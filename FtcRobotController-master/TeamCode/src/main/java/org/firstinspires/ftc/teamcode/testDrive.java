@@ -118,5 +118,9 @@ public class testDrive extends OpMode{
     @Override
     public void stop() {
         motorPower = 0;
+        frontLeftMotor.setPower(motorPower);
+        frontRightMotor.setPower(motorPower);
+        backLeftMotor.setPower(motorPower);
+        backRightMotor.setPower(motorPower);
     }
 }
