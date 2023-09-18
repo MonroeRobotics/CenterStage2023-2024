@@ -79,8 +79,11 @@ public class testDrive extends OpMode{
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //setting left side motors reverse
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftMotor.s
+    etDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
     }
 
     /*

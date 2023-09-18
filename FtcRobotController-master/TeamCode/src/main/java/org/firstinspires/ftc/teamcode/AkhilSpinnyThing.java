@@ -1,4 +1,11 @@
-public class AkhilSpinnyThing extends OpMode{
+package org.firstinspires.ftc.teamcode;
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+public class AkhilSpinnyThing extends OpMode {
     DcMotor spinny;
     double motorPower = .5;
 
@@ -12,9 +19,11 @@ public class AkhilSpinnyThing extends OpMode{
     }
 
     @Override
-    public void start() {
+    public void loop() {
         spinny.setPower(motorPower);
     }
+
+
 
     @Override
     public void stop() {
