@@ -55,8 +55,8 @@ import com.qualcomm.robotcore.util.Range;
 public class ServoActivationViaButtonPress extends OpMode{
 
     Servo airplaneServo;
-    Boolean launched = false;
-
+    boolean launched;
+    boolean yPressed;
 
     @Override
     public void init() {
@@ -85,13 +85,18 @@ public class ServoActivationViaButtonPress extends OpMode{
     @Override
     public void loop() {
         if(gamepad1.y && gamepad1.right_trigger >= .5){
-            if(!launched){
+
+            if(!launched && !yPressed){
                 airplaneServo.setPosition(1.0);
                 launched = !launched;
-            }else{
+            }
+            else if(launched && !yPressed){
                 airplaneServo.setPosition(0);
                 launched = !launched;
             }
+            yPressed = true;
+        }else{
+            yPressed = false;
         }
     }
 
