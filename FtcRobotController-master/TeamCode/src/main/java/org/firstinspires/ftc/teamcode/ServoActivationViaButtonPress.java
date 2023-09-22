@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -51,38 +52,15 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp
-public class testDrive extends OpMode{
-    DcMotor frontLeftMotor;
-    DcMotor frontRightMotor;
-    DcMotor backLeftMotor;
-    DcMotor backRightMotor;
+public class ServoActivationViaButtonPress extends OpMode{
 
-    //other variables
-    double maxPower = 1;
-    double motorPower;
+    Servo airplaneServo;
+    Boolean launched = false;
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+
     @Override
     public void init() {
-        //mapping motors onto motor objects
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeftMotor");
-        frontRightMotor = hardwareMap.get(DcMotor.class, "frontRightMotor");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "backLeftMotor");
-        backRightMotor = hardwareMap.get(DcMotor.class, "backRightMotor");
-
-        //setting motors runmode
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //setting left side motors reverse
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        airplaneServo = hardwareMap.get(Servo.class,"airplaneServo");
     }
 
     /*
@@ -98,8 +76,7 @@ public class testDrive extends OpMode{
      */
     @Override
     public void start() {
-        //power is 0 so it doesnt go
-        motorPower = 0;
+        airplaneServo.setPosition(0);
     }
 
     /*
@@ -107,11 +84,15 @@ public class testDrive extends OpMode{
      */
     @Override
     public void loop() {
-       motorPower = -gamepad1.left_stick_y;
-       frontLeftMotor.setPower(motorPower);
-       frontRightMotor.setPower(motorPower);
-       backLeftMotor.setPower(motorPower);
-       backRightMotor.setPower(motorPower);
+        if(gamepad1.y && gamepad1.right_trigger >= .5){
+            if(!launched){
+                airplaneServo.setPosition(1.0);
+                launched = !launched;
+            }else{
+                airplaneServo.setPosition(0);
+                launched = !launched;
+            }
+        }
     }
 
     /*
@@ -119,10 +100,6 @@ public class testDrive extends OpMode{
      */
     @Override
     public void stop() {
-        motorPower = 0;
-        frontLeftMotor.setPower(motorPower);
-        frontRightMotor.setPower(motorPower);
-        backLeftMotor.setPower(motorPower);
-        backRightMotor.setPower(motorPower);
+
     }
 }
