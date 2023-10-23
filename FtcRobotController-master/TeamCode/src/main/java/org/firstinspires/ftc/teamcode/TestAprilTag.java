@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -128,6 +130,8 @@ public class TestAprilTag extends LinearOpMode {
         // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
             builder.setCamera(hardwareMap.get(WebcamName.class, "webcamBack"));
+            builder.setCameraResolution(new Size(1920, 1080));
+            builder.enableLiveView(true);
         } else {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
