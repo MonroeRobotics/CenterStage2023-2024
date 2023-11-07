@@ -16,11 +16,11 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class pipelinesPlay implements VisionProcessor {
+public class TeamPropDetection implements VisionProcessor {
 
     Telemetry telemetry;
 
-    public pipelinesPlay(Telemetry telemetry) {
+    public TeamPropDetection(Telemetry telemetry) {
         this.telemetry = telemetry;
     }
 
@@ -29,7 +29,9 @@ public class pipelinesPlay implements VisionProcessor {
     Mat cropR = new Mat();
 
     String screenSector;
-
+    public String getScreenSector(){
+        return screenSector;
+    }
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
         // Not useful in this case, but we do need to implement it either way
@@ -45,12 +47,12 @@ public class pipelinesPlay implements VisionProcessor {
 
 
         //Creates the upper and lower range for the accepted HSV values for color
-        Scalar lowHSVM = new Scalar(154,40,40);
-        Scalar highHSVM = new Scalar(179,240,240);
+        Scalar lowHSV = new Scalar(154,40,40);
+        Scalar highHSV = new Scalar(179,240,240);
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)
 
-        Core.inRange(input, lowHSVM, highHSVM, input);
+        Core.inRange(input, lowHSV, highHSV, input);
 
         Imgproc.morphologyEx(input, input, MORPH_OPEN, Imgproc.getStructuringElement(MORPH_RECT, new Size(3, 3)));
 
