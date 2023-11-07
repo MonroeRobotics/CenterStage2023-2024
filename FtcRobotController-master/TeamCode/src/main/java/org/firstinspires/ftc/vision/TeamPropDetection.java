@@ -27,7 +27,8 @@ public class TeamPropDetection implements VisionProcessor {
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
-
+    int width = 640;
+    int height = 480;
     String screenSector;
     public String getScreenSector(){
         return screenSector;
@@ -35,6 +36,8 @@ public class TeamPropDetection implements VisionProcessor {
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
         // Not useful in this case, but we do need to implement it either way
+        width = 640;
+        height = 480;
     }
 
     @Override
@@ -58,11 +61,11 @@ public class TeamPropDetection implements VisionProcessor {
 
 
 
-        Rect leftScreen = new Rect(0, 0, 176/3, 144);
+        Rect leftScreen = new Rect(0, 0, width/3, height);
 
-        Rect centerScreen = new Rect(176/3, 0, 176/3, 144);
+        Rect centerScreen = new Rect(width/3, 0, width/3, height);
 
-        Rect rightScreen = new Rect((176/3)*2, 0, 176/3, 144);
+        Rect rightScreen = new Rect((width/3)*2, 0, width/3, height);
 
 
         cropL = input.submat(leftScreen);
