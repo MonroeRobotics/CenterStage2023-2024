@@ -20,6 +20,8 @@ public class RoadRunnerSim {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
+        Vector2d boardCord = new Vector2d(48, -35);
+
         // Declare our first bot
         RoadRunnerBotEntity firstBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(14,16)
@@ -29,6 +31,7 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(10, -62, Math.toRadians(90)))
                                 .lineToLinearHeading(new Pose2d(32.75,-30, Math.toRadians(180)))
+                                .lineToConstantHeading(boardCord)
                                 .build()
                 );
 
@@ -40,6 +43,7 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(10, -62, Math.toRadians(90)))
                                 .lineToLinearHeading(new Pose2d(20,-24, Math.toRadians(180)))
+                                .lineToConstantHeading(boardCord)
                                 .build()
                 );
         RoadRunnerBotEntity thirdBot = new DefaultBotBuilder(meepMeep)
@@ -50,6 +54,7 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(10, -62, Math.toRadians(90)))
                                 .lineToLinearHeading(new Pose2d(10,-30, Math.toRadians(180)))
+                                .lineToConstantHeading(boardCord)
                                 .build()
                 );
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
