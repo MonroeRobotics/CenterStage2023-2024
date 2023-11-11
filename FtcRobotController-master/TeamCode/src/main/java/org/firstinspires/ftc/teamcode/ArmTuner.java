@@ -70,6 +70,8 @@ public class ArmTuner extends OpMode {
         leftLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        rightLinear.setDirection(DcMotorSimple.Direction.REVERSE);
+
         leftLinear.setTargetPosition(SLIDE_HEIGHT);
         rightLinear.setTargetPosition(SLIDE_HEIGHT);
 
