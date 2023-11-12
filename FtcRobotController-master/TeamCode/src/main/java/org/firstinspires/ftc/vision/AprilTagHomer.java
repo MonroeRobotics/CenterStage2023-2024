@@ -3,6 +3,7 @@ package org.firstinspires.ftc.vision;
 import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class AprilTagHomer {
     AprilTagProcessor aprilTag;
-    MecanumDrive drive;
+    SampleMecanumDrive drive;
     AprilTagPoseFtc currentTagPose;
     int targetTagId = 1;
     double acptOffsetX = 0.1;
@@ -20,13 +21,13 @@ public class AprilTagHomer {
     double vertGain = 15;
 
 
-    public AprilTagHomer (AprilTagProcessor aprilTag, MecanumDrive drive){
+    public AprilTagHomer (AprilTagProcessor aprilTag, SampleMecanumDrive drive){
         this.aprilTag = aprilTag;
         this.drive = drive;
 
     }
 
-    public AprilTagHomer(AprilTagProcessor aprilTag, MecanumDrive drive, double acptOffsetX, double acptOffsetY, double horizGain, double vertGain) {
+    public AprilTagHomer(AprilTagProcessor aprilTag, SampleMecanumDrive drive, double acptOffsetX, double acptOffsetY, double horizGain, double vertGain) {
         this.aprilTag = aprilTag;
         this.drive = drive;
         this.acptOffsetX = acptOffsetX;
@@ -35,8 +36,21 @@ public class AprilTagHomer {
         this.vertGain = vertGain;
     }
 
+    public AprilTagPoseFtc getCurrentTagPose() {
+        return currentTagPose;
+    }
+    public void setGains (double horizGain, double vertGain){
+        this.vertGain = vertGain;
+        this.horizGain = horizGain;
+    }
+
+    public void setAcptOffsets (double acptOffsetX, double acptOffsetY){
+        this.acptOffsetX = acptOffsetX;
+        this.acptOffsetY = acptOffsetY;
+    }
+
     public void updateDrive(){
-        currentTagPose = getCurrentTagPose();
+        currentTagPose = updateCurrentTagPose();
         if (currentTagPose != null){
 
             // Y reversed because robot backwards
@@ -57,7 +71,7 @@ public class AprilTagHomer {
 
     }
 
-    public AprilTagPoseFtc getCurrentTagPose() {
+    public AprilTagPoseFtc updateCurrentTagPose() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
@@ -74,8 +88,10 @@ public class AprilTagHomer {
         targetTagId = newId;
     }
     public boolean inRange (){
-        if (Math.abs(currentTagPose.x) <= acptOffsetX && Math.abs(currentTagPose.y) <= acptOffsetY) {
-            return true;
+        if (currentTagPose != null) {
+            if(Math.abs(currentTagPose.x) <= acptOffsetX && Math.abs(currentTagPose.y) <= acptOffsetY) {
+                return true;
+            }
         }
         return false;
     }
