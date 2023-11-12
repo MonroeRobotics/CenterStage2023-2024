@@ -54,16 +54,17 @@ public class AprilTagHomer {
         if (currentTagPose != null){
 
             // Y reversed because robot backwards
-            double drivePowerX = (Math.abs(currentTagPose.x) - acptOffsetX) / vertGain;
-            double drivePowerY = -(Math.abs(currentTagPose.y) - acptOffsetY) / horizGain;
+            //Set Max Possible power to 1
+            double drivePowerX = Math.min((Math.abs(currentTagPose.x) - acptOffsetX) / vertGain, 1);
+            double drivePowerY = -Math.min((Math.abs(currentTagPose.y) - acptOffsetY) / horizGain, 1);
 
-            //Check Which Tag is On and reverse power if necessary
+            //Check Which Tag is On and reverse X power if necessary
             //CHECK THIS!!!!
             if (currentTagPose.x > 0){
                 drivePowerX = -drivePowerX;
             }
 
-            drive.setDrivePower(new Pose2d(drivePowerX,drivePowerY));
+            drive.setDrivePower(new Pose2d(drivePowerX, drivePowerY, 0));
         }
         else {
             drive.setDrivePower(new Pose2d(0,0, 0));
