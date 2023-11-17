@@ -61,7 +61,7 @@ public class TeamPropDetection implements VisionProcessor {
 
         Core.inRange(input, lowHSV, highHSV, input);
 
-        Imgproc.morphologyEx(input, input, MORPH_OPEN, Imgproc.getStructuringElement(MORPH_RECT, new Size(3, 3)));
+        Imgproc.morphologyEx(input, input, MORPH_OPEN, Imgproc.getStructuringElement(MORPH_RECT, new Size(0.5, 3)));
 
 
 
