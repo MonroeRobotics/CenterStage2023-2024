@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Disabled
 @Autonomous(name = "Auto Program", group = "Main")
-public class AutoProgram extends OpMode {
+public class AutoProgramRedBoard extends OpMode {
     SampleMecanumDrive drive;
     ChangeableProcessor changeableProcessor = new ChangeableProcessor();
     //trajectory declarations
