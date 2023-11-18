@@ -2,15 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-@TeleOp
-public class GamepadColorStuff extends OpMode {
+public class PixelGamepadDetector {
 
-    ColorSensor colorSensor;
+    ColorSensor colorSensor1;
+    ColorSensor colorSensor2;
     int colorDetected_argb;
     int yellow_argb;
     int purple_argb;
@@ -18,6 +16,18 @@ public class GamepadColorStuff extends OpMode {
     int white_argb;
 
     int offset = 10;
+
+    Gamepad gamepad1;
+    Gamepad gamepad2;
+
+    public PixelGamepadDetector(ColorSensor colorSensor1, ColorSensor colorSensor2, Gamepad gamepad1, Gamepad gamepad2) {
+        this.colorSensor1 = colorSensor1;
+        this.colorSensor2 = colorSensor2;
+
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+    }
+
     Gamepad.RumbleEffect effect = new Gamepad.RumbleEffect.Builder()
             .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
             .addStep(0.0, 0.0, 300)  //  Pause for 300 mSec
@@ -25,15 +35,10 @@ public class GamepadColorStuff extends OpMode {
             .addStep(0.0, 0.0, 250)  //  Pause for 250 mSec
             .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
             .build();
-    @Override
-    public void init() {
-        colorSensor = (RevColorSensorV3) hardwareMap.get("colorSensor");
-        colorSensor.enableLed(true);
 
-    }
 
-    @Override
-    public void loop() {
+
+    public void updateController() {
         if (!gamepad1.isRumbling()){
             gamepad1.runRumbleEffect(effect);
         }
