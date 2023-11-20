@@ -48,7 +48,7 @@ public class AutoProgramRedBoard extends OpMode {
     //region intake and placement pieces
     DcMotorEx intake;
     Servo uppy;
-    Servo bucketServo;
+    Servo outakeServo;
     Servo bucketAngle;
     //endregion
 
@@ -99,7 +99,7 @@ public class AutoProgramRedBoard extends OpMode {
         //region intake parts hardwaremap
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         uppy = hardwareMap.get(Servo.class, "uppy");
-        bucketServo = hardwareMap.get(Servo.class, "bucketServo");
+        outakeServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketAngle = hardwareMap.get(Servo.class, "bucketAngle");
         //endregion
 
@@ -159,11 +159,17 @@ public class AutoProgramRedBoard extends OpMode {
         universalTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
             .lineToLinearHeading(spikeLocation)
                 //place purple pixel on spike line
-                /*.addDisplacementMarker(() -> {
-                })*/
+                .addDisplacementMarker(() -> {
+                    intake.setPower(-1);
+                    outakeServo.setPosition(-.5);
+                })
                 .lineToLinearHeading(redBoardCord)
                 //go to april tag indicated by spike marker location
-                //.addDisplacementMarker()
+                .addDisplacementMarker(() -> {
+                    aprilTagDetector.getDetections();
+                    aprilTagHomer.getCurrentTagPose();
+                    aprilTagHomer.updateDrive();
+                })
                 .lineToLinearHeading(redParkCord)
                 .build();
 
