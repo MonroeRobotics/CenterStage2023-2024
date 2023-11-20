@@ -14,20 +14,33 @@ public class AxisLocking extends OpMode {
 
     SampleMecanumDrive drive;
 
-    DistanceSensor leftDistanceSensor;
-    DistanceSensor rightDistanceSensor;
+    //sensor on back-left robot
+    DistanceSensor leftDistance;
 
-    //this gotta be from 0<x<1
-    double alignHeadingFactor = .2;
+    //sensor on back-right robot
+    DistanceSensor rightDistance;
+
+    //error for rightDist sensor, changable in dashboard
+    public static double rightDistanceError = 0;
+
+    //From 0<x<1, align factor
+    double alignFactor = .1;
+
+    //boolean if axisLock mode active
     boolean axisLocked = false;
+
+    //enter in cm
+    double targetDistance = 10;
+
+    //for clicking reason
     boolean xNotPressed = true;
 
     @Override
     public void init() {
-        //intialize the things
+        //intialize hardware
         drive = new SampleMecanumDrive(hardwareMap);
-        leftDistanceSensor = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
-        rightDistanceSensor = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+        leftDistance = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+        rightDistance = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         //turn off velocity control for reasons
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -36,12 +49,13 @@ public class AxisLocking extends OpMode {
     @Override
     public void loop() {
 
-        //get them at base so I can mess with them if needed
+        //get base movement inputs
         double x = gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
         double heading = gamepad1.right_stick_x;
 
         //if gamepad1 x is clicked change axisLocked to other val
+        //to make it not freak out
         if(gamepad1.x && xNotPressed){
             xNotPressed = false;
             axisLocked = !axisLocked;
@@ -50,29 +64,25 @@ public class AxisLocking extends OpMode {
             xNotPressed = true;
         }
 
-        //if axis locked is true, auto align then lock y and heading changes
+        //if axis locked is true, auto align then move to targetDistance
         if(axisLocked){
 
-            //subtracts right sensor distance from left sensor distance
-            heading = rightDistanceSensor.getDistance(DistanceUnit.CM)
-                                    - leftDistanceSensor.getDistance(DistanceUnit.CM);
+            //subtracts right sensor distance from left sensor distance (right error in there too)
+            heading = (rightDistance.getDistance(DistanceUnit.CM) - rightDistanceError)
+                                    - leftDistance.getDistance(DistanceUnit.CM);
 
-            //if diff pos, turn right, if neg, turn left, if zero, its already zero
-            //mult power by alignHeadingFactor
-            if(heading > 0){
-                heading = 1 * alignHeadingFactor;
-            } else if(heading < 0){
-                heading = -1 * alignHeadingFactor;
+            //mult power by alignFactor
+            heading *= alignFactor;
+
+            //make it target distance once heading = 0 and aligned
+            if(heading == 0){
+                y = (targetDistance - (rightDistance.getDistance(DistanceUnit.CM) - rightDistanceError))
+                        * alignFactor;
             }
-
-
-
-            //stop y and heading change
-            y = 0;
         }
 
 
-        // Pass in the rotated input + right stick value for rotation
+        // Pass in movement to setDrivePower
         drive.setWeightedDrivePower(
                 new Pose2d(
                         x,
@@ -81,7 +91,7 @@ public class AxisLocking extends OpMode {
                 )
         );
 
-        // Update drive stuff
+        // Update drive
         drive.update();
     }
 }
