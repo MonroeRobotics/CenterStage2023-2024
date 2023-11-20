@@ -1,20 +1,14 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.util;
 
-
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-
 import org.firstinspires.ftc.teamcode.util.Color;
 
-@Config
-@TeleOp
-public class GamepadColorStuff extends OpMode {
+
+public class PixelGamepadDetector {
+
+    Gamepad gamepad1;
+    Gamepad gamepad2;
 
     RevColorSensorV3 colorSensor1;
     RevColorSensorV3 colorSensor2;
@@ -39,14 +33,15 @@ public class GamepadColorStuff extends OpMode {
             .addStep(0.0, 0.0, 250)  //  Pause for 250 mSec
             .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
             .build();
-    @Override
-    public void init() {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        colorSensor1 = (RevColorSensorV3) hardwareMap.get("colorSensor1");
-        colorSensor2 = (RevColorSensorV3) hardwareMap.get("colorSensor2");
-        colorSensor1.enableLed(true);
-        colorSensor2.enableLed(true);
+    public PixelGamepadDetector(Gamepad gamepad1, Gamepad gamepad2, RevColorSensorV3 colorSensor1, RevColorSensorV3 colorSensor2) {
+
+        this.gamepad1 = gamepad1;
+
+        this.gamepad2 = gamepad2;
+
+        this.colorSensor1 = colorSensor1;
+        this.colorSensor2 = colorSensor2;
 
         currentColor1 = new Color(0, 0, 0);
         previousColor1 = new Color(0, 0, 0);
@@ -54,8 +49,7 @@ public class GamepadColorStuff extends OpMode {
         previousColor2 = new Color(0, 0, 0);
     }
 
-    @Override
-    public void loop() {
+    public void updateControllerColors() {
         /*if (!gamepad1.isRumbling()){
             gamepad1.runRumbleEffect(effect);
         }*/
@@ -95,20 +89,7 @@ public class GamepadColorStuff extends OpMode {
             }
         }
 
-        telemetry.addData("Change In C", currentColor1.getError(previousColor1));
         previousColor1.setRbg(currentColor1.getRbg());
         previousColor2.setRbg(currentColor2.getRbg());
-
-        telemetry.addData("W Error", white.getError(currentColor1));
-        telemetry.addData("Y Error", yellow.getError(currentColor1));
-        telemetry.addData("P Error", purple.getError(currentColor1));
-        telemetry.addData("G Error", green.getError(currentColor1));
-
-        telemetry.addData("2 W Error", white.getError(currentColor2));
-        telemetry.addData("2 Y Error", yellow.getError(currentColor2));
-        telemetry.addData("2 P Error", purple.getError(currentColor2));
-        telemetry.addData("2 G Error", green.getError(currentColor2));
-
-        telemetry.update();
     }
 }
