@@ -26,6 +26,7 @@ public class main extends OpMode {
     //region variable declarations
 
     //region Arm Variables
+
     public static int SLIDE_HEIGHT = 20;
     public static double SLIDE_POWER = 0.5;
     public static double SLIDE_MAX_VELO = 2000;
@@ -53,7 +54,6 @@ public class main extends OpMode {
 
     public double reverseTimer = 0;
     public static double REVERSE_TIME = 5000;
-
 
 
     //endregion
@@ -169,9 +169,9 @@ public class main extends OpMode {
     public void loop() {
 
         drive.setWeightedDrivePower(new Pose2d(
-                gamepad1.left_stick_x,
+                -gamepad1.left_stick_x,
                 -gamepad1.left_stick_y,
-                gamepad1.right_stick_x
+                -gamepad1.right_stick_x
         ));
 
         //region Arm Logic
