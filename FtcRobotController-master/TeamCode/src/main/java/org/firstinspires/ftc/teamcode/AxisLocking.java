@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp
+@Config
 public class AxisLocking extends OpMode {
 
     SampleMecanumDrive drive;
@@ -22,16 +25,24 @@ public class AxisLocking extends OpMode {
     DistanceSensor rightDistance;
 
     //error for rightDist sensor, changable in dashboard
-    public static double rightDistanceError = 0;
+    public static double leftDistanceError = 0;
+
+    double xError;
+    double headingError;
+
+    public static double headingTolerance = .1;
+    public static double xTolerance = .1;
+
 
     //From 0<x<1, align factor
-    double alignFactor = .1;
+    public static double headingAlignFactor = 4;
+    public static double xAlignFactor = 4;
 
     //boolean if axisLock mode active
     boolean axisLocked = false;
 
     //enter in cm
-    double targetDistance = 10;
+    public static double targetDistance = 10;
 
     //for clicking reason
     Gamepad currentGamepad1;
@@ -42,10 +53,12 @@ public class AxisLocking extends OpMode {
 
     @Override
     public void init() {
+
+        telemetry = new MultipleTelemetry(telemetry);
         //intialize hardware
         drive = new SampleMecanumDrive(hardwareMap);
-        leftDistance = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
-        rightDistance = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+        leftDistance = hardwareMap.get(DistanceSensor.class, "leftDistance");
+        rightDistance = hardwareMap.get(DistanceSensor.class, "rightDistance");
 
         //turn off velocity control for reasons
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -58,9 +71,9 @@ public class AxisLocking extends OpMode {
     public void loop() {
 
         //get base movement inputs
-        double x = gamepad1.left_stick_x;
-        double y = -gamepad1.left_stick_y;
-        double heading = gamepad1.right_stick_x;
+        double x = -gamepad1.left_stick_y;
+        double y = -gamepad1.left_stick_x;
+        double heading = -gamepad1.right_stick_x;
 
         //if gamepad1 x is clicked change axisLocked to other val
         //to make it not freak out
@@ -70,18 +83,30 @@ public class AxisLocking extends OpMode {
 
         //if axis locked is true, auto align then move to targetDistance
         if(axisLocked){
+            x = 0;
 
-            //subtracts right sensor distance from left sensor distance (right error in there too)
-            heading = (rightDistance.getDistance(DistanceUnit.CM) - rightDistanceError)
-                                    - leftDistance.getDistance(DistanceUnit.CM);
-            //mult power by alignFactor
-            heading *= alignFactor;
+            headingError = (leftDistance.getDistance(DistanceUnit.CM) - leftDistanceError)
+                    - rightDistance.getDistance(DistanceUnit.CM);
 
-            //make it target distance once heading = 0 and aligned
-            if(heading == 0){
-                y = (targetDistance - (rightDistance.getDistance(DistanceUnit.CM) - rightDistanceError))
-                        * alignFactor;
+            if(Math.abs(headingError) >= headingTolerance) {
+                //subtracts right sensor distance from left sensor distance (right error in there too)
+                heading = headingError / headingAlignFactor;
+
+            }else{
+                heading = 0;
+
+
+                //make it target distance
+                xError = targetDistance - rightDistance.getDistance(DistanceUnit.CM);
+
+                if(Math.abs(xError) >= xTolerance) {
+                    //subtracts right sensor distance from left sensor distance (right error in there too)
+                    x = xError / xAlignFactor;
+                }
+
             }
+
+
         }
 
 
@@ -100,5 +125,13 @@ public class AxisLocking extends OpMode {
         previousGamepad1.copy(currentGamepad1);
 
         currentGamepad1.copy(gamepad1);
+
+        telemetry.addData("Left Distance", leftDistance.getDistance(DistanceUnit.CM));
+        telemetry.addData("Right Distance", rightDistance.getDistance(DistanceUnit.CM));
+
+        telemetry.addData("X Error", xError);
+        telemetry.addData("Heading Error", headingError);
+
+        telemetry.update();
     }
 }
