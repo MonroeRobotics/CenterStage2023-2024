@@ -28,8 +28,17 @@ public class main extends OpMode {
     //region Arm Variables
 
     public static int SLIDE_HEIGHT = 20;
+    public static int SLIDE_STAGE = 0;
     public static double SLIDE_POWER = 0.5;
     public static double SLIDE_MAX_VELO = 2000;
+
+    enum ArmState {
+        INTAKE,
+        OUTTAKE_READY,
+        OUTTAKE_ACTIVE
+    }
+
+    ArmState currentArmState;
 
     public static double ARM_POSITION = 0.05;
     public static double ARM_SERVO_FORWARD = 0.05;
@@ -39,6 +48,10 @@ public class main extends OpMode {
     public static double BOX_SERVO_FORWARD = 1;
     public static double BOX_SERVO_BACKWARD = 0.5;
 
+   double outtakeTimer = 0;
+
+    public static double OUTTAKE_TIME = 1000;
+
 
     //endregion
 
@@ -47,13 +60,11 @@ public class main extends OpMode {
     public static double INTAKE_POWER = .5;
     public static double INTAKE_POSITION = .5;
     boolean intakeActive = false;
-
     boolean reverseIntake = false;
 
     public static double PIXEL_DETECTION_DISTANCE = .01;
-
     public double reverseTimer = 0;
-    public static double REVERSE_TIME = 5000;
+    public static double REVERSE_TIME = 1000;
 
 
     //endregion
@@ -175,13 +186,40 @@ public class main extends OpMode {
         ));
 
         //region Arm Logic
-        if (gamepad1.x) {
-            BOX_SERVO_POSITION = BOX_SERVO_FORWARD;
-            ARM_POSITION = ARM_SERVO_FORWARD;
-        } else if (gamepad1.y) {
-            BOX_SERVO_POSITION = BOX_SERVO_BACKWARD;
-            ARM_POSITION = ARM_SERVO_BACKWARD;
+
+
+        if(currentGamepad2.dpad_up && !previousGamepad2.dpad_up && SLIDE_STAGE < 5){
+            SLIDE_STAGE++;
         }
+        else if(currentGamepad2.dpad_down && !previousGamepad2.dpad_down && SLIDE_STAGE > 0){
+            SLIDE_STAGE--;
+        }
+
+
+       if(currentGamepad2.triangle && !previousGamepad2.triangle){
+           switch (currentArmState){
+               case INTAKE:
+                   currentArmState = ArmState.OUTTAKE_READY;
+                   changeArmState();
+                   break;
+               case OUTTAKE_READY:
+                   currentArmState = ArmState.OUTTAKE_ACTIVE;
+                   outtakeTimer = System.currentTimeMillis() + OUTTAKE_TIME;
+                   changeArmState();
+                   break;
+           }
+       }
+       else if(currentGamepad2.square && !previousGamepad2.square){
+           currentArmState = ArmState.INTAKE;
+           changeArmState();
+       }
+
+       if(currentArmState == ArmState.OUTTAKE_ACTIVE && outtakeTimer < System.currentTimeMillis()){
+           currentArmState = ArmState.INTAKE;
+           changeArmState();
+       }
+
+
 
         leftLinear.setTargetPosition(SLIDE_HEIGHT);
         rightLinear.setTargetPosition(SLIDE_HEIGHT);
@@ -203,8 +241,14 @@ public class main extends OpMode {
         }
 
         if(intakeActive){
+
+            //
             intakeMotor.setPower(INTAKE_POWER);
             intakeServo.setPosition(INTAKE_POSITION);
+
+            //Runs outtake servo
+            outtakeServo.setPower(-1);
+
             if(colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE){
                 intakeActive = false;
                 reverseIntake = true;
@@ -220,11 +264,36 @@ public class main extends OpMode {
         }
         //endregion
 
+        pixelGamepadDetector.updateControllerColors();
+
         previousGamepad1.copy(currentGamepad1);
         previousGamepad2.copy(currentGamepad2);
 
         currentGamepad1.copy(gamepad1);
         currentGamepad2.copy(gamepad2);
 
+    }
+
+    public void changeArmState(){
+        switch (currentArmState){
+            case INTAKE:
+                BOX_SERVO_POSITION = BOX_SERVO_FORWARD;
+                ARM_POSITION = ARM_SERVO_FORWARD;
+                SLIDE_HEIGHT = 20;
+                outtakeServo.setPower(1);
+                break;
+            case OUTTAKE_READY:
+                BOX_SERVO_POSITION = BOX_SERVO_BACKWARD;
+                ARM_POSITION = ARM_SERVO_BACKWARD;
+                if (SLIDE_STAGE == 0) {
+                    SLIDE_HEIGHT = 540;
+                }
+                else{
+                    SLIDE_HEIGHT = 540 + (SLIDE_STAGE * 150);
+                }
+                break;
+            case OUTTAKE_ACTIVE:
+                outtakeServo.setPower(1);
+        }
     }
 }
