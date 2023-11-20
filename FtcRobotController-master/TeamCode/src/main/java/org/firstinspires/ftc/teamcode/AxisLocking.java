@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -37,7 +38,7 @@ public class AxisLocking extends OpMode {
     public void loop() {
 
         //get them at base so I can mess with them if needed
-        double x = gamepad1.left_stick_x;
+        double x = gamepad1.left_stick_x
         double y = -gamepad1.left_stick_y;
         double heading = gamepad1.right_stick_x;
 
@@ -81,7 +82,13 @@ public class AxisLocking extends OpMode {
                 )
         );
 
-        // Update drive stuff
+        // Update everything. Odometry. Etc.
         drive.update();
+
+        // Print pose to telemetry
+        telemetry.addData("x", poseEstimate.getX());
+        telemetry.addData("y", poseEstimate.getY());
+        telemetry.addData("heading", poseEstimate.getHeading());
+        telemetry.update();
     }
 }
