@@ -2,15 +2,23 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
+
+import java.util.Timer;
 
 @TeleOp
 public class main extends OpMode {
@@ -18,37 +26,50 @@ public class main extends OpMode {
     //region variable declarations
 
     //region Arm Variables
-    int SLIDE_HEIGHT = 20;
-    double SLIDE_POWER = 0.5;
-    double SLIDE_MAX_VELO = 2000;
+    public static int SLIDE_HEIGHT = 20;
+    public static double SLIDE_POWER = 0.5;
+    public static double SLIDE_MAX_VELO = 2000;
 
-    double ARM_POSITION = 0.05;
-    double ARM_SERVO_FORWARD = 0.05;
-    double ARM_SERVO_BACKWARD = 0.7;
+    public static double ARM_POSITION = 0.05;
+    public static double ARM_SERVO_FORWARD = 0.05;
+    public static double ARM_SERVO_BACKWARD = 0.7;
 
-    static double BOX_SERVO_POSITION = 1;
-    static double BOX_SERVO_FORWARD = 1;
-    double BOX_SERVO_BACKWARD = 0.5;
+    public static double BOX_SERVO_POSITION = 1;
+    public static double BOX_SERVO_FORWARD = 1;
+    public static double BOX_SERVO_BACKWARD = 0.5;
 
 
     //endregion
 
 
     //region Intake Variables
-    public static double motorPower = .5;
-    public static double servoPosition = .5;
-    boolean intakePosition = false;
-    boolean bPressed = false;
+    public static double INTAKE_POWER = .5;
+    public static double INTAKE_POSITION = .5;
+    boolean intakeActive = false;
+
+    boolean reverseIntake = false;
+
+    public static double PIXEL_DETECTION_DISTANCE = .01;
+
+    public double reverseTimer = 0;
+    public static double REVERSE_TIME = 5000;
+
+
+
     //endregion
 
     //endregion
 
     //region Declare Objects
 
+    SampleMecanumDrive drive;
+
+
     //region Arm Objects
     Servo armServoRight;
     Servo armServoLeft;
     Servo boxServo;
+    CRServo outtakeServo;
     DcMotorEx rightLinear;
     DcMotorEx leftLinear;
     //endregion
@@ -56,6 +77,12 @@ public class main extends OpMode {
     //region Intake Objects
     DcMotor intakeMotor;
     Servo intakeServo;
+
+    PixelGamepadDetector pixelGamepadDetector;
+
+    RevColorSensorV3 colorSensor1;
+    RevColorSensorV3 colorSensor2;
+
     //endregion
 
     //endregion
@@ -66,13 +93,12 @@ public class main extends OpMode {
     Gamepad previousGamepad1;
     Gamepad previousGamepad2;
 
-    PixelGamepadDetector pixelGamepadDetector;
 
-    ColorSensor colorSensor1;
-    ColorSensor colorSensor2;
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        drive = new SampleMecanumDrive(hardwareMap);
 
         //region Arm Init
         //region Hardware Map
@@ -80,6 +106,7 @@ public class main extends OpMode {
         armServoLeft = hardwareMap.get(Servo.class, "armServoLeft");
         armServoRight = hardwareMap.get(Servo.class, "armServoRight");
         boxServo = hardwareMap.get(Servo.class, "boxServo");
+        outtakeServo = hardwareMap.get(CRServo.class,"outtakeServo");
         leftLinear = hardwareMap.get(DcMotorEx.class ,"leftLinear");
         rightLinear = hardwareMap.get(DcMotorEx.class, "rightLinear");
 
@@ -123,12 +150,12 @@ public class main extends OpMode {
 
         //region Intake Settings Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeServo.setPosition(servoPosition);
+        intakeServo.setPosition(INTAKE_POSITION);
         //endregion
         //endregion
 
-        colorSensor1 = (RevColorSensorV3) hardwareMap.get("colorSensor1");
-        colorSensor2 = (RevColorSensorV3) hardwareMap.get("colorSensor2");
+        colorSensor1 = hardwareMap.get(RevColorSensorV3.class,"colorSensor1");
+        colorSensor2 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
 
         currentGamepad1 = new Gamepad();
         currentGamepad2 = new Gamepad();
@@ -136,10 +163,16 @@ public class main extends OpMode {
         previousGamepad1 = new Gamepad();
         previousGamepad2 = new Gamepad();
 
-        pixelGamepadDetector = new PixelGamepadDetector(colorSensor1, colorSensor2, gamepad1, gamepad2);
+        pixelGamepadDetector = new PixelGamepadDetector(this.gamepad1, this.gamepad2, colorSensor1, colorSensor2);
     }
     @Override
     public void loop() {
+
+        drive.setWeightedDrivePower(new Pose2d(
+                gamepad1.left_stick_x,
+                -gamepad1.left_stick_y,
+                gamepad1.right_stick_x
+        ));
 
         //region Arm Logic
         if (gamepad1.x) {
@@ -160,33 +193,38 @@ public class main extends OpMode {
         //endregion
 
         //region Intake Logic
-        if (gamepad1.dpad_down) {
-            intakeMotor.setPower(motorPower);
-        } else if (gamepad1.dpad_up) {
-            intakeMotor.setPower(-motorPower);
-        } else {
-            intakeMotor.setPower(0);
+        if (currentGamepad1.cross && !previousGamepad1.cross){
+            intakeActive = true;
         }
 
-        if (gamepad1.b && bPressed == false){
-            bPressed = true;
-            intakePosition = !intakePosition;
-            if (intakePosition == true){
-                intakeServo.setPosition(0);
-            }
-            else{
-                intakeServo.setPosition(servoPosition);
+        if (currentGamepad1.circle && !previousGamepad1.circle){
+            intakeActive = false;
+            reverseIntake = false;
+        }
+
+        if(intakeActive){
+            intakeMotor.setPower(INTAKE_POWER);
+            intakeServo.setPosition(INTAKE_POSITION);
+            if(colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE){
+                intakeActive = false;
+                reverseIntake = true;
+                reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
             }
         }
-        else if (!gamepad1.b){
-            bPressed = false;
+        else if (reverseIntake && reverseTimer > System.currentTimeMillis()){
+            intakeMotor.setPower(-INTAKE_POWER);
         }
+        else{
+            intakeMotor.setPower(INTAKE_POWER);
+            intakeServo.setPosition(0);
+        }
+        //endregion
 
         previousGamepad1.copy(currentGamepad1);
         previousGamepad2.copy(currentGamepad2);
 
         currentGamepad1.copy(gamepad1);
         currentGamepad2.copy(gamepad2);
-        //endregion
+
     }
 }
