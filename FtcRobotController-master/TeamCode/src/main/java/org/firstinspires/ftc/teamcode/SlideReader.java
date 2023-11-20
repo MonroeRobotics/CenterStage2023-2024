@@ -33,6 +33,8 @@ public class SlideReader extends OpMode {
         leftLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+        rightLinear.setDirection(DcMotorSimple.Direction.REVERSE);
+
         //endregion
     }
     @Override
