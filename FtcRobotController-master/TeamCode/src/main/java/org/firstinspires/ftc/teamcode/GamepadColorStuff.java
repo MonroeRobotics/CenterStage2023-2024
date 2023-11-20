@@ -42,7 +42,7 @@ public class GamepadColorStuff extends OpMode {
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        
         colorSensor1 = (RevColorSensorV3) hardwareMap.get("colorSensor1");
         colorSensor2 = (RevColorSensorV3) hardwareMap.get("colorSensor2");
         colorSensor1.enableLed(true);
