@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
@@ -60,16 +57,8 @@ public class main extends OpMode {
 
     //endregion
 
-    Gamepad currentGamepad1;
-    Gamepad currentGamepad2;
 
-    Gamepad previousGamepad1;
-    Gamepad previousGamepad2;
 
-    PixelGamepadDetector pixelGamepadDetector;
-
-    ColorSensor colorSensor1;
-    ColorSensor colorSensor2;
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -126,17 +115,6 @@ public class main extends OpMode {
         intakeServo.setPosition(servoPosition);
         //endregion
         //endregion
-
-        colorSensor1 = (RevColorSensorV3) hardwareMap.get("colorSensor1");
-        colorSensor2 = (RevColorSensorV3) hardwareMap.get("colorSensor2");
-
-        currentGamepad1 = new Gamepad();
-        currentGamepad2 = new Gamepad();
-
-        previousGamepad1 = new Gamepad();
-        previousGamepad2 = new Gamepad();
-
-        pixelGamepadDetector = new PixelGamepadDetector(colorSensor1, colorSensor2, gamepad1, gamepad2);
     }
     @Override
     public void loop() {
@@ -181,12 +159,6 @@ public class main extends OpMode {
         else if (!gamepad1.b){
             bPressed = false;
         }
-
-        previousGamepad1.copy(currentGamepad1);
-        previousGamepad2.copy(currentGamepad2);
-
-        currentGamepad1.copy(gamepad1);
-        currentGamepad2.copy(gamepad2);
         //endregion
     }
 }

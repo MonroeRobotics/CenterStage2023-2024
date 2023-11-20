@@ -15,7 +15,6 @@ public class GamepadColorStuff extends OpMode {
     int yellow_argb;
     int purple_argb;
     int green_argb;
-    int white_argb;
 
     int offset = 10;
     Gamepad.RumbleEffect effect = new Gamepad.RumbleEffect.Builder()
@@ -51,11 +50,8 @@ public class GamepadColorStuff extends OpMode {
             gamepad1.setLedColor(0,1,0, 1000);
         }
 
-        else if(Math.abs(colorDetected_argb-white_argb) <= offset){
-            gamepad1.setLedColor(1,1,1, 1000);
-        }
         else{
-            gamepad1.setLedColor(0,0,0,1000);
+            gamepad1.setLedColor(1,1,1, 1000);
         }
     }
 }
