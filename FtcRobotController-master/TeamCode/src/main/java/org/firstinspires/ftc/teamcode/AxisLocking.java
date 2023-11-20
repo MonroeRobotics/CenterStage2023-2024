@@ -30,19 +30,19 @@ public class AxisLocking extends OpMode {
     double xError;
     double headingError;
 
-    public static double headingTolerance = .1;
-    public static double xTolerance = .1;
+    public static double headingTolerance = .3;
+    public static double xTolerance = .3;
 
 
     //From 0<x<1, align factor
-    public static double headingAlignFactor = 4;
-    public static double xAlignFactor = 4;
+    public static double headingAlignFactor = 20;
+    public static double xAlignFactor = 20;
 
     //boolean if axisLock mode active
     boolean axisLocked = false;
 
     //enter in cm
-    public static double targetDistance = 10;
+    public static double targetDistance = 16;
 
     //for clicking reason
     Gamepad currentGamepad1;
