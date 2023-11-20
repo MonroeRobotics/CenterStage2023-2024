@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 @TeleOp
-public class AkhilSpinnyAndUppyThing extends OpMode {
+public class AkhilSpinnyThing extends OpMode {
     DcMotor spinny;
     Servo uppy;
     public static double motorPower = .5;
