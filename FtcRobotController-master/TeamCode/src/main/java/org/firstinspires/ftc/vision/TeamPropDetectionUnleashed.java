@@ -6,28 +6,27 @@ import static org.opencv.imgproc.Imgproc.MORPH_RECT;
 
 import android.graphics.Canvas;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
-
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class TeamPropDetection implements VisionProcessor {
+public class TeamPropDetectionUnleashed implements VisionProcessor {
 
     Telemetry telemetry;
 
-    public TeamPropDetection(Telemetry telemetry) {
+    public TeamPropDetectionUnleashed(Telemetry telemetry) {
         this.telemetry = telemetry;
     }
 
 
     //Creates the upper and lower range for the accepted HSV values for color
-    public Scalar lowHSV = new Scalar(171,40,40);
-    public Scalar highHSV = new Scalar(174,240,240);
+    public Scalar lowHSV = new Scalar(0,0,0);
+    public Scalar highHSV = new Scalar(179,255,255);
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
@@ -54,11 +53,12 @@ public class TeamPropDetection implements VisionProcessor {
         //Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2GRAY);
 
         //changes Mat input from RGB to HSV and saves to Mat HSV
-        Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
+        //Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)
 
+        /*
         Core.inRange(input, lowHSV, highHSV, input);
 
         Imgproc.morphologyEx(input, input, MORPH_OPEN, Imgproc.getStructuringElement(MORPH_RECT, new Size(3, 3)));
@@ -99,6 +99,7 @@ public class TeamPropDetection implements VisionProcessor {
         telemetry.addData("[Zone]", screenSector);
         telemetry.update();
 
+         */
         return null; // No context object
     }
 
