@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -33,7 +34,11 @@ public class AxisLocking extends OpMode {
     double targetDistance = 10;
 
     //for clicking reason
-    boolean xNotPressed = true;
+    Gamepad currentGamepad1;
+
+    Gamepad previousGamepad1;
+
+
 
     @Override
     public void init() {
@@ -44,6 +49,9 @@ public class AxisLocking extends OpMode {
 
         //turn off velocity control for reasons
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        currentGamepad1 = new Gamepad();
+        previousGamepad1 = new Gamepad();
     }
 
     @Override
@@ -56,12 +64,8 @@ public class AxisLocking extends OpMode {
 
         //if gamepad1 x is clicked change axisLocked to other val
         //to make it not freak out
-        if(gamepad1.x && xNotPressed){
-            xNotPressed = false;
+        if(currentGamepad1.cross && !previousGamepad1.cross){
             axisLocked = !axisLocked;
-        }
-        if(!gamepad1.x){
-            xNotPressed = true;
         }
 
         //if axis locked is true, auto align then move to targetDistance
@@ -70,7 +74,6 @@ public class AxisLocking extends OpMode {
             //subtracts right sensor distance from left sensor distance (right error in there too)
             heading = (rightDistance.getDistance(DistanceUnit.CM) - rightDistanceError)
                                     - leftDistance.getDistance(DistanceUnit.CM);
-
             //mult power by alignFactor
             heading *= alignFactor;
 
@@ -93,5 +96,9 @@ public class AxisLocking extends OpMode {
 
         // Update drive
         drive.update();
+
+        previousGamepad1.copy(currentGamepad1);
+
+        currentGamepad1.copy(gamepad1);
     }
 }
