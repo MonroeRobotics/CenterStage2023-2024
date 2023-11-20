@@ -27,11 +27,11 @@ public class PixelGamepadDetector {
 
     public static int offset = 1000;
     Gamepad.RumbleEffect effect = new Gamepad.RumbleEffect.Builder()
-            .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
+            .addStep(1.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
             .addStep(0.0, 0.0, 300)  //  Pause for 300 mSec
-            .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
-            .addStep(0.0, 0.0, 250)  //  Pause for 250 mSec
-            .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+            .addStep(1.0, 1.0, 400)  //  Rumble left motor 100% for 250 mSec
+            .addStep(0.0, 0.0, 300)  //  Pause for 250 mSec
+            .addStep(1.0, 1.0, 300)  //  Rumble left motor 100% for 250 mSec
             .build();
 
     public PixelGamepadDetector(Gamepad gamepad1, Gamepad gamepad2, RevColorSensorV3 colorSensor1, RevColorSensorV3 colorSensor2) {
@@ -61,7 +61,6 @@ public class PixelGamepadDetector {
             if (!gamepad1.isRumbling()){
                 gamepad1.runRumbleEffect(effect);
             }
-
             if (yellow.getError(currentColor1) <= offset) {
                 gamepad1.setLedColor(1, 1, 0, 20000);
             } else if (purple.getError(currentColor1) <= offset) {
