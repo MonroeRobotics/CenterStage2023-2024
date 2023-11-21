@@ -49,7 +49,7 @@ public class main extends OpMode {
 
     public static double BOX_SERVO_POSITION = 1;
     public static double BOX_SERVO_FORWARD = 1;
-    public static double BOX_SERVO_BACKWARD = 0.3;
+    public static double BOX_SERVO_BACKWARD = 0.5;
 
    double outtakeTimer = 0;
 
@@ -61,7 +61,7 @@ public class main extends OpMode {
 
     //region Intake Variables
     public static double INTAKE_POWER = .5;
-    public static double INTAKE_POSITION = .5;
+    public static double INTAKE_POSITION = .3;
     boolean intakeActive = false;
     boolean reverseIntake = false;
 
@@ -236,11 +236,13 @@ public class main extends OpMode {
         //region Intake Logic
         if (currentGamepad2.cross && !previousGamepad2.cross){
             intakeActive = true;
-        }
-
-        if (currentGamepad2.circle && !previousGamepad2.circle){
+        } else if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
+            reverseIntake = false;
+            outtakeServo.setPower(0);
+        } else if (currentGamepad2.circle && !previousGamepad2.circle){
             intakeActive = false;
             reverseIntake = false;
+            outtakeServo.setPower(0);
         }
 
         if(intakeActive){
@@ -265,7 +267,6 @@ public class main extends OpMode {
         else{
             intakeMotor.setPower(0);
             intakeServo.setPosition(1);
-            outtakeServo.setPower(0);
         }
         //endregion
 
@@ -284,11 +285,13 @@ public class main extends OpMode {
             case INTAKE:
                 BOX_SERVO_POSITION = BOX_SERVO_FORWARD;
                 ARM_POSITION = ARM_SERVO_FORWARD;
+                outtakeServo.setPower(0);
                 SLIDE_HEIGHT = 20;
                 break;
             case OUTTAKE_READY:
                 BOX_SERVO_POSITION = BOX_SERVO_BACKWARD;
                 ARM_POSITION = ARM_SERVO_BACKWARD;
+                outtakeServo.setPower(0);
                 if (SLIDE_STAGE == 0) {
                     SLIDE_HEIGHT = 540;
                 }
