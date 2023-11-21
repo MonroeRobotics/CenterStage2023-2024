@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
@@ -14,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
@@ -21,6 +23,7 @@ import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 import java.util.Timer;
 
 @TeleOp
+@Config
 public class main extends OpMode {
 
     //region variable declarations
@@ -38,7 +41,7 @@ public class main extends OpMode {
         OUTTAKE_ACTIVE
     }
 
-    ArmState currentArmState;
+    ArmState currentArmState = ArmState.INTAKE;
 
     public static double ARM_POSITION = 0.05;
     public static double ARM_SERVO_FORWARD = 0.05;
@@ -46,7 +49,7 @@ public class main extends OpMode {
 
     public static double BOX_SERVO_POSITION = 1;
     public static double BOX_SERVO_FORWARD = 1;
-    public static double BOX_SERVO_BACKWARD = 0.5;
+    public static double BOX_SERVO_BACKWARD = 0.3;
 
    double outtakeTimer = 0;
 
@@ -62,7 +65,7 @@ public class main extends OpMode {
     boolean intakeActive = false;
     boolean reverseIntake = false;
 
-    public static double PIXEL_DETECTION_DISTANCE = .01;
+    public static double PIXEL_DETECTION_DISTANCE = 1;
     public double reverseTimer = 0;
     public static double REVERSE_TIME = 1000;
 
@@ -161,7 +164,7 @@ public class main extends OpMode {
 
         //region Intake Settings Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeServo.setPosition(INTAKE_POSITION);
+        intakeServo.setPosition(1);
         //endregion
         //endregion
 
@@ -180,8 +183,8 @@ public class main extends OpMode {
     public void loop() {
 
         drive.setWeightedDrivePower(new Pose2d(
-                -gamepad1.left_stick_x,
                 -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
                 -gamepad1.right_stick_x
         ));
 
@@ -231,11 +234,11 @@ public class main extends OpMode {
         //endregion
 
         //region Intake Logic
-        if (currentGamepad1.cross && !previousGamepad1.cross){
+        if (currentGamepad2.cross && !previousGamepad2.cross){
             intakeActive = true;
         }
 
-        if (currentGamepad1.circle && !previousGamepad1.circle){
+        if (currentGamepad2.circle && !previousGamepad2.circle){
             intakeActive = false;
             reverseIntake = false;
         }
@@ -257,10 +260,12 @@ public class main extends OpMode {
         }
         else if (reverseIntake && reverseTimer > System.currentTimeMillis()){
             intakeMotor.setPower(-INTAKE_POWER);
+            outtakeServo.setPower(0);
         }
         else{
-            intakeMotor.setPower(INTAKE_POWER);
-            intakeServo.setPosition(0);
+            intakeMotor.setPower(0);
+            intakeServo.setPosition(1);
+            outtakeServo.setPower(0);
         }
         //endregion
 
@@ -280,7 +285,6 @@ public class main extends OpMode {
                 BOX_SERVO_POSITION = BOX_SERVO_FORWARD;
                 ARM_POSITION = ARM_SERVO_FORWARD;
                 SLIDE_HEIGHT = 20;
-                outtakeServo.setPower(1);
                 break;
             case OUTTAKE_READY:
                 BOX_SERVO_POSITION = BOX_SERVO_BACKWARD;
