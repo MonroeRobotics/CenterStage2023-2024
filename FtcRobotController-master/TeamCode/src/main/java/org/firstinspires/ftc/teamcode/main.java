@@ -43,13 +43,13 @@ public class main extends OpMode {
 
     ArmState currentArmState = ArmState.INTAKE;
 
-    public static double ARM_POSITION = 0.05;
-    public static double ARM_SERVO_FORWARD = 0.05;
+    public static double ARM_POSITION = 0.06;
+    public static double ARM_SERVO_FORWARD = 0.06;
     public static double ARM_SERVO_BACKWARD = 0.7;
 
     public static double BOX_SERVO_POSITION = 1;
     public static double BOX_SERVO_FORWARD = 1;
-    public static double BOX_SERVO_BACKWARD = 0.5;
+    public static double BOX_SERVO_BACKWARD = 0.3;
 
    double outtakeTimer = 0;
 
