@@ -114,6 +114,8 @@ public class main extends OpMode {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         //region Arm Init
         //region Hardware Map
 
@@ -237,7 +239,9 @@ public class main extends OpMode {
         if (currentGamepad2.cross && !previousGamepad2.cross){
             intakeActive = true;
         } else if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
-            reverseIntake = false;
+            intakeActive = false;
+            reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
+            reverseIntake = true;
             outtakeServo.setPower(0);
         } else if (currentGamepad2.circle && !previousGamepad2.circle){
             intakeActive = false;
@@ -261,6 +265,7 @@ public class main extends OpMode {
             }
         }
         else if (reverseIntake && reverseTimer > System.currentTimeMillis()){
+            intakeServo.setPosition(INTAKE_POSITION);
             intakeMotor.setPower(-INTAKE_POWER);
             outtakeServo.setPower(0);
         }
@@ -269,6 +274,8 @@ public class main extends OpMode {
             intakeServo.setPosition(1);
         }
         //endregion
+
+        drive.update();
 
         pixelGamepadDetector.updateControllerColors();
 
