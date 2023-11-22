@@ -18,7 +18,7 @@ import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Autonomous(name = "Auto Program Main", group = "Main")
+@Autonomous(name = "TEST THIS Auto Program", group = "Main")
 @Config
 public class AutoProgramRedBoard extends OpMode {
 
@@ -35,7 +35,7 @@ public class AutoProgramRedBoard extends OpMode {
     //region Slide Variables
     public static int INIT_SLIDE_HEIGHT = 20;
     public static int PLACEMENT_SLIDE_HEIGHT = 540;//Slide height for placing pixels on board
-    public static double SLIDE_POWER = .5;//Max Slide Power
+    public static double SLIDE_POWER = .5; //Max Slide Power
     public static int SLIDE_MAX_VELO = 2000;
     //endregion
 
@@ -254,7 +254,7 @@ public class AutoProgramRedBoard extends OpMode {
                 if(aprilTagHomer.inRange()){
                     outtakeServo.setPower(1);
                     waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
-                    queuedState = autoState.PLACE_BOARD;
+                    queuedState = autoState.PARK;
                     break;
                 }
                 aprilTagHomer.updateDrive();
@@ -263,8 +263,8 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     outtakeServo.setPower(0);
                     //Trajectory to Park Pos
-                    toRedBoard = drive.trajectoryBuilder(toSpikeMark.end())
-                            .lineToLinearHeading(redBoardCord)
+                    toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(redParkCord)
                             .build();
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(toRedBoard);
@@ -276,9 +276,7 @@ public class AutoProgramRedBoard extends OpMode {
                     boxServo.setPosition(BOX_SERVO_FORWARD);
                 }
                 break;
-
         }
-
         drive.update();
     }
 }
