@@ -20,22 +20,22 @@ public class RoadRunnerSim {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
-        Pose2d redBoardCord = new Pose2d(48, -35, Math.toRadians(180));
+        Pose2d redBoardCord = new Pose2d(43, -35, Math.toRadians(180));
         Pose2d redParkCord = new Pose2d(48, -60, Math.toRadians(180));
         Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
         Pose2d blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
+        Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
 
         // Declare our first bot
         //region red board position
         //right
         RoadRunnerBotEntity firstBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(14,16)
-                // We set this bot to be blue
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(10, -62, Math.toRadians(90)))
-                                .lineToLinearHeading(new Pose2d(13,-30, Math.toRadians(0)))
+                        drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
+                                .lineToLinearHeading(new Pose2d(32,-30, Math.toRadians(180)))
                                 .lineToLinearHeading(redBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
@@ -43,11 +43,10 @@ public class RoadRunnerSim {
         //center
         RoadRunnerBotEntity secondBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(14,16)
-                // We set this bot to be blue
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(10, -62, Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
                                 .lineToLinearHeading(new Pose2d(20,-24, Math.toRadians(180)))
                                 .lineToLinearHeading(redBoardCord)
                                 .lineToLinearHeading(redParkCord)
@@ -60,7 +59,7 @@ public class RoadRunnerSim {
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(10, -62, Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
                                 .lineToLinearHeading(new Pose2d(10,-30, Math.toRadians(180)))
                                 .lineToLinearHeading(redBoardCord)
                                 .lineToLinearHeading(redParkCord)
@@ -212,8 +211,8 @@ public class RoadRunnerSim {
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
                 .addEntity(firstBot)
-//                .addEntity(secondBot)
-                //.addEntity(thirdBot)
+                .addEntity(secondBot)
+                .addEntity(thirdBot)
                 //.addEntity(fourBot)
                 //.addEntity(fiveBot)
                 //.addEntity(sixBot)
