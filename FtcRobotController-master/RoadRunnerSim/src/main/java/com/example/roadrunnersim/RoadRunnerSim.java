@@ -211,8 +211,8 @@ public class RoadRunnerSim {
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
-                //.addEntity(firstBot)
-                .addEntity(secondBot)
+                .addEntity(firstBot)
+//                .addEntity(secondBot)
                 //.addEntity(thirdBot)
                 //.addEntity(fourBot)
                 //.addEntity(fiveBot)

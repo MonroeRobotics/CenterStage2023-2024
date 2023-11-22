@@ -18,7 +18,7 @@ import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Autonomous(name = "Auto Program", group = "Main")
+@Autonomous(name = "Test Auto Just Drive", group = "Main")
 public class AutoProgramReadJustTrajectory extends LinearOpMode {
     SampleMecanumDrive drive;
 
@@ -29,6 +29,7 @@ public class AutoProgramReadJustTrajectory extends LinearOpMode {
     //endregion
 
     Trajectory universalTrajectory;
+    Trajectory universalTrajectory2;
 
     //region red board spike locations
     Pose2d spikeLocation;
@@ -70,7 +71,7 @@ public class AutoProgramReadJustTrajectory extends LinearOpMode {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
-        drive.setPoseEstimate(new Pose2d(10, 62, Math.toRadians(90)));
+        drive.setPoseEstimate(new Pose2d(10, -62, Math.toRadians(90)));
 
         //Identify spike marker location
 
@@ -97,17 +98,19 @@ public class AutoProgramReadJustTrajectory extends LinearOpMode {
             spikeLocation = spikeThree;
         }
 
-        universalTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+        universalTrajectory = drive.trajectoryBuilder(new Pose2d(10, -62, Math.toRadians(90)))
                 .lineToLinearHeading(spikeLocation)
+                .build();
                 //place purple pixel on spike line
+
+        universalTrajectory2 = drive.trajectoryBuilder(universalTrajectory.end())
                 .lineToLinearHeading(redBoardCord)
                 //go to april tag indicated by spike marker location
                 .build();
 
-        drive.followTrajectoryAsync(universalTrajectory);
-        
-        while(opModeIsActive()){
-            drive.update();
-        }
+
+
+        drive.followTrajectory(universalTrajectory);
+        drive.followTrajectory(universalTrajectory2);
     }
 }
