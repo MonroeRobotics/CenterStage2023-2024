@@ -30,44 +30,42 @@ public class main extends OpMode {
 
     //region Arm Variables
 
-    public static int SLIDE_HEIGHT = 20;
-    public static int SLIDE_STAGE = 0;
-    public static double SLIDE_POWER = 0.5;
-    public static double SLIDE_MAX_VELO = 2000;
+    public static int SLIDE_HEIGHT = 20; //Live Updating Slide height
+    public static int SLIDE_STAGE = 0; //Used for incremental Slide Height
+    public static double SLIDE_POWER = 0.5; //Max Linear Slide Power
+    public static double SLIDE_MAX_VELO = 2000; //Max Linear Slide Velocity
 
-    enum ArmState {
+
+    enum ArmState { //Creates States that arm could be in for logic use
         INTAKE,
         OUTTAKE_READY,
         OUTTAKE_ACTIVE
     }
 
-    ArmState currentArmState = ArmState.INTAKE;
+    ArmState currentArmState = ArmState.INTAKE; //Creates a variables to store current Arm State
 
-    public static double ARM_POSITION = 0.04;
-    public static double ARM_SERVO_FORWARD = 0.04;
-    public static double ARM_SERVO_BACKWARD = 0.7;
+    public static double ARM_POSITION = 0.04; //Live Updating Arm Servo Position (1 is intake position)
+    public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
+    public static double ARM_SERVO_BACKWARD = 0.7;//Stores Value of Arm outtake Position
 
-    public static double BOX_SERVO_POSITION = 1;
-    public static double BOX_SERVO_FORWARD = 1;
-    public static double BOX_SERVO_BACKWARD = 0.3;
+    public static double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
+    public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
+    public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
 
-   double outtakeTimer = 0;
-
-    public static double OUTTAKE_TIME = 1000;
-
-
+    double outtakeTimer = 0; //Timer to control outtake
+    public static double OUTTAKE_TIME = 1000; //How Long Outtake runs for
     //endregion
 
 
     //region Intake Variables
-    public static double INTAKE_POWER = .5;
-    public static double INTAKE_POSITION = .3;
+    public static double INTAKE_POWER = .5; //Power of Intake Motor
+    public static double INTAKE_POSITION = .3; //Position of Intake Servo
     boolean intakeActive = false;
     boolean reverseIntake = false;
 
-    public static double PIXEL_DETECTION_DISTANCE = 1;
-    public double reverseTimer = 0;
-    public static double REVERSE_TIME = 1000;
+    public static double PIXEL_DETECTION_DISTANCE = 1; //Distance from color sensor to pixel for detection (CM)
+    public double reverseTimer = 0; //timer for reversing intake
+    public static double REVERSE_TIME = 1000; //How long to Reverse intake
 
 
     //endregion
@@ -101,6 +99,8 @@ public class main extends OpMode {
 
     //endregion
 
+
+    //Creates Gamepad objects to store current and previous Gamepad states
     Gamepad currentGamepad1;
     Gamepad currentGamepad2;
 
@@ -110,14 +110,15 @@ public class main extends OpMode {
 
     @Override
     public void init() {
+        //Sets up telemetry to work with FTC Dashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        //creates and sets up RR Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
-
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //region Arm Init
-        //region Hardware Map
+        //region Arm Hardware Map
 
         armServoLeft = hardwareMap.get(Servo.class, "armServoLeft");
         armServoRight = hardwareMap.get(Servo.class, "armServoRight");
@@ -128,7 +129,7 @@ public class main extends OpMode {
 
         //endregion
 
-        //region Motor Settings
+        //region Arm Lift Motor Settings
         leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -159,12 +160,12 @@ public class main extends OpMode {
         //endregion
 
         //region Intake Init
-        //region Hardware Map
+        //region Intake Hardware Map
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         //endregion
 
-        //region Intake Settings Settings
+        //region Intake Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeServo.setPosition(1);
         //endregion
@@ -192,15 +193,17 @@ public class main extends OpMode {
 
         //region Arm Logic
 
-
-        if(currentGamepad2.dpad_up && !previousGamepad2.dpad_up && SLIDE_STAGE < 5){
+        //Increases or Decreases Slide Stage on Dpad up or down within [0,7]
+        if(currentGamepad2.dpad_up && !previousGamepad2.dpad_up && SLIDE_STAGE < 7){
             SLIDE_STAGE++;
+            changeArmState();
         }
         else if(currentGamepad2.dpad_down && !previousGamepad2.dpad_down && SLIDE_STAGE > 0){
             SLIDE_STAGE--;
+            changeArmState();
         }
 
-
+        //Changes Arm State on Triangle Press
        if(currentGamepad2.triangle && !previousGamepad2.triangle){
            switch (currentArmState){
                case INTAKE:
