@@ -135,7 +135,8 @@ public class AprilTagHomer {
     }
     public boolean inRange (){
         if (currentTagPose != null) {
-            if(Math.abs(currentTagPose.x) <= acptOffsetX && Math.abs(currentTagPose.y) <= acptOffsetY) {
+            if(Math.abs(currentTagPose.x) <= acptOffsetX && Math.abs(currentTagPose.y) <= acptOffsetY
+                    && Math.abs(currentTagPose.yaw) <= acptOffsetYaw) {
                 return true;
             }
         }
