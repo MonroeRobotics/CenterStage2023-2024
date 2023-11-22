@@ -33,7 +33,13 @@ public class AutoProgramRedBoard extends OpMode {
     //endregion
 
     //region Arm Variables
-    public static double ARM_POSITION = .05;
+    public static double ARM_POSITION = 0.04;
+    public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
+    public static double ARM_SERVO_BACKWARD = 0.7;//Stores Value of Arm outtake Position
+
+    public static double BOX_SERVO_POSITION = 1;
+    public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
+    public static double BOX_SERVO_BACKWARD = 0.3;//Stores Value of Box outtake Position
     //endregion
 
     //endregion
@@ -101,7 +107,7 @@ public class AutoProgramRedBoard extends OpMode {
         PARK
     }
 
-    autoState currentState = autoState.START;
+    autoState queuedState = autoState.START;
 
 
 
