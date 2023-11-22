@@ -71,7 +71,7 @@ public class AutoProgramReadJustTrajectory extends LinearOpMode {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
-        drive.setPoseEstimate(new Pose2d(10, -62, Math.toRadians(90)));
+        drive.setPoseEstimate(new Pose2d(10, -62, Math.toRadians(270)));
 
         //Identify spike marker location
 
@@ -98,14 +98,17 @@ public class AutoProgramReadJustTrajectory extends LinearOpMode {
             spikeLocation = spikeThree;
         }
 
-        universalTrajectory = drive.trajectoryBuilder(new Pose2d(10, -62, Math.toRadians(90)))
+        universalTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(spikeLocation)
+
+//                .addDisplacementMarker(() ->{
+                      //place purple pixel on spike line
+//                })
                 .build();
-                //place purple pixel on spike line
+
 
         universalTrajectory2 = drive.trajectoryBuilder(universalTrajectory.end())
                 .lineToLinearHeading(redBoardCord)
-                //go to april tag indicated by spike marker location
                 .build();
 
 
