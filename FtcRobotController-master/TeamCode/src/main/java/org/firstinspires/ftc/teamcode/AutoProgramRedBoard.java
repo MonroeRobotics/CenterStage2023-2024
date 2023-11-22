@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -17,25 +19,60 @@ import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Disabled
-@Autonomous(name = "Auto Program", group = "Main")
+@Autonomous(name = "Auto Program Main", group = "Main")
+@Config
 public class AutoProgramRedBoard extends OpMode {
+
+    //region Dashboard Static Variable Declarations
+
+    //region Slide Variables
+    public static int INIT_SLIDE_HEIGHT = 20;
+    public static int PLACEMENT_SLIDE_HEIGHT = 540;
+    public static double SLIDE_POWER = .5;
+    public static int SLIDE_MAX_VELO = 2000;
+    //endregion
+
+    //region Arm Variables
+    public static double ARM_POSITION = .05;
+    //endregion
+
+    //endregion
+
     SampleMecanumDrive drive;
 
-    //region trajectory declarations
-    Trajectory redBoardCenter;
-    Trajectory redBoardPlacement;
+    //region Trajectory Declarations
+    Trajectory toSpikeMark;
+    Trajectory toRedBoard;
     Trajectory redBoardPark;
     //endregion
 
-    Trajectory universalTrajectory;
 
-    //region slides
-    DcMotorEx leftSlide;
-    DcMotorEx rightSlide;
-    Servo leftArmServo;
-    Servo rightArmServo;
+
+
+    //region Arm Objects
+    DcMotorEx intakeMotor;
+    Servo intakeServo;
+    CRServo outtakeServo;
+    Servo boxServo;
+    DcMotorEx leftLinear;
+    DcMotorEx rightLinear;
+    Servo armServoLeft;
+    Servo armServoRight;
     //endregion
+
+    double waitTimer;
+
+
+
+    //region Vision Objects
+    TeamPropDetection propDetection = new TeamPropDetection(telemetry);
+    String screenSector;
+    AprilTagProcessor aprilTagDetector;
+    VisionPortal visionPortal;
+    AprilTagHomer aprilTagHomer;
+    //endregion
+
+    //region static coordinates
 
     //region red board spike locations
     Pose2d spikeLocation;
@@ -44,32 +81,6 @@ public class AutoProgramRedBoard extends OpMode {
     Pose2d spikeThree = new Pose2d(13,-30, Math.toRadians(0));
     //endregion
 
-
-    //region intake and placement pieces
-    DcMotorEx intake;
-    Servo uppy;
-    Servo outakeServo;
-    Servo bucketAngle;
-    //endregion
-
-    double waitTime;
-    double currentTime;
-
-    WebcamName webcam;
-    String screenSector;
-    String colorDetectString = "";
-    String colorDetected = "";
-
-    //region importing vision stuff
-    TeamPropDetection propDetection = new TeamPropDetection(telemetry);
-
-    AprilTagProcessor aprilTagDetector;
-    VisionPortal visionPortal;
-
-    AprilTagHomer aprilTagHomer;
-    //endregion
-
-    //region static coordinates
     Pose2d redBoardCord = new Pose2d(48, -35, Math.toRadians(180));
     Pose2d redParkCord = new Pose2d(48, -60, Math.toRadians(180));
     Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
@@ -80,54 +91,76 @@ public class AutoProgramRedBoard extends OpMode {
     //endregion
 
 
-    enum State {
-
+    enum autoState {
+        START,
+        TO_SPIKE_MARK,
+        OUTTAKE_SPIKE,
+        TO_BOARD,
+        HOME_TAG,
+        PLACE_BOARD,
+        PARK
     }
 
-    State currentState;
+    autoState currentState = autoState.START;
 
-    public String detectColor(){
-        String detection = colorDetectString;
-
-        return detection;
-    }
 
 
     @Override
     public void init() {
+        //region Arm Init
+        //region Arm Hardware Map
 
-        //region intake parts hardwaremap
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        uppy = hardwareMap.get(Servo.class, "uppy");
-        outakeServo = hardwareMap.get(Servo.class, "bucketServo");
-        bucketAngle = hardwareMap.get(Servo.class, "bucketAngle");
+        armServoLeft = hardwareMap.get(Servo.class, "armServoLeft");
+        armServoRight = hardwareMap.get(Servo.class, "armServoRight");
+        boxServo = hardwareMap.get(Servo.class, "boxServo");
+        outtakeServo = hardwareMap.get(CRServo.class,"outtakeServo");
+        leftLinear = hardwareMap.get(DcMotorEx.class ,"leftLinear");
+        rightLinear = hardwareMap.get(DcMotorEx.class, "rightLinear");
+
         //endregion
 
-        //region slides stuff
-        leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
-        rightSlide = hardwareMap.get(DcMotorEx.class, "rightSlide");
+        //region Arm Lift Motor Settings
+        leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftArmServo = hardwareMap.get(Servo.class, "leftArmServo");
-        rightArmServo = hardwareMap.get(Servo.class, "rightArmServo");
+        leftLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
+        rightLinear.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftArmServo.setPosition(.72);
-        rightArmServo.setPosition(.3);
+        leftLinear.setTargetPosition(INIT_SLIDE_HEIGHT);
+        rightLinear.setTargetPosition(INIT_SLIDE_HEIGHT);
 
-        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftLinear.setPower(SLIDE_POWER);
+        rightLinear.setPower(SLIDE_POWER);
 
-        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        rightSlide.setTargetPosition(10);
-        leftSlide.setTargetPosition(10);
-        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightSlide.setPower(0.4);
-        leftSlide.setPower(0.4);
+        leftLinear.setVelocity(SLIDE_MAX_VELO);
+        rightLinear.setVelocity(SLIDE_MAX_VELO);
         //endregion
+
+        //region Initial Servo Pos
+        armServoLeft.setPosition(ARM_POSITION);
+        armServoRight.setPosition(1 - ARM_POSITION);
+        boxServo.setPosition(BOX_SERVO_POSITION);
+        //endregion
+
+        //endregion
+
+        //region Intake Init
+        //region Intake Hardware Map
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
+        //endregion
+
+        //region Intake Settings
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeServo.setPosition(1);
+        //endregion
+        //endregion
+
 
         //get webcam stuff here
 
@@ -135,28 +168,12 @@ public class AutoProgramRedBoard extends OpMode {
 
         drive.setPoseEstimate(new Pose2d(10, 62, Math.toRadians(90)));
 
-        //Identify spike marker location
 
-        screenSector = propDetection.getScreenSector();
-
-        if (screenSector == "L"){
-            spikeLocation = spikeOne;
-        }
-        else if (screenSector == "C"){
-            spikeLocation = spikeTwo;
-        }
-        else{
-            spikeLocation = spikeThree;
-        }
-
-        aprilTagDetector = AprilTagProcessor.easyCreateWithDefaults();
-
-        aprilTagHomer = new AprilTagHomer(aprilTagDetector, drive);
 
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
 
-        universalTrajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+        toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
             .lineToLinearHeading(spikeLocation)
                 //place purple pixel on spike line
                 .addDisplacementMarker(() -> {
@@ -173,12 +190,17 @@ public class AutoProgramRedBoard extends OpMode {
                 .lineToLinearHeading(redParkCord)
                 .build();
 
-        drive.followTrajectoryAsync(universalTrajectory);
+        drive.followTrajectoryAsync(toSpikeMark);
 
     }
 
     @Override
     public void loop() {
+        switch ()
+
+
+
+
         drive.update();
     }
 }
