@@ -180,6 +180,7 @@ public class main extends OpMode {
         previousGamepad1 = new Gamepad();
         previousGamepad2 = new Gamepad();
 
+        //See util.PixelGamepadDetector
         pixelGamepadDetector = new PixelGamepadDetector(this.gamepad1, this.gamepad2, colorSensor1, colorSensor2);
     }
     @Override
@@ -217,18 +218,20 @@ public class main extends OpMode {
                    break;
            }
        }
+       //Resets Arm to Intake Position on square press
        else if(currentGamepad2.square && !previousGamepad2.square){
            currentArmState = ArmState.INTAKE;
            changeArmState();
        }
 
+       //Changes Arm State back to intake once outtake timer runs out
        if(currentArmState == ArmState.OUTTAKE_ACTIVE && outtakeTimer < System.currentTimeMillis()){
            currentArmState = ArmState.INTAKE;
            changeArmState();
        }
 
 
-
+        //Sets Slides Arm and Box to respective positions as determined by the previous logic
         leftLinear.setTargetPosition(SLIDE_HEIGHT);
         rightLinear.setTargetPosition(SLIDE_HEIGHT);
 
@@ -239,34 +242,45 @@ public class main extends OpMode {
         //endregion
 
         //region Intake Logic
-        if (currentGamepad2.cross && !previousGamepad2.cross){
-            intakeActive = true;
-        } else if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
+
+        //On cross start intake (Only if arm is in intake position)
+        if(currentArmState == ArmState.INTAKE){
+            if (currentGamepad2.cross && !previousGamepad2.cross){
+                intakeActive = true;
+            }
+            else if (currentGamepad2.circle && !previousGamepad2.circle){
+                intakeActive = false;
+                reverseIntake = false;
+                outtakeServo.setPower(0);
+            }
+        }
+        //if arm is not in take position cancel intake
+        else {
+            intakeActive = false;
+        }
+        //On right bumper reverse intake
+        if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
             intakeActive = false;
             reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
             reverseIntake = true;
-            outtakeServo.setPower(0);
-        } else if (currentGamepad2.circle && !previousGamepad2.circle){
-            intakeActive = false;
-            reverseIntake = false;
             outtakeServo.setPower(0);
         }
 
         if(intakeActive){
 
-            //
             intakeMotor.setPower(INTAKE_POWER);
             intakeServo.setPosition(INTAKE_POSITION);
 
-            //Runs outtake servo
             outtakeServo.setPower(-1);
 
+            //If two pixels are detected within specified distance, start reversal of intake
             if(colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE){
                 intakeActive = false;
                 reverseIntake = true;
                 reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
             }
         }
+        //Checks if reverse is on and timer is still on
         else if (reverseIntake && reverseTimer > System.currentTimeMillis()){
             intakeServo.setPosition(INTAKE_POSITION);
             intakeMotor.setPower(-INTAKE_POWER);
