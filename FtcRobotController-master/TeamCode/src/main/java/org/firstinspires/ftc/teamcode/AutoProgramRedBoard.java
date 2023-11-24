@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -120,6 +122,9 @@ public class AutoProgramRedBoard extends OpMode {
 
     @Override
     public void init() {
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(STARTING_DRIVE_POS);
@@ -191,15 +196,16 @@ public class AutoProgramRedBoard extends OpMode {
 
     @Override
     public void loop() {
+        telemetry.addData("Next auto State", queuedState);
+
         switch (queuedState){
             case START:
+                screenSector = propDetection.getScreenSector();
                 if(screenSector != null) {
-                    screenSector = propDetection.getScreenSector();
-
-                    if (screenSector == "L") {
+                    if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
                         targetTagId = 4;
-                    } else if (screenSector == "C") {
+                    } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
                         targetTagId = 5;
                     } else {
@@ -257,6 +263,15 @@ public class AutoProgramRedBoard extends OpMode {
                     queuedState = autoState.PARK;
                     break;
                 }
+                if(aprilTagHomer.getCurrentTagPose() != null) {
+                            telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                            telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                            telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+
+                        }
+                else{telemetry.addLine("No Tag Detected");
+                        }
+
                 aprilTagHomer.updateDrive();
                 break;
             case PARK:
@@ -277,6 +292,12 @@ public class AutoProgramRedBoard extends OpMode {
                 }
                 break;
         }
+
+
+
+
+        telemetry.update();
+
         drive.update();
     }
 }
