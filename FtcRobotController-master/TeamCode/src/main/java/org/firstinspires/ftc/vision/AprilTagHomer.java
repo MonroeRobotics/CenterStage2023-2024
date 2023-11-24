@@ -15,13 +15,13 @@ public class AprilTagHomer {
     SampleMecanumDrive drive;
     AprilTagPoseFtc currentTagPose;
     int targetTagId = 6;
-    double acptOffsetX = 0.1;
-    double acptOffsetY = 5;
-    double acptOffsetYaw = .5;
+    double acptOffsetX = 1;
+    double acptOffsetY = 7;
+    double acptOffsetYaw = 1;
+    double yawGain = 30;
     double cameraYawError = 0;
-    double horizGain = 15;
-    double vertGain = 50;
-    double yawGain = 15;
+    double horizGain = 25;
+    double vertGain = 60;
     double decelRate = 0.01;
 
     double drivePowerY = 0;

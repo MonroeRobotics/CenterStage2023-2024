@@ -56,7 +56,7 @@ public class AutoProgramRedBoard extends OpMode {
     SampleMecanumDrive drive;
 
     //region Trajectory Declarations
-    Trajectory toSpikeMark;
+    Trajectory toSpikeMarkAndExtra;
     Trajectory toRedBoard;
     Trajectory redBoardPark;
     //endregion
@@ -92,6 +92,7 @@ public class AutoProgramRedBoard extends OpMode {
     public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
     public static Pose2d spikeCenter = new Pose2d(20,-24, Math.toRadians(180));
     public static Pose2d spikeRight = new Pose2d(32,-30, Math.toRadians(180));
+    public static Pose2d spikeRightExtra = new Pose2d(32, -33, Math.toRadians(180));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
@@ -218,10 +219,11 @@ public class AutoProgramRedBoard extends OpMode {
                 break;
             case TO_SPIKE_MARK:
                 if(!drive.isBusy()) {
-                    toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    toSpikeMarkAndExtra = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
+                            .lineToLinearHeading(spikeRightExtra)
                             .build();
-                    drive.followTrajectoryAsync(toSpikeMark);
+                    drive.followTrajectoryAsync(toSpikeMarkAndExtra);
                     queuedState = autoState.OUTTAKE_SPIKE;
                 }
                 break;
@@ -237,7 +239,7 @@ public class AutoProgramRedBoard extends OpMode {
             case TO_BOARD:
                 if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
-                    toRedBoard = drive.trajectoryBuilder(toSpikeMark.end())
+                    toRedBoard = drive.trajectoryBuilder(toSpikeMarkAndExtra.end())
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     leftLinear.setTargetPosition(PLACEMENT_SLIDE_HEIGHT);

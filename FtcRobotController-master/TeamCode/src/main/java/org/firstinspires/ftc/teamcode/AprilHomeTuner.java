@@ -22,13 +22,13 @@ public class AprilHomeTuner extends OpMode {
     AprilTagHomer tagHomer;
 
     public static int targetTag = 6;
-    public static double acptOffsetX = 0.1;
-    public static double acptOffsetY = 5;
-    public static double acptOffsetYaw = .5;
-    public static double yawGain = 15;
+    public static double acptOffsetX = 1;
+    public static double acptOffsetY = 7;
+    public static double acptOffsetYaw = 1;
+    public static double yawGain = 30;
     public static double cameraYawError = 0;
-    public static double horizGain = 15;
-    public static double vertGain = 50;
+    public static double horizGain = 25;
+    public static double vertGain = 60;
 
     public static double decelRate = 0.01;
 
