@@ -54,10 +54,8 @@ public class AprilHomeTuner extends OpMode {
         tagHomer.changeTarget(targetTag);
         tagHomer.updateTag();
 
-        if(!tagHomer.inRange()){
-            tagHomer.updateDrive();
-        }
-        telemetry.addLine("April Tag Data:");
+
+             telemetry.addLine("April Tag Data:");
         if(currentTagPose != null) {
             telemetry.addData("Tag X:", currentTagPose.x);
             telemetry.addData("Tag Y:", currentTagPose.y);
@@ -67,6 +65,11 @@ public class AprilHomeTuner extends OpMode {
         else{
             telemetry.addLine("No Tag Detected");
         }
+
+         if(!tagHomer.inRange()){
+             tagHomer.updateDrive();
+         }
+         else{requestOpModeStop();}
         telemetry.update();
     }
 }
