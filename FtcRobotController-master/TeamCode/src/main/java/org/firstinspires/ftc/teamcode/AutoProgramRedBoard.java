@@ -113,7 +113,8 @@ public class AutoProgramRedBoard extends OpMode {
         TO_BOARD,
         HOME_TAG,
         PLACE_BOARD,
-        PARK
+        PARK,
+        STOP
     }
 
     autoState queuedState = autoState.START;
@@ -278,19 +279,25 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     outtakeServo.setPower(0);
                     //Trajectory to Park Pos
-                    toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    redBoardPark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(redParkCord)
                             .build();
                     //Start Following Trajectory
-                    drive.followTrajectoryAsync(toRedBoard);
+                    drive.followTrajectoryAsync(redBoardPark);
                     //Put slide and arm back to intake position
                     leftLinear.setTargetPosition(5);
                     rightLinear.setTargetPosition(5);
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
                     boxServo.setPosition(BOX_SERVO_FORWARD);
+                    queuedState = autoState.STOP;
                 }
                 break;
+            case STOP:
+                if(!drive.isBusy()){
+                    requestOpModeStop();
+                }
+
         }
 
 
