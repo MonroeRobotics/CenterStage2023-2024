@@ -73,9 +73,9 @@ public class AprilTagHomer {
 
             // Y reversed because robot backwards
             //Set Max Possible power to 1
-            drivePowerY = Math.min((Math.abs(currentTagPose.x) - acptOffsetX) / horizGain, 1);
-            drivePowerX = -Math.min((Math.abs(currentTagPose.y) - acptOffsetY) / vertGain, 1);
-            drivePowerYaw = -Math.min((Math.abs(currentTagPose.yaw - cameraYawError) - acptOffsetYaw) / yawGain , .1);
+            drivePowerY = Math.min((Math.abs(currentTagPose.x)) / horizGain, 1);
+            drivePowerX = -Math.min((Math.abs(currentTagPose.y)) / vertGain, 1);
+            drivePowerYaw = -Math.min((Math.abs(currentTagPose.yaw - cameraYawError)) / yawGain , .1);
 //          drivePowerX = 0;
 
             //Check Which Tag is On and reverse X power if necessary
