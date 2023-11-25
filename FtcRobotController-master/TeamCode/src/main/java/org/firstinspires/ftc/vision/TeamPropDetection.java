@@ -18,10 +18,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class TeamPropDetection implements VisionProcessor {
 
-    Telemetry telemetry;
+    //String alliance;
+    //Telemetry telemetry;
 
     public TeamPropDetection(Telemetry telemetry) {
-        this.telemetry = telemetry;
+        //, String alliance
+        //this.alliance = alliance;
+        //this.telemetry = telemetry;
     }
 
 
@@ -50,12 +53,16 @@ public class TeamPropDetection implements VisionProcessor {
     @Override
     public Object processFrame(Mat input, long captureTimeNanos) {
 
-        //makes stuff gray
-        //Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2GRAY);
-
         //changes Mat input from RGB to HSV and saves to Mat HSV
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
+        /*
+        if(alliance.equals("red")){
+
+        }else if(alliance.equals("blue")){
+
+        }
+         */
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)
 
@@ -65,11 +72,11 @@ public class TeamPropDetection implements VisionProcessor {
 
 
 
-        Rect leftScreen = new Rect(0, 0, width/3, height);
+        Rect leftScreen = new Rect(0, 0, width/4, height);
 
-        Rect centerScreen = new Rect(width/3, 0, width/3, height);
+        Rect centerScreen = new Rect(width/4, 0, width/2, height);
 
-        Rect rightScreen = new Rect((width/3)*2, 0, width/3, height);
+        Rect rightScreen = new Rect((width/4)*3, 0, width/4, height);
 
 
         cropL = input.submat(leftScreen);
@@ -96,8 +103,8 @@ public class TeamPropDetection implements VisionProcessor {
             Imgproc.rectangle(input, rightScreen, new Scalar(50,180,180));
         }
 
-        telemetry.addData("[Zone]", screenSector);
-        telemetry.update();
+        //telemetry.addData("[Zone]", screenSector);
+        //telemetry.update();
 
         return null; // No context object
     }

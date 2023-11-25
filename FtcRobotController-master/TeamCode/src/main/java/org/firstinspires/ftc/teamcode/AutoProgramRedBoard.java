@@ -20,6 +20,8 @@ import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.Objects;
+
 @Autonomous(name = "TEST THIS Auto Program", group = "Main")
 @Config
 public class AutoProgramRedBoard extends OpMode {
@@ -36,7 +38,7 @@ public class AutoProgramRedBoard extends OpMode {
 
     //region Slide Variables
     public static int INIT_SLIDE_HEIGHT = 20;
-    public static int PLACEMENT_SLIDE_HEIGHT = 540;//Slide height for placing pixels on board
+    public static int PLACEMENT_SLIDE_HEIGHT = 450;//Slide height for placing pixels on board
     public static double SLIDE_POWER = .5; //Max Slide Power
     public static int SLIDE_MAX_VELO = 2000;
     //endregion
@@ -49,7 +51,7 @@ public class AutoProgramRedBoard extends OpMode {
     public static double BOX_SERVO_BACKWARD = 0.3;//Stores Value of Box outtake Position
     //endregion
 
-    public static double SPIKE_OUTTAKE_POWER = 0.3; //Stores the power of the reversed intake for spike pixel drop
+    public static double SPIKE_OUTTAKE_POWER = -0.3; //Stores the power of the reversed intake for spike pixel drop
 
     //endregion
 
@@ -90,13 +92,17 @@ public class AutoProgramRedBoard extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
     public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
-    public static Pose2d spikeCenter = new Pose2d(20,-24, Math.toRadians(180));
-    public static Pose2d spikeRight = new Pose2d(32,-30, Math.toRadians(180));
+    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
+    public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
 
-    public static Pose2d redBoardCord = new Pose2d(45, -35, Math.toRadians(180));
+    //y was previously -35
+    public static Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
+    public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
+    public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
+    public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     public static  Pose2d redParkCord = new Pose2d(48, -60, Math.toRadians(180));
 
     /*
@@ -205,12 +211,15 @@ public class AutoProgramRedBoard extends OpMode {
                 if(screenSector != null) {
                     if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
+                        redBoardCord = leftRedBoardCord;
                         targetTagId = 4;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
+                        redBoardCord = centerRedBoardCord;
                         targetTagId = 5;
                     } else {
                         spikeLocation = spikeRight;
+                        redBoardCord = rightRedBoardCord;
                         targetTagId = 6;
                     }
 
@@ -218,12 +227,19 @@ public class AutoProgramRedBoard extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy()) {
+                if(!drive.isBusy() & !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
+                }
+                else if (!drive.isBusy()) {
+                    Trajectory leftSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(spikeCenter)
+                            .lineToLinearHeading(spikeLeft)
+                            .build();
+                    drive.followTrajectoryAsync(leftSpikeMark);
                 }
                 break;
             case OUTTAKE_SPIKE:
@@ -285,8 +301,6 @@ public class AutoProgramRedBoard extends OpMode {
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(redBoardPark);
                     //Put slide and arm back to intake position
-                    leftLinear.setTargetPosition(5);
-                    rightLinear.setTargetPosition(5);
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
                     boxServo.setPosition(BOX_SERVO_FORWARD);
@@ -295,6 +309,8 @@ public class AutoProgramRedBoard extends OpMode {
                 break;
             case STOP:
                 if(!drive.isBusy()){
+                    leftLinear.setTargetPosition(5);
+                    rightLinear.setTargetPosition(5);
                     requestOpModeStop();
                 }
 
