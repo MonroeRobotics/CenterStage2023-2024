@@ -16,7 +16,7 @@ public class AprilTagHomer {
     AprilTagPoseFtc currentTagPose;
     int targetTagId = 6;
     double acptOffsetX = 1;
-    double acptOffsetY = 5;
+    double acptOffsetY = 4;
     double acptOffsetYaw = 1;
     double yawGain = 30;
     double cameraYawError = 0;
