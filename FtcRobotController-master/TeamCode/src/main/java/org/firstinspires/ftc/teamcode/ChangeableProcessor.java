@@ -19,7 +19,7 @@ public class ChangeableProcessor extends OpMode {
     boolean notPressed = true;
     @Override
     public void init() {
-        propDetector = new TeamPropDetection(telemetry);
+        propDetector = new TeamPropDetection("red");
         aprilTagDetector = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetector);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);

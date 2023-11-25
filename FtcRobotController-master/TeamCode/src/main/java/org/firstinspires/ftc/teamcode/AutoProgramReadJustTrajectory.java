@@ -79,7 +79,7 @@ public class AutoProgramReadJustTrajectory extends LinearOpMode {
 
         aprilTagHomer = new AprilTagHomer(aprilTagDetector, drive);
 
-        propDetection = new TeamPropDetection(telemetry);
+        propDetection = new TeamPropDetection("red");
 
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);

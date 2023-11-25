@@ -18,19 +18,16 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class TeamPropDetection implements VisionProcessor {
 
-    //String alliance;
-    //Telemetry telemetry;
+    String alliance;
 
-    public TeamPropDetection(Telemetry telemetry) {
-        //, String alliance
-        //this.alliance = alliance;
-        //this.telemetry = telemetry;
+    public TeamPropDetection(String alliance) {
+        this.alliance = alliance;
     }
 
 
     //Creates the upper and lower range for the accepted HSV values for color
-    public Scalar lowHSV = new Scalar(170,60,60);
-    public Scalar highHSV = new Scalar(176,250,250);
+    public Scalar lowHSV = new Scalar(0,0,0);
+    public Scalar highHSV = new Scalar(179,255,255);
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
@@ -56,7 +53,7 @@ public class TeamPropDetection implements VisionProcessor {
         //changes Mat input from RGB to HSV and saves to Mat HSV
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
-        /*
+
         if(alliance.equals("red")){
              //pink range
              lowHSV = new Scalar(170,60,60);
@@ -66,7 +63,7 @@ public class TeamPropDetection implements VisionProcessor {
              lowHSV = new Scalar(130,40,40);
              highHSV = new Scalar(136,240,240);
         }
-         */
+
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)
 
@@ -106,9 +103,6 @@ public class TeamPropDetection implements VisionProcessor {
             screenSector = "R";
             Imgproc.rectangle(input, rightScreen, new Scalar(50,180,180));
         }
-
-        //telemetry.addData("[Zone]", screenSector);
-        //telemetry.update();
 
         return null; // No context object
     }
