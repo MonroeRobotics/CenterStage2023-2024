@@ -233,7 +233,7 @@ public class AutoProgramRedBoard extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() & !Objects.equals(screenSector, "R")) {
+                if(!drive.isBusy() & !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .build();

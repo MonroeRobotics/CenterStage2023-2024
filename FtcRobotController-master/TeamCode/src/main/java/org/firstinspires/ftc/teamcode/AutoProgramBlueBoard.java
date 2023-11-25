@@ -108,7 +108,7 @@ public class AutoProgramBlueBoard extends OpMode {
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
 
     //y was previously -35
-    public static Pose2d centerBlueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 34, Math.toRadians(180));
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
     public static Pose2d leftBlueBoardCord = new Pose2d(35, 40, Math.toRadians(180));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
