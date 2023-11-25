@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -91,7 +92,10 @@ public class AutoProgramRedBoard extends OpMode {
 
     //region red board spike locations
     Pose2d spikeLocation;
+
     public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
+    public static Vector2d spikeLeftSpline = new Vector2d(10,-30);// Math.toRadians(180));
+    public static Vector2d spikeCenterSpline = new Vector2d(20,-25.5);
     public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
     public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
     //endregion
@@ -236,8 +240,8 @@ public class AutoProgramRedBoard extends OpMode {
                 }
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(spikeCenter)
-                            .lineToLinearHeading(spikeLeft)
+                            .splineTo(spikeCenterSpline, Math.toRadians(180))
+                            .splineTo(spikeLeftSpline, Math.toRadians(180))
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                 }
