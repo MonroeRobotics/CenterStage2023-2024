@@ -29,8 +29,8 @@ public class TeamPropDetection implements VisionProcessor {
 
 
     //Creates the upper and lower range for the accepted HSV values for color
-    public Scalar lowHSV = new Scalar(171,40,40);
-    public Scalar highHSV = new Scalar(174,240,240);
+    public Scalar lowHSV = new Scalar(170,60,60);
+    public Scalar highHSV = new Scalar(176,250,250);
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
@@ -58,9 +58,13 @@ public class TeamPropDetection implements VisionProcessor {
 
         /*
         if(alliance.equals("red")){
-
+             //pink range
+             lowHSV = new Scalar(170,60,60);
+             highHSV = new Scalar(176,250,250);
         }else if(alliance.equals("blue")){
-
+             //purple range
+             lowHSV = new Scalar(130,40,40);
+             highHSV = new Scalar(136,240,240);
         }
          */
 
