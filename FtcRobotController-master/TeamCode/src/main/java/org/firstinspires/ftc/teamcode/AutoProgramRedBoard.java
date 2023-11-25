@@ -304,7 +304,6 @@ public class AutoProgramRedBoard extends OpMode {
                     outtakeServo.setPower(0);
                     //Trajectory to Park Pos
                     redBoardPark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .back(2)
                             .lineToLinearHeading(redParkCord)
                             .build();
                     //Start Following Trajectory
