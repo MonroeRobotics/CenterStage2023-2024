@@ -33,11 +33,10 @@ public class RoadRunnerSim {
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60,60,Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
-                                .back(24)
-                                //.strafeLeft(4)
-                                //.splineTo(spikeCenterSpline, Math.toRadians(180))
-                                .splineTo(spikeLeftSpline, Math.toRadians(0))
+                        drive.trajectorySequenceBuilder(new Pose2d(10, 62, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(20,25.5, Math.toRadians(180)))
+                                .lineToLinearHeading(blueBoardCord)
+                                .lineToLinearHeading(blueParkCord)
                                 .build()
                 );
         //region red board position

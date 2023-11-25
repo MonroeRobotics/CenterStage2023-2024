@@ -235,7 +235,7 @@ public class AutoProgramBlueBoard extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() & !Objects.equals(screenSector, "L")) {
+                if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .build();
