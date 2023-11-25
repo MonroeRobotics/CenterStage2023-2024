@@ -28,7 +28,6 @@ public class RoadRunnerSim {
 
         // Declare our first bot
         Vector2d spikeLeftSpline = new Vector2d(11,-32);// Math.toRadians(180));
-        Vector2d spikeCenterSpline = new Vector2d(20,-25.5);
         RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(15.25,18)
                 .setColorScheme(new ColorSchemeRedDark())
