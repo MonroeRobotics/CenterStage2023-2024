@@ -111,7 +111,7 @@ public class AutoProgramBlueBoard extends OpMode {
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 40, Math.toRadians(180));
     public static Pose2d leftBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static  Pose2d blueParkCord = new Pose2d(48, 64, Math.toRadians(180));
+    public static  Pose2d blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
 
     /*
     Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
