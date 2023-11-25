@@ -94,9 +94,7 @@ public class AutoProgramRedBoard extends OpMode {
     Pose2d spikeLocation;
 
     public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
-    public static Vector2d spikeLeftSpline = new Vector2d(10,-30);// Math.toRadians(180));
-    public static Vector2d spikeCenterSpline = new Vector2d(20,-25.5);
-    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
+    public static Vector2d spikeLeftSpline = new Vector2d(10,-32);    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
     public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
     //endregion
 
@@ -240,8 +238,8 @@ public class AutoProgramRedBoard extends OpMode {
                 }
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .splineTo(spikeCenterSpline, Math.toRadians(180))
-                            .splineTo(spikeLeftSpline, Math.toRadians(180))
+                            .back(12)
+                            .splineTo(spikeLeftSpline, Math.toRadians(0))
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                 }

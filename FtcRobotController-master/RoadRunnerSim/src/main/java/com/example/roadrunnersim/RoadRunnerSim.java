@@ -27,6 +27,19 @@ public class RoadRunnerSim {
         Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
 
         // Declare our first bot
+        Vector2d spikeLeftSpline = new Vector2d(10,-32);// Math.toRadians(180));
+        Vector2d spikeCenterSpline = new Vector2d(20,-25.5);
+        RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
+                .setDimensions(14,16)
+                .setColorScheme(new ColorSchemeRedDark())
+                .setConstraints(60,60,Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
+                                .back(12)
+                                //.splineTo(spikeCenterSpline, Math.toRadians(180))
+                                .splineTo(spikeLeftSpline, Math.toRadians(0))
+                                .build()
+                );
         //region red board position
         //right
         RoadRunnerBotEntity firstBot = new DefaultBotBuilder(meepMeep)
@@ -210,9 +223,10 @@ public class RoadRunnerSim {
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
-                .addEntity(firstBot)
-                .addEntity(secondBot)
-                .addEntity(thirdBot)
+                .addEntity(testBot)
+                //.addEntity(firstBot)
+                //.addEntity(secondBot)
+                //.addEntity(thirdBot)
                 //.addEntity(fourBot)
                 //.addEntity(fiveBot)
                 //.addEntity(sixBot)
