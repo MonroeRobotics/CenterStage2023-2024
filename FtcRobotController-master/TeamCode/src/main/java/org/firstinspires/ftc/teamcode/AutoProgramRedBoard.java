@@ -33,8 +33,9 @@ public class AutoProgramRedBoard extends OpMode {
 
     public static double SPIKE_OUTTAKE_TIME = 1000; //Time Spike Pixel Outtakes In auto
     public static double BOARD_OUTTAKE_TIME = 1000;//Time Board Pixel Outtakes in auto
-
     public static double PARK_TIME = 2000; //Time to go to park pos
+    public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
+
     double waitTimer;
 
 
@@ -276,11 +277,12 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy()){
                     aprilTagHomer.changeTarget(targetTagId);
                     aprilTagHomer.updateDrive();
+                    waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                     queuedState = autoState.PLACE_BOARD;
                 }
                 break;
             case PLACE_BOARD:
-                if(aprilTagHomer.inRange()){
+                if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
                     outtakeServo.setPower(1);
                     waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
                     queuedState = autoState.PARK;
