@@ -23,7 +23,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Blue Board Auto", group = "Main")
+@Autonomous(name = "TEST THIS Auto Program", group = "Main")
 @Config
 public class AutoProgramBlueBoard extends OpMode {
 
