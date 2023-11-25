@@ -98,11 +98,13 @@ public class AutoProgramBlueBoard extends OpMode {
     Pose2d spikeLocation;
 
     public static Pose2d spikeLeft = new Pose2d(10,30, Math.toRadians(180));
-    public static Vector2d spikeLeftSpline = new Vector2d(11,32);    public static Pose2d spikeCenter = new Pose2d(20,25.5, Math.toRadians(180));
+    public static Vector2d spikeLeftSpline = new Vector2d(11,32);
+
+    static Pose2d spikeCenter = new Pose2d(20,25.5, Math.toRadians(180));
     public static Pose2d spikeRight = new Pose2d(32.5,30, Math.toRadians(180));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(270));
+    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
 
     //y was previously -35
     public static Pose2d centerBlueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
