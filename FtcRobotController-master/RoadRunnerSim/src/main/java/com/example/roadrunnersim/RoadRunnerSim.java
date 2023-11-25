@@ -27,7 +27,7 @@ public class RoadRunnerSim {
         Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
 
         // Declare our first bot
-        Vector2d spikeLeftSpline = new Vector2d(10,-32);// Math.toRadians(180));
+        Vector2d spikeLeftSpline = new Vector2d(11,-32);// Math.toRadians(180));
         Vector2d spikeCenterSpline = new Vector2d(20,-25.5);
         RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(15.25,18)
@@ -36,6 +36,7 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
                                 .back(24)
+                                //.strafeLeft(4)
                                 //.splineTo(spikeCenterSpline, Math.toRadians(180))
                                 .splineTo(spikeLeftSpline, Math.toRadians(0))
                                 .build()

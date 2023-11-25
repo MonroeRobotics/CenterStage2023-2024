@@ -33,7 +33,10 @@ public class AutoProgramRedBoard extends OpMode {
 
     public static double SPIKE_OUTTAKE_TIME = 1000; //Time Spike Pixel Outtakes In auto
     public static double BOARD_OUTTAKE_TIME = 1000;//Time Board Pixel Outtakes in auto
+
+    public static double PARK_TIME = 2000; //Time to go to park pos
     double waitTimer;
+
 
     //endregion
 
@@ -94,7 +97,7 @@ public class AutoProgramRedBoard extends OpMode {
     Pose2d spikeLocation;
 
     public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
-    public static Vector2d spikeLeftSpline = new Vector2d(10,-32);    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
+    public static Vector2d spikeLeftSpline = new Vector2d(11,-32);    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
     public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
     //endregion
 
@@ -307,6 +310,7 @@ public class AutoProgramRedBoard extends OpMode {
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
                     boxServo.setPosition(BOX_SERVO_FORWARD);
+                    waitTimer = System.currentTimeMillis() + PARK_TIME;
                     queuedState = autoState.STOP;
                 }
                 break;
@@ -314,7 +318,10 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy()){
                     leftLinear.setTargetPosition(5);
                     rightLinear.setTargetPosition(5);
-                    requestOpModeStop();
+
+                    if(System.currentTimeMillis() > waitTimer){
+                        requestOpModeStop();
+                    }
                 }
 
         }
