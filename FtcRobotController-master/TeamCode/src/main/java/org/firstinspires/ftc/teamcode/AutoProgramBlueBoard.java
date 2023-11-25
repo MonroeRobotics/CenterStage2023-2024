@@ -217,7 +217,7 @@ public class AutoProgramBlueBoard extends OpMode {
             case START:
                 screenSector = propDetection.getScreenSector();
                 if(screenSector != null) {
-                    if (screenSector.equals("L")) {
+                    if (screenSector.equals("R")) {
                         spikeLocation = spikeLeft;
                         blueBoardCord = leftBlueBoardCord;
                         targetTagId = 1;
