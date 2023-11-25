@@ -30,12 +30,12 @@ public class RoadRunnerSim {
         Vector2d spikeLeftSpline = new Vector2d(10,-32);// Math.toRadians(180));
         Vector2d spikeCenterSpline = new Vector2d(20,-25.5);
         RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
-                .setDimensions(14,16)
+                .setDimensions(15.25,18)
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60,60,Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
-                                .back(12)
+                                .back(24)
                                 //.splineTo(spikeCenterSpline, Math.toRadians(180))
                                 .splineTo(spikeLeftSpline, Math.toRadians(0))
                                 .build()

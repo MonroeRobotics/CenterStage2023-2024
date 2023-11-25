@@ -238,10 +238,11 @@ public class AutoProgramRedBoard extends OpMode {
                 }
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .back(12)
+                            .back(24)
                             .splineTo(spikeLeftSpline, Math.toRadians(0))
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
+                    queuedState = autoState.OUTTAKE_SPIKE;
                 }
                 break;
             case OUTTAKE_SPIKE:
