@@ -64,7 +64,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="Optimize AprilTag Exposure", group = "Concept")
-@Disabled
 public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 {
     private VisionPortal visionPortal = null;        // Used to manage the video source.
@@ -162,7 +161,7 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 
         // Create the WEBCAM vision portal by using a builder.
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(hardwareMap.get(WebcamName.class, "webcam"))
                 .addProcessor(aprilTag)
                 .build();
     }
