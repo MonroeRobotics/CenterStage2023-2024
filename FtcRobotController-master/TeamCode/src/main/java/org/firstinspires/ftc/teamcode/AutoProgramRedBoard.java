@@ -279,6 +279,9 @@ public class AutoProgramRedBoard extends OpMode {
                     aprilTagHomer.updateDrive();
                     waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                     queuedState = autoState.PLACE_BOARD;
+                    /*if(!apriltagDetected){
+                        move around to find it
+                    }*/
                 }
                 break;
             case PLACE_BOARD:
