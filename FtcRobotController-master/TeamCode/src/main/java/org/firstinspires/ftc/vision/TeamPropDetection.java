@@ -14,20 +14,19 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class TeamPropDetection implements VisionProcessor {
 
-    Telemetry telemetry;
+    String alliance;
 
-    public TeamPropDetection(Telemetry telemetry) {
-        this.telemetry = telemetry;
+    public TeamPropDetection(String alliance) {
+        this.alliance = alliance;
     }
 
 
     //Creates the upper and lower range for the accepted HSV values for color
-    public Scalar lowHSV = new Scalar(171,40,40);
-    public Scalar highHSV = new Scalar(174,240,240);
+    public Scalar lowHSV = new Scalar(0,0,0);
+    public Scalar highHSV = new Scalar(179,255,255);
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
@@ -50,11 +49,19 @@ public class TeamPropDetection implements VisionProcessor {
     @Override
     public Object processFrame(Mat input, long captureTimeNanos) {
 
-        //makes stuff gray
-        //Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2GRAY);
-
         //changes Mat input from RGB to HSV and saves to Mat HSV
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
+
+        alliance = "red";
+        if(alliance.equals("red")){
+            //pink range
+            lowHSV = new Scalar(168,60,60);
+            highHSV = new Scalar(178,250,250);
+        }else if(alliance.equals("blue")){
+            //purple range
+            lowHSV = new Scalar(128,40,40);
+            highHSV = new Scalar(138,240,240);
+        }
 
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)
@@ -65,11 +72,11 @@ public class TeamPropDetection implements VisionProcessor {
 
 
 
-        Rect leftScreen = new Rect(0, 0, width/3, height);
+        Rect leftScreen = new Rect(0, 0, width/4, height);
 
-        Rect centerScreen = new Rect(width/3, 0, width/3, height);
+        Rect centerScreen = new Rect(width/4, 0, width/2, height);
 
-        Rect rightScreen = new Rect((width/3)*2, 0, width/3, height);
+        Rect rightScreen = new Rect((width/4)*3, 0, width/4, height);
 
 
         cropL = input.submat(leftScreen);
@@ -95,9 +102,6 @@ public class TeamPropDetection implements VisionProcessor {
             screenSector = "R";
             Imgproc.rectangle(input, rightScreen, new Scalar(50,180,180));
         }
-
-        telemetry.addData("[Zone]", screenSector);
-        telemetry.update();
 
         return null; // No context object
     }
