@@ -19,31 +19,24 @@ public class TeamPropDetection implements VisionProcessor {
 
     String alliance;
 
-    public TeamPropDetection(String alliance) {
-        this.alliance = alliance;
-    }
-
-
     //Creates the upper and lower range for the accepted HSV values for color
-    public Scalar lowHSV = new Scalar(0,0,0);
-    public Scalar highHSV = new Scalar(179,255,255);
+    //pink range
+    Scalar lowHSV = new Scalar(168,60,60);
+    Scalar highHSV = new Scalar(178,250,250);
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
     int width = 640;
     int height = 480;
     String screenSector;
-    public String getScreenSector(){
-        return screenSector;
-    }
 
 
 
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
         // Not useful in this case, but we do need to implement it either way
-        width = 640;
-        height = 480;
+        //width = 640;
+        //height = 480;
     }
 
     @Override
@@ -52,6 +45,7 @@ public class TeamPropDetection implements VisionProcessor {
         //changes Mat input from RGB to HSV and saves to Mat HSV
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
+        /*
         alliance = "red";
         if(alliance.equals("red")){
             //pink range
@@ -62,6 +56,9 @@ public class TeamPropDetection implements VisionProcessor {
             lowHSV = new Scalar(128,40,40);
             highHSV = new Scalar(138,240,240);
         }
+
+
+         */
 
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)

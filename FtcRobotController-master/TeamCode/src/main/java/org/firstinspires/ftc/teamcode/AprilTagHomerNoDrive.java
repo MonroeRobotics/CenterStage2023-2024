@@ -1,18 +1,15 @@
-package org.firstinspires.ftc.vision;
+package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-public class AprilTagHomer {
+public class AprilTagHomerNoDrive {
     AprilTagProcessor aprilTag;
-    SampleMecanumDrive drive;
     AprilTagPoseFtc currentTagPose;
     int targetTagId = 1;
     double acptOffsetX = 0.1;
@@ -20,20 +17,29 @@ public class AprilTagHomer {
     double horizGain = 15;
     double vertGain = 15;
 
+    double drivePowerX;
+    double drivePowerY;
 
-    public AprilTagHomer (AprilTagProcessor aprilTag, SampleMecanumDrive drive){
+
+    public AprilTagHomerNoDrive(AprilTagProcessor aprilTag){
         this.aprilTag = aprilTag;
-        this.drive = drive;
 
     }
 
-    public AprilTagHomer(AprilTagProcessor aprilTag, SampleMecanumDrive drive, double acptOffsetX, double acptOffsetY, double horizGain, double vertGain) {
+    public AprilTagHomerNoDrive(AprilTagProcessor aprilTag, double acptOffsetX, double acptOffsetY, double horizGain, double vertGain) {
         this.aprilTag = aprilTag;
-        this.drive = drive;
         this.acptOffsetX = acptOffsetX;
         this.acptOffsetY = acptOffsetY;
         this.horizGain = horizGain;
         this.vertGain = vertGain;
+    }
+
+    public double getDrivePowerX() {
+        return drivePowerX;
+    }
+
+    public double getDrivePowerY() {
+        return drivePowerY;
     }
 
     public AprilTagPoseFtc getCurrentTagPose() {
@@ -55,8 +61,8 @@ public class AprilTagHomer {
 
             // Y reversed because robot backwards
             //Set Max Possible power to 1
-            double drivePowerX = Math.min((Math.abs(currentTagPose.x) - acptOffsetX) / vertGain, 1);
-            double drivePowerY = -Math.min((Math.abs(currentTagPose.y) - acptOffsetY) / horizGain, 1);
+            drivePowerX = Math.min((Math.abs(currentTagPose.x) - acptOffsetX) / vertGain, 1);
+            drivePowerY = -Math.min((Math.abs(currentTagPose.y) - acptOffsetY) / horizGain, 1);
 
             //Check Which Tag is On and reverse X power if necessary
             //CHECK THIS!!!!
@@ -64,10 +70,10 @@ public class AprilTagHomer {
                 drivePowerX = -drivePowerX;
             }
 
-            drive.setDrivePower(new Pose2d(drivePowerX, drivePowerY, 0));
+            //drive.setDrivePower(new Pose2d(drivePowerX, drivePowerY, 0));
         }
         else {
-            drive.setDrivePower(new Pose2d(0,0, 0));
+            //drive.setDrivePower(new Pose2d(0,0, 0));
         }
 
     }

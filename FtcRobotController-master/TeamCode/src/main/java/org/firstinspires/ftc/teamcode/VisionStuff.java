@@ -14,7 +14,7 @@ public class VisionStuff extends OpMode {
     String screenSector;
     @Override
     public void init() {
-        propDetector = new TeamPropDetection("red");
+        propDetector = new TeamPropDetection();
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), propDetector);
     }
 
