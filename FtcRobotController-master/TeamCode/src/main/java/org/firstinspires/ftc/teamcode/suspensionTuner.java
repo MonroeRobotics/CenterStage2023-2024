@@ -9,21 +9,28 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class suspensionTuner extends OpMode{
 
     DcMotorEx hangMotor;
+
+    public static int riggingHeight = 0;
     @Override
     public void init() {
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangMotor.setPower(1);
+        hangMotor.setTargetPosition(riggingHeight);
+
+        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
     }
 
     @Override
     public void loop() {
-        if(gamepad1.dpad_up) {
-            hangMotor.setPower(-1);
-        } else if (gamepad1.dpad_down) {
-            hangMotor.setPower(1);
+        if(gamepad1.dpad_up && riggingHeight <= 1000) {
+            riggingHeight += 5;
+        } else if (gamepad1.dpad_down && riggingHeight >= 0) {
+            riggingHeight -= 5;
         }
-        else {
-            hangMotor.setPower(0);
-        }
+
+
+        hangMotor.setTargetPosition(riggingHeight);
     }
 }

@@ -56,7 +56,6 @@ public class main extends OpMode {
     public static double OUTTAKE_TIME = 1000; //How Long Outtake runs for
     //endregion
 
-
     //region Intake Variables
     public static double INTAKE_POWER = .5; //Power of Intake Motor
     public static double INTAKE_POSITION = .3; //Position of Intake Servo
@@ -80,10 +79,21 @@ public class main extends OpMode {
     double headingPower;
     //endregion
 
+    public static int RIGGING_EXTENDED_POS = 1000;
+
+    //endregion
+
     //region Declare Objects
 
     SampleMecanumDrive drive;
 
+
+    //region EndGame Objects
+    DcMotorEx hangMotor;
+
+    Servo droneServo;
+
+    //endRegion
 
     //region Arm Objects
     Servo armServoRight;
@@ -179,6 +189,13 @@ public class main extends OpMode {
         //endregion
         //endregion
 
+        //region Rigging Init
+        hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
+
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //endregion
+
         colorSensor1 = hardwareMap.get(RevColorSensorV3.class,"colorSensor1");
         colorSensor2 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
 
@@ -194,6 +211,7 @@ public class main extends OpMode {
     @Override
     public void loop() {
 
+        //region Drive Logic
         xPower = -gamepad1.left_stick_y;
         yPower = -gamepad1.left_stick_x;
         headingPower = -gamepad1.right_stick_x;
@@ -245,6 +263,8 @@ public class main extends OpMode {
                 yPower,
                 headingPower
         ));
+
+        //endregion
 
         //region Arm Logic
 
@@ -343,6 +363,23 @@ public class main extends OpMode {
         else{
             intakeMotor.setPower(0);
             intakeServo.setPosition(1);
+        }
+        //endregion
+
+        //region Rigging Logic
+        if(currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button){
+            hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hangMotor.setPower(1);
+
+            hangMotor.setTargetPosition(RIGGING_EXTENDED_POS);
+        }
+        if(currentGamepad1.right_stick_button){
+            drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            hangMotor.setTargetPosition(hangMotor.getTargetPosition() - 5);
         }
         //endregion
 
