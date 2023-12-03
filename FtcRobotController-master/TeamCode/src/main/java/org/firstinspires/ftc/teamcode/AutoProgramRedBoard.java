@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Thread.sleep;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -15,6 +17,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
@@ -22,8 +26,9 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "TEST THIS Auto Program", group = "Main")
+@Autonomous(name = "Red Auto Program", group = "Main")
 @Config
 public class AutoProgramRedBoard extends OpMode {
 
@@ -50,14 +55,16 @@ public class AutoProgramRedBoard extends OpMode {
 
     //region Arm Variables
     public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
-    public static double ARM_SERVO_BACKWARD = 0.7;//Stores Value of Arm outtake Position
+    public static double ARM_SERVO_BACKWARD = 0.75;//Stores Value of Arm outtake Position
 
     public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
-    public static double BOX_SERVO_BACKWARD = 0.3;//Stores Value of Box outtake Position
+    public static double BOX_SERVO_BACKWARD = 0.2;//Stores Value of Box outtake Position
     //endregion
 
     public static double SPIKE_OUTTAKE_POWER = -0.3; //Stores the power of the reversed intake for spike pixel drop
 
+    public static double CAMERA_EXPOSURE = 17;
+    public static int CAMERA_GAIN = 27;
     //endregion
 
     SampleMecanumDrive drive;
@@ -254,6 +261,15 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy()){
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
+                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+                    if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                        exposureControl.setMode(ExposureControl.Mode.Manual);
+                    }
+                    exposureControl.setExposure((long)CAMERA_EXPOSURE, TimeUnit.MILLISECONDS);
+
+                    // Set Gain.
+                    GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+                    gainControl.setGain(CAMERA_GAIN);
                     waitTimer = System.currentTimeMillis() + SPIKE_OUTTAKE_TIME;
                     intakeMotor.setPower(-SPIKE_OUTTAKE_POWER);
                     queuedState = autoState.TO_BOARD;
@@ -300,6 +316,16 @@ public class AutoProgramRedBoard extends OpMode {
                         }
                 else{telemetry.addLine("No Tag Detected");
                         }
+
+                /*if(aprilTagHomer.getCurrentTagPose() == null){
+                    CAMERA_EXPOSURE += 1;
+
+                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+                    if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                        exposureControl.setMode(ExposureControl.Mode.Manual);
+                    }
+                    exposureControl.setExposure((long)CAMERA_EXPOSURE, TimeUnit.MILLISECONDS);
+                }*/
 
                 aprilTagHomer.updateDrive();
                 break;
