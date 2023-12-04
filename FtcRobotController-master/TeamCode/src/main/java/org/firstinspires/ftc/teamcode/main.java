@@ -216,7 +216,7 @@ public class main extends OpMode {
         if (droneTimer==0){
             droneTimer=(System.currentTimeMillis()+120000);
             if (currentGamepad1.triangle){
-                droneServo.setPosition();
+                droneServo.setPosition(1);
             }
         }
 
