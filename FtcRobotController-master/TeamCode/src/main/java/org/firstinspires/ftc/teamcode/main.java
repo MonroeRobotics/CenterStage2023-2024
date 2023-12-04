@@ -215,9 +215,11 @@ public class main extends OpMode {
 
         if (droneTimer==0){
             droneTimer=(System.currentTimeMillis()+120000);
-            if (currentGamepad1.triangle){
-                droneServo.setPosition(1);
-            }
+
+        }
+
+        if (currentGamepad1.triangle && System.currentTimeMillis() >= droneTimer){
+            droneServo.setPosition(1);
         }
 
         //region Drive Logic
