@@ -339,21 +339,21 @@ public class AutoProgramRedBoard extends OpMode {
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(redBoardPark);
                     //Put slide and arm back to intake position
+                    leftLinear.setTargetPosition(-5);
+                    rightLinear.setTargetPosition(-5);
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
-                    boxServo.setPosition(BOX_SERVO_FORWARD);
+
                     waitTimer = System.currentTimeMillis() + PARK_TIME;
                     queuedState = autoState.STOP;
                 }
                 break;
             case STOP:
                 if(!drive.isBusy()){
-                    leftLinear.setTargetPosition(5);
-                    rightLinear.setTargetPosition(5);
-
-                    if(System.currentTimeMillis() > waitTimer){
-                        requestOpModeStop();
-                    }
+                    telemetry.addData("Slide Height",  leftLinear.getCurrentPosition());
+                    telemetry.update();
+                    boxServo.setPosition(BOX_SERVO_FORWARD);
+                    
                 }
 
         }
