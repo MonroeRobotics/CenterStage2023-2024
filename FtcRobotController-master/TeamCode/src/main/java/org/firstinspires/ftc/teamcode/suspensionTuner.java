@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
 public class suspensionTuner extends OpMode{
@@ -15,6 +16,8 @@ public class suspensionTuner extends OpMode{
     public void init() {
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         hangMotor.setPower(1);
         hangMotor.setTargetPosition(riggingHeight);
 

@@ -46,7 +46,7 @@ public class main extends OpMode {
 
     public static double ARM_POSITION = 0.04; //Live Updating Arm Servo Position (1 is intake position)
     public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
-    public static double ARM_SERVO_BACKWARD = 0.7;//Stores Value of Arm outtake Position
+    public static double ARM_SERVO_BACKWARD = 0.8;//Stores Value of Arm outtake Position
 
     public static double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
     public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
@@ -230,29 +230,26 @@ public class main extends OpMode {
         headingPower *= drivePower;
 
 
-        if(currentGamepad1.dpad_up){
+        if (currentGamepad1.dpad_up) {
             xPower = drivePower;
             yPower = 0;
             headingPower = 0;
-        }
-        else if (currentGamepad1.dpad_down){
+        } else if (currentGamepad1.dpad_down) {
             xPower = -drivePower;
             yPower = 0;
             headingPower = 0;
-        }
-        else if (currentGamepad1.dpad_left){
+        } else if (currentGamepad1.dpad_left) {
             xPower = 0;
             yPower = -drivePower;
             headingPower = 0;
-        }
-        else if (currentGamepad1.dpad_right){
+        } else if (currentGamepad1.dpad_right) {
             xPower = 0;
             yPower = drivePower;
             headingPower = 0;
 
         }
 
-        if(currentGamepad1.right_bumper){
+        if (currentGamepad1.right_bumper) {
             xPower *= scaledPower;
             yPower *= scaledPower;
             headingPower *= scaledPower;
@@ -269,40 +266,39 @@ public class main extends OpMode {
         //region Arm Logic
 
         //Increases or Decreases Slide Stage on Dpad up or down within [0,7]
-        if(currentGamepad2.dpad_up && !previousGamepad2.dpad_up && SLIDE_STAGE < 7){
+        if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up && SLIDE_STAGE < 7) {
             SLIDE_STAGE++;
             changeArmState();
-        }
-        else if(currentGamepad2.dpad_down && !previousGamepad2.dpad_down && SLIDE_STAGE > 0){
+        } else if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down && SLIDE_STAGE > 0) {
             SLIDE_STAGE--;
             changeArmState();
         }
 
         //Changes Arm State on Triangle Press
-       if(currentGamepad2.triangle && !previousGamepad2.triangle){
-           switch (currentArmState){
-               case INTAKE:
-                   currentArmState = ArmState.OUTTAKE_READY;
-                   changeArmState();
-                   break;
-               case OUTTAKE_READY:
-                   currentArmState = ArmState.OUTTAKE_ACTIVE;
-                   outtakeTimer = System.currentTimeMillis() + OUTTAKE_TIME;
-                   changeArmState();
-                   break;
-           }
-       }
-       //Resets Arm to Intake Position on square press
-       else if(currentGamepad2.square && !previousGamepad2.square){
-           currentArmState = ArmState.INTAKE;
-           changeArmState();
-       }
+        if (currentGamepad2.triangle && !previousGamepad2.triangle) {
+            switch (currentArmState) {
+                case INTAKE:
+                    currentArmState = ArmState.OUTTAKE_READY;
+                    changeArmState();
+                    break;
+                case OUTTAKE_READY:
+                    currentArmState = ArmState.OUTTAKE_ACTIVE;
+                    outtakeTimer = System.currentTimeMillis() + OUTTAKE_TIME;
+                    changeArmState();
+                    break;
+            }
+        }
+        //Resets Arm to Intake Position on square press
+        else if (currentGamepad2.square && !previousGamepad2.square) {
+            currentArmState = ArmState.INTAKE;
+            changeArmState();
+        }
 
-       //Changes Arm State back to intake once outtake timer runs out
-       if(currentArmState == ArmState.OUTTAKE_ACTIVE && outtakeTimer < System.currentTimeMillis()){
-           currentArmState = ArmState.INTAKE;
-           changeArmState();
-       }
+        //Changes Arm State back to intake once outtake timer runs out
+        if (currentArmState == ArmState.OUTTAKE_ACTIVE && outtakeTimer < System.currentTimeMillis()) {
+            currentArmState = ArmState.INTAKE;
+            changeArmState();
+        }
 
 
         //Sets Slides Arm and Box to respective positions as determined by the previous logic
@@ -312,7 +308,13 @@ public class main extends OpMode {
         armServoLeft.setPosition(ARM_POSITION);
         armServoRight.setPosition(1 - ARM_POSITION);
 
-        boxServo.setPosition(BOX_SERVO_POSITION);
+        if (currentArmState == ArmState.INTAKE && leftLinear.getCurrentPosition() <= 20){
+            boxServo.setPosition(BOX_SERVO_POSITION);
+        }
+        else if(currentArmState != ArmState.INTAKE) {
+            boxServo.setPosition(BOX_SERVO_POSITION);
+        }
+
         //endregion
 
         //region Intake Logic
