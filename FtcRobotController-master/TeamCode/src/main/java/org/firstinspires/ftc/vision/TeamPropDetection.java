@@ -73,11 +73,11 @@ public class TeamPropDetection implements VisionProcessor {
 
 
 
-        Rect leftScreen = new Rect(0, 0, width/4, height);
+        Rect leftScreen = new Rect(0, height/2, width/4, height);
 
-        Rect centerScreen = new Rect(width/4, 0, width/2, height);
+        Rect centerScreen = new Rect(width/4, height/2, width/2, height);
 
-        Rect rightScreen = new Rect((width/4)*3, 0, width/4, height);
+        Rect rightScreen = new Rect((width/4)*3, height/2, width/4, height);
 
 
         cropL = input.submat(leftScreen);
