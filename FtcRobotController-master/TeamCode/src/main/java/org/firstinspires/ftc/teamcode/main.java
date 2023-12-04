@@ -125,6 +125,8 @@ public class main extends OpMode {
     Gamepad previousGamepad1;
     Gamepad previousGamepad2;
 
+    double droneTimer = 0;
+
 
     @Override
     public void init() {
@@ -210,6 +212,13 @@ public class main extends OpMode {
     }
     @Override
     public void loop() {
+
+        if (droneTimer==0){
+            droneTimer=(System.currentTimeMillis()+120000);
+            if (currentGamepad1.triangle){
+                droneServo.setPosition();
+            }
+        }
 
         //region Drive Logic
         xPower = -gamepad1.left_stick_y;
