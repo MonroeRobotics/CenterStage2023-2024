@@ -79,7 +79,7 @@ public class main extends OpMode {
     double headingPower;
     //endregion
 
-    public static int RIGGING_EXTENDED_POS = 1000;
+    public static int RIGGING_EXTENDED_POS = 145000;
 
     //endregion
 
@@ -193,8 +193,19 @@ public class main extends OpMode {
 
         //region Rigging Init
         hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
-
         hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hangMotor.setPower(1);
+        hangMotor.setTargetPosition(0);
+
+        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        droneServo = hardwareMap.get(Servo.class, "droneServo");
+        droneServo.setPosition(0);
+
+
 
         //endregion
 
@@ -212,13 +223,20 @@ public class main extends OpMode {
     }
     @Override
     public void loop() {
-
         if (droneTimer==0){
-            droneTimer=(System.currentTimeMillis()+120000);
-
+            droneTimer = System.currentTimeMillis() + 100000;
         }
 
-        if (currentGamepad1.triangle && System.currentTimeMillis() >= droneTimer){
+        if(currentGamepad1.ps && !previousGamepad1.ps){
+            droneTimer = 1;
+        }
+
+        if (currentGamepad1.square && System.currentTimeMillis() >= droneTimer){
+            hangMotor.setPower(1);
+
+            hangMotor.setTargetPosition(5620);
+        }
+        if (currentGamepad1.touchpad && currentGamepad2.touchpad && System.currentTimeMillis() >= droneTimer){
             droneServo.setPosition(1);
         }
 
@@ -381,7 +399,6 @@ public class main extends OpMode {
 
         //region Rigging Logic
         if(currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button){
-            hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hangMotor.setPower(1);
 
             hangMotor.setTargetPosition(RIGGING_EXTENDED_POS);
