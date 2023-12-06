@@ -26,7 +26,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "Red Auto Program", group = "Main")
+@Autonomous(name = "Red Auto Program Away", group = "Main")
 @Config
 public class AutoProgramRedAway extends OpMode {
 
