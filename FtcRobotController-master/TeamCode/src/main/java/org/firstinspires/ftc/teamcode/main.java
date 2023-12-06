@@ -79,7 +79,7 @@ public class main extends OpMode {
     double headingPower;
     //endregion
 
-    public static int RIGGING_EXTENDED_POS = 145000;
+    public static int RIGGING_EXTENDED_POS = 14500;
 
     //endregion
 
@@ -409,7 +409,7 @@ public class main extends OpMode {
             leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            hangMotor.setTargetPosition(hangMotor.getTargetPosition() - 5);
+            hangMotor.setTargetPosition(hangMotor.getTargetPosition() - 50);
         }
         //endregion
 
