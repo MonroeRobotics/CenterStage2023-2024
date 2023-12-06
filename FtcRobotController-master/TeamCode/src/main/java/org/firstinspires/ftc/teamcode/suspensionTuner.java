@@ -15,9 +15,9 @@ public class suspensionTuner extends OpMode{
 
     DcMotorEx hangMotor;
     Servo servo;
-    public static double servoPos = 0;
+    double servoPos = 0;
 
-    public static int riggingHeight = 0;
+    int riggingHeight = 0;
     public static int riggingHeightMin = 0;
 
     public static int riggingHeightMax = 14500; //

@@ -30,7 +30,7 @@ public class main extends OpMode {
 
     //region Arm Variables
 
-    public static int SLIDE_HEIGHT = 20; //Live Updating Slide height
+    int SLIDE_HEIGHT = 20; //Live Updating Slide height
     public static int SLIDE_STAGE = 0; //Used for incremental Slide Height
     public static double SLIDE_POWER = 0.5; //Max Linear Slide Power
     public static double SLIDE_MAX_VELO = 2000; //Max Linear Slide Velocity
@@ -44,11 +44,11 @@ public class main extends OpMode {
 
     ArmState currentArmState = ArmState.INTAKE; //Creates a variables to store current Arm State
 
-    public static double ARM_POSITION = 0.04; //Live Updating Arm Servo Position (1 is intake position)
+    double ARM_POSITION = 0.04; //Live Updating Arm Servo Position (1 is intake position)
     public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
     public static double ARM_SERVO_BACKWARD = 0.8;//Stores Value of Arm outtake Position
 
-    public static double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
+    double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
     public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
     public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
 
@@ -57,7 +57,7 @@ public class main extends OpMode {
     //endregion
 
     //region Intake Variables
-    public static double INTAKE_POWER = .5; //Power of Intake Motor
+    public static double INTAKE_POWER = .8; //Power of Intake Motor
     public static double INTAKE_POSITION = .3; //Position of Intake Servo
     boolean intakeActive = false;
     boolean reverseIntake = false;
@@ -229,11 +229,11 @@ public class main extends OpMode {
             droneTimer = System.currentTimeMillis() + 100000;
         }
 
-        if(currentGamepad1.ps && !previousGamepad1.ps){
+        if(currentGamepad2.ps && !previousGamepad2.ps){
             droneTimer = 1;
         }
 
-        if (currentGamepad1.square && System.currentTimeMillis() >= droneTimer){
+        if (currentGamepad2.start && System.currentTimeMillis() >= droneTimer){
             hangMotor.setPower(1);
 
             hangMotor.setTargetPosition(5620);
@@ -400,14 +400,12 @@ public class main extends OpMode {
         //endregion
 
         //region Rigging Logic
-        if(currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button){
+        if(currentGamepad2.left_stick_button && !previousGamepad2.left_stick_button){
             hangMotor.setPower(1);
 
             hangMotor.setTargetPosition(RIGGING_EXTENDED_POS);
         }
-        if(currentGamepad1.right_stick_button){
-            drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(currentGamepad2.right_stick_button){
             leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
