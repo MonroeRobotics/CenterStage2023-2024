@@ -18,7 +18,8 @@ import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Autonomous(name = "Test Auto Just Drive", group = "Main")
+@Disabled
+@Autonomous(name = "Test Red Auto Just Drive", group = "Main")
 public class AutoProgramReadJustTrajectory extends LinearOpMode {
     SampleMecanumDrive drive;
 
