@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 
-@TeleOp(name="Main Drive", group = "main")
+@TeleOp(name="Main Drive", group = "Main")
 @Config
 public class main extends OpMode {
 
