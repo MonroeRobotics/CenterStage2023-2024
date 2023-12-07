@@ -102,20 +102,20 @@ public class AutoProgramRedAway extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
-    public static Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
-    public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
+    Pose2d spikeRight = new Pose2d(-10,-30, Math.toRadians(0));
+    Vector2d spikeRightSpline = new Vector2d(-11,-32);
+    Pose2d spikeCenter = new Pose2d(-20,-25.5, Math.toRadians(0));
+    Pose2d spikeLeft = new Pose2d(-32.5,-30, Math.toRadians(0));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
+    Pose2d STARTING_DRIVE_POS = new Pose2d(-10, -62, Math.toRadians(270));
 
     //y was previously -35
-    public static Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
-    public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
-    public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
-    public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static  Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+    Pose2d centerRedBoardCord = new Pose2d(-35, -36, Math.toRadians(0));
+    Pose2d rightRedBoardCord = new Pose2d(-35, -40, Math.toRadians(0));
+    Pose2d leftRedBoardCord = new Pose2d(-35, -32, Math.toRadians(0));
+    Pose2d redBoardCord = new Pose2d(-35, -38, Math.toRadians(0));
+    public static  Pose2d redParkCord = new Pose2d(-48, -64, Math.toRadians(0));
 
     /*
     Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
@@ -239,7 +239,7 @@ public class AutoProgramRedAway extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() & !Objects.equals(screenSector, "L")) {
+                if(!drive.isBusy() && !screenSector.equals("R")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .build();
@@ -249,7 +249,7 @@ public class AutoProgramRedAway extends OpMode {
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .back(24)
-                            .splineTo(spikeLeftSpline, Math.toRadians(0))
+                            .splineTo(spikeRightSpline, Math.toRadians(180))
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
