@@ -62,8 +62,8 @@ public class TeamPropDetection implements VisionProcessor {
             //highHSV = new Scalar(6,250,250);
         }else if(alliance.equals("blue")){
             //blue range
-            lowHSV = new Scalar(104,40,40);
-            highHSV = new Scalar(110,240,240);
+            lowHSV = new Scalar(115,40,40);
+            highHSV = new Scalar(125,240,240);
         }
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)

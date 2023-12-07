@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static java.lang.Thread.sleep;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -104,10 +102,10 @@ public class AutoProgramRedBoard extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
-    public static Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
-    public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
+    Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
+    Vector2d spikeLeftSpline = new Vector2d(11,-32);
+    Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
+    Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
