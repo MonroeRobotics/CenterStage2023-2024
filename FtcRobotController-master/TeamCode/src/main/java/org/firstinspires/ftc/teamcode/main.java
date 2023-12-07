@@ -49,7 +49,7 @@ public class main extends OpMode {
     public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
 
     double outtakeTimer = 0; //Timer to control outtake
-    public static double OUTTAKE_TIME = 500; //How Long Outtake runs for
+    public static double OUTTAKE_TIME = 150; //How Long Outtake runs for (ms)
     //endregion
 
     //region Intake Variables
@@ -227,12 +227,12 @@ public class main extends OpMode {
             droneTimer = 1;
         }
 
-        if (currentGamepad2.start && System.currentTimeMillis() >= droneTimer){
+        if (currentGamepad2.options && System.currentTimeMillis() >= droneTimer){
             hangMotor.setPower(1);
 
             hangMotor.setTargetPosition(5620);
         }
-        if (currentGamepad1.touchpad && currentGamepad2.touchpad && System.currentTimeMillis() >= droneTimer){
+        if (currentGamepad2.touchpad && System.currentTimeMillis() >= droneTimer){
             droneServo.setPosition(1);
         }
 
