@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testing;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -9,17 +10,20 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @Autonomous
+@Config
 public class ChangeableProcessor extends OpMode {
     TeamPropDetection propDetector;
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
     String screenSector;
 
+    public static String alliance = "red";
+
     boolean cameraState = false;
     boolean notPressed = true;
     @Override
     public void init() {
-        propDetector = new TeamPropDetection(telemetry);
+        propDetector = new TeamPropDetection(alliance);
         aprilTagDetector = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetector);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
