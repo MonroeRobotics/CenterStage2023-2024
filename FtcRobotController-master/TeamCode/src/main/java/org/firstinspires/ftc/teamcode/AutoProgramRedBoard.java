@@ -241,7 +241,7 @@ public class AutoProgramRedBoard extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() & !Objects.equals(screenSector, "L")) {
+                if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .build();
@@ -309,23 +309,13 @@ public class AutoProgramRedBoard extends OpMode {
                     break;
                 }
                 if(aprilTagHomer.getCurrentTagPose() != null) {
-                            telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
-                            telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
-                            telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+                    telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                    telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                    telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
 
-                        }
+                }
                 else{telemetry.addLine("No Tag Detected");
-                        }
-
-                /*if(aprilTagHomer.getCurrentTagPose() == null){
-                    CAMERA_EXPOSURE += 1;
-
-                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-                    if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                        exposureControl.setMode(ExposureControl.Mode.Manual);
-                    }
-                    exposureControl.setExposure((long)CAMERA_EXPOSURE, TimeUnit.MILLISECONDS);
-                }*/
+                }
 
                 aprilTagHomer.updateDrive();
                 break;
