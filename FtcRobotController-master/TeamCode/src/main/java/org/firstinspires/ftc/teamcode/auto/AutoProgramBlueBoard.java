@@ -115,7 +115,7 @@ public class AutoProgramBlueBoard extends OpMode {
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
     public static Pose2d leftBlueBoardCord = new Pose2d(35, 40, Math.toRadians(180));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static  Pose2d blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
+    public static  Vector2d blueParkCord = new Vector2d(48, 60);
 
     /*
     Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
@@ -319,13 +319,16 @@ public class AutoProgramBlueBoard extends OpMode {
                     outtakeServo.setPower(0);
                     //Trajectory to Park Pos
                     blueBoardPark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(blueParkCord)
+                            .forward(5)
+                            .addDisplacementMarker(() -> {
+                                leftLinear.setTargetPosition(-5);
+                                rightLinear.setTargetPosition(-5);
+                            })
+                            .splineTo(blueParkCord, Math.toRadians(180))
                             .build();
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(blueBoardPark);
                     //Put slide and arm back to intake position
-                    leftLinear.setTargetPosition(-5);
-                    rightLinear.setTargetPosition(-5);
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
 
