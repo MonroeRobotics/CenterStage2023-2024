@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -14,7 +14,7 @@ public class VisionStuff extends OpMode {
     String screenSector;
     @Override
     public void init() {
-        propDetector = new TeamPropDetection("red");
+        propDetector = new TeamPropDetection("blue");
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), propDetector);
     }
 
