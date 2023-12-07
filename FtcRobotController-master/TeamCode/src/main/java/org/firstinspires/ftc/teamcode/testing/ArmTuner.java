@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
-@TeleOp
+@TeleOp(name="Arm Tuner", group = "Testing")
 @Config
 public class ArmTuner extends OpMode {
 

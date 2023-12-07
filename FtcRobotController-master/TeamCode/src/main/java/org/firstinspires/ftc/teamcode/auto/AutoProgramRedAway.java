@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -26,9 +26,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "Blue Board Auto", group = "Main")
+@Autonomous(name = "Red Auto Program Away", group = "Main")
 @Config
-public class AutoProgramBlueBoard extends OpMode {
+public class AutoProgramRedAway extends OpMode {
 
     //region Dashboard Variable Declarations
 
@@ -69,8 +69,8 @@ public class AutoProgramBlueBoard extends OpMode {
 
     //region Trajectory Declarations
     Trajectory toSpikeMark;
-    Trajectory toBlueBoard;
-    Trajectory blueBoardPark;
+    Trajectory toRedBoard;
+    Trajectory redBoardPark;
     //endregion
 
 
@@ -89,7 +89,7 @@ public class AutoProgramBlueBoard extends OpMode {
     //endregion
 
     //region Vision Objects
-    TeamPropDetection propDetection = new TeamPropDetection("blue");
+    TeamPropDetection propDetection = new TeamPropDetection("red");
     String screenSector;
     int targetTagId;
     AprilTagProcessor aprilTagDetector;
@@ -99,23 +99,23 @@ public class AutoProgramBlueBoard extends OpMode {
 
     //region RR static coordinates
 
-    //region blue board spike locations
+    //region red board spike locations
     Pose2d spikeLocation;
 
-    Pose2d spikeLeft = new Pose2d(32.5,30, Math.toRadians(180));
-    Vector2d spikeRightSpline = new Vector2d(11,32);
-    Pose2d spikeCenter = new Pose2d(20,25.5, Math.toRadians(180));
-    Pose2d spikeRight = new Pose2d(10,30, Math.toRadians(180));
+    public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
+    public static Vector2d spikeLeftSpline = new Vector2d(11,-32);
+    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
+    public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
+    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
 
     //y was previously -35
-    public static Pose2d centerBlueBoardCord = new Pose2d(35, 34, Math.toRadians(180));
-    public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
-    public static Pose2d leftBlueBoardCord = new Pose2d(35, 40, Math.toRadians(180));
-    public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static  Pose2d blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
+    public static Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
+    public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
+    public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
+    public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
+    public static  Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
 
     /*
     Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
@@ -206,7 +206,7 @@ public class AutoProgramBlueBoard extends OpMode {
 
         aprilTagHomer = new AprilTagHomer(aprilTagDetector, drive);
 
-        propDetection = new TeamPropDetection("blue");
+        propDetection = new TeamPropDetection("red");
 
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
@@ -223,23 +223,23 @@ public class AutoProgramBlueBoard extends OpMode {
                 if(screenSector != null) {
                     if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
-                        blueBoardCord = leftBlueBoardCord;
-                        targetTagId = 1;
+                        redBoardCord = leftRedBoardCord;
+                        targetTagId = 4;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
-                        blueBoardCord = centerBlueBoardCord;
-                        targetTagId = 2;
+                        redBoardCord = centerRedBoardCord;
+                        targetTagId = 5;
                     } else {
                         spikeLocation = spikeRight;
-                        blueBoardCord = rightBlueBoardCord;
-                        targetTagId = 3;
+                        redBoardCord = rightRedBoardCord;
+                        targetTagId = 6;
                     }
 
                     queuedState = autoState.TO_SPIKE_MARK;
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() && !Objects.equals(screenSector, "R")) {
+                if(!drive.isBusy() & !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .build();
@@ -249,7 +249,7 @@ public class AutoProgramBlueBoard extends OpMode {
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .back(24)
-                            .splineTo(spikeRightSpline, Math.toRadians(0))
+                            .splineTo(spikeLeftSpline, Math.toRadians(0))
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -276,24 +276,18 @@ public class AutoProgramBlueBoard extends OpMode {
             case TO_BOARD:
                 if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
-                    toBlueBoard = drive.trajectoryBuilder(toSpikeMark.end())
-                            .lineToLinearHeading(blueBoardCord)
-                            .build();
-                    leftLinear.setTargetPosition(PLACEMENT_SLIDE_HEIGHT);
-                    rightLinear.setTargetPosition(PLACEMENT_SLIDE_HEIGHT);
-                    armServoLeft.setPosition(ARM_SERVO_BACKWARD);
-                    armServoRight.setPosition(1 - ARM_SERVO_BACKWARD);
-                    boxServo.setPosition(BOX_SERVO_BACKWARD);
-                    drive.followTrajectoryAsync(toBlueBoard);
-                    queuedState = autoState.HOME_TAG;
+                    //queuedState = autoState.HOME_TAG;
                 }
                 break;
-            case HOME_TAG:
+            /*case HOME_TAG:
                 if(!drive.isBusy()){
                     aprilTagHomer.changeTarget(targetTagId);
                     aprilTagHomer.updateDrive();
                     waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                     queuedState = autoState.PLACE_BOARD;
+                    /*if(!apriltagDetected){
+                        move around to find it
+                    }
                 }
                 break;
             case PLACE_BOARD:
@@ -304,12 +298,22 @@ public class AutoProgramBlueBoard extends OpMode {
                     break;
                 }
                 if(aprilTagHomer.getCurrentTagPose() != null) {
-                    telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
-                    telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
-                    telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+                            telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                            telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                            telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
 
-                }
+                        }
                 else{telemetry.addLine("No Tag Detected");
+                        }
+            */
+                /*if(aprilTagHomer.getCurrentTagPose() == null){
+                    CAMERA_EXPOSURE += 1;
+
+                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+                    if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                        exposureControl.setMode(ExposureControl.Mode.Manual);
+                    }
+                    exposureControl.setExposure((long)CAMERA_EXPOSURE, TimeUnit.MILLISECONDS);
                 }
 
                 aprilTagHomer.updateDrive();
@@ -318,29 +322,29 @@ public class AutoProgramBlueBoard extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     outtakeServo.setPower(0);
                     //Trajectory to Park Pos
-                    blueBoardPark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(blueParkCord)
+                    redBoardPark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(redParkCord)
                             .build();
                     //Start Following Trajectory
-                    drive.followTrajectoryAsync(blueBoardPark);
+                    drive.followTrajectoryAsync(redBoardPark);
                     //Put slide and arm back to intake position
-                    leftLinear.setTargetPosition(-5);
-                    rightLinear.setTargetPosition(-5);
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
-
+                    boxServo.setPosition(BOX_SERVO_FORWARD);
                     waitTimer = System.currentTimeMillis() + PARK_TIME;
                     queuedState = autoState.STOP;
                 }
                 break;
             case STOP:
                 if(!drive.isBusy()){
-                    telemetry.addData("Slide Height",  leftLinear.getCurrentPosition());
-                    telemetry.update();
-                    boxServo.setPosition(BOX_SERVO_FORWARD);
+                    leftLinear.setTargetPosition(5);
+                    rightLinear.setTargetPosition(5);
 
+                    if(System.currentTimeMillis() > waitTimer){
+                        requestOpModeStop();
+                    }
                 }
-
+            */
         }
 
 

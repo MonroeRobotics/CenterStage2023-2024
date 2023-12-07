@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp
+@TeleOp (name="Slide Reader", group = "Testing")
 public class SlideReader extends OpMode {
 
 

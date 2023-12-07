@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
-@TeleOp
+@TeleOp(name="Lift Tuner", group = "Testing")
 @Config
 public class LiftTuner extends OpMode {
 

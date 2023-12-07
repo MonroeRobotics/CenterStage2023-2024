@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -26,9 +26,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "Red Auto Program Away", group = "Main")
+@Autonomous(name = "Red Auto Program Board", group = "Main")
 @Config
-public class AutoProgramRedAway extends OpMode {
+public class AutoProgramRedBoard extends OpMode {
 
     //region Dashboard Variable Declarations
 
@@ -102,10 +102,10 @@ public class AutoProgramRedAway extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    public static Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
-    public static Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    public static Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
-    public static Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
+    Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
+    Vector2d spikeLeftSpline = new Vector2d(11,-32);
+    Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
+    Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
@@ -239,7 +239,7 @@ public class AutoProgramRedAway extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() & !Objects.equals(screenSector, "L")) {
+                if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .build();
@@ -276,10 +276,19 @@ public class AutoProgramRedAway extends OpMode {
             case TO_BOARD:
                 if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
-                    //queuedState = autoState.HOME_TAG;
+                    toRedBoard = drive.trajectoryBuilder(toSpikeMark.end())
+                            .lineToLinearHeading(redBoardCord)
+                            .build();
+                    leftLinear.setTargetPosition(PLACEMENT_SLIDE_HEIGHT);
+                    rightLinear.setTargetPosition(PLACEMENT_SLIDE_HEIGHT);
+                    armServoLeft.setPosition(ARM_SERVO_BACKWARD);
+                    armServoRight.setPosition(1 - ARM_SERVO_BACKWARD);
+                    boxServo.setPosition(BOX_SERVO_BACKWARD);
+                    drive.followTrajectoryAsync(toRedBoard);
+                    queuedState = autoState.HOME_TAG;
                 }
                 break;
-            /*case HOME_TAG:
+            case HOME_TAG:
                 if(!drive.isBusy()){
                     aprilTagHomer.changeTarget(targetTagId);
                     aprilTagHomer.updateDrive();
@@ -287,7 +296,7 @@ public class AutoProgramRedAway extends OpMode {
                     queuedState = autoState.PLACE_BOARD;
                     /*if(!apriltagDetected){
                         move around to find it
-                    }
+                    }*/
                 }
                 break;
             case PLACE_BOARD:
@@ -298,22 +307,12 @@ public class AutoProgramRedAway extends OpMode {
                     break;
                 }
                 if(aprilTagHomer.getCurrentTagPose() != null) {
-                            telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
-                            telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
-                            telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+                    telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                    telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                    telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
 
-                        }
+                }
                 else{telemetry.addLine("No Tag Detected");
-                        }
-            */
-                /*if(aprilTagHomer.getCurrentTagPose() == null){
-                    CAMERA_EXPOSURE += 1;
-
-                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-                    if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                        exposureControl.setMode(ExposureControl.Mode.Manual);
-                    }
-                    exposureControl.setExposure((long)CAMERA_EXPOSURE, TimeUnit.MILLISECONDS);
                 }
 
                 aprilTagHomer.updateDrive();
@@ -328,23 +327,23 @@ public class AutoProgramRedAway extends OpMode {
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(redBoardPark);
                     //Put slide and arm back to intake position
+                    leftLinear.setTargetPosition(-5);
+                    rightLinear.setTargetPosition(-5);
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
-                    boxServo.setPosition(BOX_SERVO_FORWARD);
+
                     waitTimer = System.currentTimeMillis() + PARK_TIME;
                     queuedState = autoState.STOP;
                 }
                 break;
             case STOP:
                 if(!drive.isBusy()){
-                    leftLinear.setTargetPosition(5);
-                    rightLinear.setTargetPosition(5);
-
-                    if(System.currentTimeMillis() > waitTimer){
-                        requestOpModeStop();
-                    }
+                    telemetry.addData("Slide Height",  leftLinear.getCurrentPosition());
+                    telemetry.update();
+                    boxServo.setPosition(BOX_SERVO_FORWARD);
+                    
                 }
-            */
+
         }
 
 

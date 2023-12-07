@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 
-@Autonomous
+@Autonomous(name="Team Prop Dect. Tuner", group = "Testing")
 public class VisionStuff extends OpMode {
     TeamPropDetection propDetector;
     VisionPortal visionPortal;
