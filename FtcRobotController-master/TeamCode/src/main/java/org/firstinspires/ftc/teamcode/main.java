@@ -12,15 +12,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
-
-import java.util.Timer;
 
 @TeleOp
 @Config
@@ -31,7 +27,7 @@ public class main extends OpMode {
     //region Arm Variables
 
     int SLIDE_HEIGHT = 20; //Live Updating Slide height
-    public static int SLIDE_STAGE = 0; //Used for incremental Slide Height
+    int SLIDE_STAGE = 0; //Used for incremental Slide Height
     public static double SLIDE_POWER = 0.5; //Max Linear Slide Power
     public static double SLIDE_MAX_VELO = 2000; //Max Linear Slide Velocity
 
@@ -53,7 +49,7 @@ public class main extends OpMode {
     public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
 
     double outtakeTimer = 0; //Timer to control outtake
-    public static double OUTTAKE_TIME = 1000; //How Long Outtake runs for
+    public static double OUTTAKE_TIME = 500; //How Long Outtake runs for
     //endregion
 
     //region Intake Variables
@@ -72,8 +68,6 @@ public class main extends OpMode {
     //region Drive Variables
 
     public static double drivePower = 0.8;
-    double drivePowerStore = 0.8;
-    public static double fineDrivePower = 0.4;
     double xPower;
     double yPower;
     double headingPower;
@@ -313,23 +307,31 @@ public class main extends OpMode {
                     changeArmState();
                     break;
                 case OUTTAKE_READY:
-                    currentArmState = ArmState.OUTTAKE_ACTIVE;
-                    outtakeTimer = System.currentTimeMillis() + OUTTAKE_TIME;
+                    currentArmState = ArmState.INTAKE;
                     changeArmState();
                     break;
             }
         }
         //Resets Arm to Intake Position on square press
-        else if (currentGamepad2.square && !previousGamepad2.square) {
-            currentArmState = ArmState.INTAKE;
-            changeArmState();
+        else if (currentGamepad2.square && !previousGamepad2.square && outtakeTimer <= System.currentTimeMillis()) {
+            outtakeTimer = System.currentTimeMillis() + OUTTAKE_TIME;
+            outtakeServo.setPower(1);
+        }
+        else if (currentGamepad2.square && !previousGamepad2.square && outtakeTimer >= System.currentTimeMillis() && outtakeTimer <= (System.currentTimeMillis() + (OUTTAKE_TIME * 2))){
+            outtakeTimer += OUTTAKE_TIME;
+            outtakeServo.setPower(1);
         }
 
+        if(outtakeTimer <= System.currentTimeMillis() && currentArmState == ArmState.OUTTAKE_READY){
+            outtakeServo.setPower(0);
+        }
+
+        /*
         //Changes Arm State back to intake once outtake timer runs out
         if (currentArmState == ArmState.OUTTAKE_ACTIVE && outtakeTimer < System.currentTimeMillis()) {
             currentArmState = ArmState.INTAKE;
             changeArmState();
-        }
+        }*/
 
 
         //Sets Slides Arm and Box to respective positions as determined by the previous logic
@@ -438,14 +440,12 @@ public class main extends OpMode {
                 ARM_POSITION = ARM_SERVO_BACKWARD;
                 outtakeServo.setPower(0);
                 if (SLIDE_STAGE == 0) {
-                    SLIDE_HEIGHT = 540;
+                    SLIDE_HEIGHT = 690;
                 }
                 else{
-                    SLIDE_HEIGHT = 540 + (SLIDE_STAGE * 150);
+                    SLIDE_HEIGHT = 690 + (SLIDE_STAGE * 150);
                 }
                 break;
-            case OUTTAKE_ACTIVE:
-                outtakeServo.setPower(1);
         }
     }
 }

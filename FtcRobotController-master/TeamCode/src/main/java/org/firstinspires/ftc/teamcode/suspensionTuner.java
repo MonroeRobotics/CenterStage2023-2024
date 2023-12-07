@@ -28,8 +28,7 @@ public class suspensionTuner extends OpMode{
     public static int droneRelease = 1;
 
     Gamepad currentGamepad;
-
-    Gamepad prevoiousGamepad;
+    Gamepad previousGamepad;
 
     @Override
     public void init() {
@@ -47,9 +46,9 @@ public class suspensionTuner extends OpMode{
         servo.setPosition(servoPos);
 
         currentGamepad = new Gamepad();
-        prevoiousGamepad = new Gamepad();
+        previousGamepad = new Gamepad();
         currentGamepad.copy(gamepad1);
-        prevoiousGamepad.copy(gamepad1);
+        previousGamepad.copy(gamepad1);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class suspensionTuner extends OpMode{
         telemetry.addData("Rigging Height", riggingHeight);
         telemetry.update();
 
-        if(currentGamepad.a && !prevoiousGamepad.a){
+        if(currentGamepad.a && !previousGamepad.a){
             if(servoPos == droneStart) {
                 servoPos = droneRelease;
             }
@@ -80,7 +79,7 @@ public class suspensionTuner extends OpMode{
 
         servo.setPosition(servoPos);
 
-        prevoiousGamepad.copy(currentGamepad);
+        previousGamepad.copy(currentGamepad);
         currentGamepad.copy(gamepad1);
     }
 }
