@@ -18,15 +18,33 @@ import org.opencv.imgproc.Imgproc;
 public class TeamPropDetection implements VisionProcessor {
 
     String alliance;
+    Scalar lowHSV;
+    Scalar highHSV;
 
     public TeamPropDetection(String alliance) {
         this.alliance = alliance;
+        if(alliance.equals("red")){
+            //pink range
+            lowHSV = new Scalar(168,60,60);
+            highHSV = new Scalar(178,250,250);
+            //red range
+            //lowHSV = new Scalar(0,60,60);
+            //highHSV = new Scalar(6,250,250);
+        }else if(alliance.equals("blue")){
+            //blue range
+            highHSV = new Scalar(80,40,20);
+            lowHSV = new Scalar(140,240,240);
+        }
     }
 
+    public TeamPropDetection(String alliance, Scalar lowHSV, Scalar highHSV) {
+        this.alliance = alliance;
+        this.lowHSV = lowHSV;
+        this.highHSV = highHSV;
+    }
 
     //Creates the upper and lower range for the accepted HSV values for color
-    public Scalar lowHSV = new Scalar(0,0,0);
-    public Scalar highHSV = new Scalar(179,255,255);
+
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
@@ -44,35 +62,23 @@ public class TeamPropDetection implements VisionProcessor {
         // Not useful in this case, but we do need to implement it either way
         width = 640;
         height = 480;
+
     }
 
     @Override
     public Object processFrame(Mat input, long captureTimeNanos) {
 
+        Scalar lowHSV = this.lowHSV;
+        Scalar highHSV = this.highHSV;
+
         //changes Mat input from RGB to HSV and saves to Mat HSV
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
-
-
-        if(alliance.equals("red")){
-            //pink range
-            lowHSV = new Scalar(168,60,60);
-            highHSV = new Scalar(178,250,250);
-            //red range
-            //lowHSV = new Scalar(0,60,60);
-            //highHSV = new Scalar(6,250,250);
-        }else if(alliance.equals("blue")){
-            //blue range
-            lowHSV = new Scalar(115,40,40);
-            highHSV = new Scalar(125,240,240);
-        }
 
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)
 
         Core.inRange(input, lowHSV, highHSV, input);
 
         Imgproc.morphologyEx(input, input, MORPH_OPEN, Imgproc.getStructuringElement(MORPH_RECT, new Size(3, 3)));
-
-
 
         Rect leftScreen = new Rect(0, height/2, width/4, height/2);
 
@@ -106,6 +112,11 @@ public class TeamPropDetection implements VisionProcessor {
         }
 
         return null; // No context object
+    }
+
+    public void changeHSV(Scalar lowHSV, Scalar highHSV){
+        this.lowHSV = new Scalar(lowHSV.val[0], lowHSV.val[1],lowHSV.val[2]);
+        this.highHSV = new Scalar(highHSV.val[0], highHSV.val[1],highHSV.val[2]);
     }
 
     @Override
