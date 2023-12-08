@@ -70,7 +70,8 @@ public class AutoProgramRedBoard extends OpMode {
     //region Trajectory Declarations
     Trajectory toSpikeMark;
     Trajectory toRedBoard;
-    Trajectory redBoardPark;
+    Trajectory redBoardPark1;
+    Trajectory redBoardPark2;
     //endregion
 
 
@@ -115,14 +116,7 @@ public class AutoProgramRedBoard extends OpMode {
     public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static  Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
-
-    /*
-    Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
-    Pose2d blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
-    */
-    //endregion
-
+    public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -136,8 +130,6 @@ public class AutoProgramRedBoard extends OpMode {
     }
 
     autoState queuedState = autoState.START;
-
-
 
     @Override
     public void init() {
@@ -294,9 +286,6 @@ public class AutoProgramRedBoard extends OpMode {
                     aprilTagHomer.updateDrive();
                     waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                     queuedState = autoState.PLACE_BOARD;
-                    /*if(!apriltagDetected){
-                        move around to find it
-                    }*/
                 }
                 break;
             case PLACE_BOARD:
@@ -321,14 +310,20 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     outtakeServo.setPower(0);
                     //Trajectory to Park Pos
-                    redBoardPark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    redBoardPark2 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(redParkCord)
                             .build();
+                    redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .forward(5)
+                            .addDisplacementMarker(() -> {
+                                leftLinear.setTargetPosition(-10);
+                                rightLinear.setTargetPosition(-10);
+                                drive.followTrajectoryAsync(redBoardPark2);
+                            })
+                            .build();
                     //Start Following Trajectory
-                    drive.followTrajectoryAsync(redBoardPark);
+                    drive.followTrajectoryAsync(redBoardPark1);
                     //Put slide and arm back to intake position
-                    leftLinear.setTargetPosition(-5);
-                    rightLinear.setTargetPosition(-5);
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
 
@@ -341,13 +336,9 @@ public class AutoProgramRedBoard extends OpMode {
                     telemetry.addData("Slide Height",  leftLinear.getCurrentPosition());
                     telemetry.update();
                     boxServo.setPosition(BOX_SERVO_FORWARD);
-                    
+
                 }
-
         }
-
-
-
 
         telemetry.update();
 
