@@ -327,6 +327,16 @@ public class main extends OpMode {
             outtakeServo.setPower(0);
         }
 
+        //Manual Jog For Slides (In Case of emergency)
+        if(currentGamepad2.right_bumper && currentGamepad2.left_bumper){
+            if(currentGamepad2.left_trigger >= 0.1){
+                SLIDE_HEIGHT -= 10;
+            }
+            else if(currentGamepad2.right_trigger >= 0.1){
+                SLIDE_HEIGHT += 10;
+            }
+        }
+
         /*
         //Changes Arm State back to intake once outtake timer runs out
         if (currentArmState == ArmState.OUTTAKE_ACTIVE && outtakeTimer < System.currentTimeMillis()) {
