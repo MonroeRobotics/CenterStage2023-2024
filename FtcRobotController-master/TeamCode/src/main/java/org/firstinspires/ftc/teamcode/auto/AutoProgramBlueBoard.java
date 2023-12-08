@@ -59,7 +59,7 @@ public class AutoProgramBlueBoard extends OpMode {
     public static double BOX_SERVO_BACKWARD = 0.2;//Stores Value of Box outtake Position
     //endregion
 
-    public static double SPIKE_OUTTAKE_POWER = -0.3; //Stores the power of the reversed intake for spike pixel drop
+    public static double SPIKE_OUTTAKE_POWER = -0.5; //Stores the power of the reversed intake for spike pixel drop
 
     public static double CAMERA_EXPOSURE = 17;
     public static int CAMERA_GAIN = 27;
@@ -70,7 +70,8 @@ public class AutoProgramBlueBoard extends OpMode {
     //region Trajectory Declarations
     Trajectory toSpikeMark;
     Trajectory toBlueBoard;
-    Trajectory blueBoardPark;
+    Trajectory blueBoardPark1;
+    Trajectory blueBoardPark2;
     //endregion
 
 
@@ -115,14 +116,7 @@ public class AutoProgramBlueBoard extends OpMode {
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
     public static Pose2d leftBlueBoardCord = new Pose2d(35, 40, Math.toRadians(180));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static  Vector2d blueParkCord = new Vector2d(48, 60);
-
-    /*
-    Pose2d blueBoardCord = new Pose2d(48, 35, Math.toRadians(180));
-    Pose2d blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
-    */
-    //endregion
-
+    public static Pose2d blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -136,8 +130,6 @@ public class AutoProgramBlueBoard extends OpMode {
     }
 
     autoState queuedState = autoState.START;
-
-
 
     @Override
     public void init() {
@@ -318,16 +310,19 @@ public class AutoProgramBlueBoard extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     outtakeServo.setPower(0);
                     //Trajectory to Park Pos
-                    blueBoardPark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    blueBoardPark2 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(blueParkCord)
+                            .build();
+                    blueBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .forward(5)
                             .addDisplacementMarker(() -> {
-                                leftLinear.setTargetPosition(-5);
-                                rightLinear.setTargetPosition(-5);
+                                leftLinear.setTargetPosition(-10);
+                                rightLinear.setTargetPosition(-10);
+                                drive.followTrajectoryAsync(blueBoardPark2);
                             })
-                            .splineTo(blueParkCord, Math.toRadians(180))
                             .build();
                     //Start Following Trajectory
-                    drive.followTrajectoryAsync(blueBoardPark);
+                    drive.followTrajectoryAsync(blueBoardPark1);
                     //Put slide and arm back to intake position
                     armServoLeft.setPosition(ARM_SERVO_FORWARD);
                     armServoRight.setPosition(1 - ARM_SERVO_FORWARD);
@@ -343,11 +338,7 @@ public class AutoProgramBlueBoard extends OpMode {
                     boxServo.setPosition(BOX_SERVO_FORWARD);
 
                 }
-
         }
-
-
-
 
         telemetry.update();
 
