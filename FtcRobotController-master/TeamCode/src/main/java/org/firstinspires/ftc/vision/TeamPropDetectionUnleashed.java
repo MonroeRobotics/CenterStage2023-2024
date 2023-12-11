@@ -17,12 +17,13 @@ import org.opencv.imgproc.Imgproc;
 
 public class TeamPropDetectionUnleashed implements VisionProcessor {
 
-    Telemetry telemetry;
+    /*
+    Telemetry telemxetry;
 
     public TeamPropDetectionUnleashed(Telemetry telemetry) {
         this.telemetry = telemetry;
     }
-
+     */
 
     //Creates the upper and lower range for the accepted HSV values for color
     public Scalar lowHSV = new Scalar(0,0,0);
