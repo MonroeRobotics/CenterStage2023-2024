@@ -61,8 +61,8 @@ public class AutoProgramRedBoard extends OpMode {
 
     public static double SPIKE_OUTTAKE_POWER = -0.3; //Stores the power of the reversed intake for spike pixel drop
 
-    public static double CAMERA_EXPOSURE = 17;
-    public static int CAMERA_GAIN = 27;
+    public static double CAMERA_EXPOSURE = 12;
+    public static int CAMERA_GAIN = 255;
     //endregion
 
     SampleMecanumDrive drive;
