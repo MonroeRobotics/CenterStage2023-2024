@@ -35,12 +35,16 @@ public class suspensionTuner extends OpMode{
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         servo = hardwareMap.get(Servo.class, "droneServo");
 
+        riggingHeight = 0;
+
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         hangMotor.setPower(1);
-        hangMotor.setTargetPosition(riggingHeight);
 
+        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        hangMotor.setTargetPosition(riggingHeight);
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         servo.setPosition(servoPos);

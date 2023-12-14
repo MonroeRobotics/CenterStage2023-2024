@@ -46,6 +46,7 @@ public class main extends OpMode {
 
     double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
     public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
+    public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
     public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
 
     double outtakeTimer = 0; //Timer to control outtake
@@ -230,7 +231,7 @@ public class main extends OpMode {
         if (currentGamepad2.options && System.currentTimeMillis() >= droneTimer){
             hangMotor.setPower(1);
 
-            hangMotor.setTargetPosition(5620);
+            hangMotor.setTargetPosition(5020);
         }
         if (currentGamepad2.touchpad && System.currentTimeMillis() >= droneTimer){
             droneServo.setPosition(1);
@@ -326,6 +327,16 @@ public class main extends OpMode {
             outtakeServo.setPower(0);
         }
 
+        //Manual Jog For Slides (In Case of emergency)
+        if(currentGamepad2.right_bumper && currentGamepad2.left_bumper){
+            if(currentGamepad2.left_trigger >= 0.1){
+                SLIDE_HEIGHT -= 10;
+            }
+            else if(currentGamepad2.right_trigger >= 0.1){
+                SLIDE_HEIGHT += 10;
+            }
+        }
+
         /*
         //Changes Arm State back to intake once outtake timer runs out
         if (currentArmState == ArmState.OUTTAKE_ACTIVE && outtakeTimer < System.currentTimeMillis()) {
@@ -341,8 +352,11 @@ public class main extends OpMode {
         armServoLeft.setPosition(ARM_POSITION);
         armServoRight.setPosition(1 - ARM_POSITION);
 
-        if (currentArmState == ArmState.INTAKE && leftLinear.getCurrentPosition() <= 20){
+        if (currentArmState == ArmState.INTAKE && leftLinear.getCurrentPosition() <= 80){
             boxServo.setPosition(BOX_SERVO_POSITION);
+        }
+        else if(currentArmState == ArmState.INTAKE) {
+            boxServo.setPosition(BOX_SERVO_TRANSITION);
         }
         else if(currentArmState != ArmState.INTAKE) {
             boxServo.setPosition(BOX_SERVO_POSITION);
@@ -411,7 +425,7 @@ public class main extends OpMode {
             leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            hangMotor.setTargetPosition(hangMotor.getTargetPosition() - 50);
+            hangMotor.setTargetPosition(hangMotor.getTargetPosition() - 80);
         }
         //endregion
 
