@@ -22,6 +22,18 @@ public class TeamPropDetection implements VisionProcessor {
 
     public TeamPropDetection(String alliance) {
         this.alliance = alliance;
+        if(alliance.equals("red")){
+            //pink range
+            lowHSV = new Scalar(168,60,60);
+            highHSV = new Scalar(178,250,250);
+            //red range
+            //lowHSV = new Scalar(0,60,60);
+            //highHSV = new Scalar(6,250,250);
+        }else if(alliance.equals("blue")){
+            //blue range
+            highHSV = new Scalar(110,255,200);
+            lowHSV = new Scalar(100,140,130);
+        }
     }
 
 
