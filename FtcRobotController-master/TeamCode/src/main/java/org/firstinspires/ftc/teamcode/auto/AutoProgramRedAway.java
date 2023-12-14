@@ -115,6 +115,8 @@ public class AutoProgramRedAway extends OpMode {
     Pose2d rightRedBoardCord = new Pose2d(-35, -40, Math.toRadians(0));
     Pose2d leftRedBoardCord = new Pose2d(-35, -32, Math.toRadians(0));
     Pose2d redBoardCord = new Pose2d(-35, -38, Math.toRadians(0));
+    Pose2d beforeTruss = new Pose2d(-12,-12, Math.toRadians(0));
+    Pose2d afterTruss = new Pose2d(12,-12, Math.toRadians(0));
     public static  Pose2d redParkCord = new Pose2d(-48, -64, Math.toRadians(0));
 
     /*
@@ -276,18 +278,24 @@ public class AutoProgramRedAway extends OpMode {
             case TO_BOARD:
                 if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
-                    //queuedState = autoState.HOME_TAG;
+                    trussPath = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(beforeTruss)
+                            .lineToLinearHeading(afterTruss)
+                            .lineToLinearHeading(redBoardCord)
+                            .build();
+                    drive.followTrajectoryAsync(trussPath);
+                    queuedState = autoState.HOME_TAG;
                 }
                 break;
-            /*case HOME_TAG:
+            case HOME_TAG:
                 if(!drive.isBusy()){
                     aprilTagHomer.changeTarget(targetTagId);
                     aprilTagHomer.updateDrive();
                     waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                     queuedState = autoState.PLACE_BOARD;
-                    /*if(!apriltagDetected){
-                        move around to find it
-                    }
+                    //if(!apriltagDetected){
+                      //  move around to find it
+                    //}
                 }
                 break;
             case PLACE_BOARD:
@@ -305,8 +313,8 @@ public class AutoProgramRedAway extends OpMode {
                         }
                 else{telemetry.addLine("No Tag Detected");
                         }
-            */
-                /*if(aprilTagHomer.getCurrentTagPose() == null){
+            
+                if(aprilTagHomer.getCurrentTagPose() == null){
                     CAMERA_EXPOSURE += 1;
 
                     ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
@@ -344,7 +352,6 @@ public class AutoProgramRedAway extends OpMode {
                         requestOpModeStop();
                     }
                 }
-            */
         }
 
 
