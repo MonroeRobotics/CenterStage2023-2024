@@ -34,8 +34,12 @@ public class RoadRunnerSim {
         Trajectory trussPath2;
         Trajectory trussPath3;
 
-        Pose2d beforeTrussCord = new Pose2d(-38, -10, Math.toRadians(180));
-        Pose2d afterTrussCord = new Pose2d(12, -10, Math.toRadians(180));
+        Pose2d beforeTrussCord = new Pose2d(-36, -10, Math.toRadians(0));
+        Pose2d afterTrussCord = new Pose2d(12, -10, Math.toRadians(0));
+        Pose2d spikeCenter = new Pose2d(-42,-24, Math.toRadians(0));
+        Vector2d spikeRightSpline = new Vector2d(-34,-29);
+        Pose2d spikeLeft = new Pose2d(-36,-29, Math.toRadians(180));
+
         //Pose2d redParkCord = new Pose2d(-48, -64, Math.toRadians(0));
 
         RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
@@ -43,9 +47,12 @@ public class RoadRunnerSim {
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60,60,Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-36, -62, Math.toRadians(90)))
+                                .lineToLinearHeading(spikeLeft)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
+                                .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(redParkCord)
                                 .build()
                 );
         //region red board position
