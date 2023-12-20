@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Spline;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -117,8 +116,8 @@ public class AutoProgramRedAway extends OpMode {
     Pose2d rightRedBoardCord = new Pose2d(-35, -40, Math.toRadians(0));
     Pose2d leftRedBoardCord = new Pose2d(-35, -32, Math.toRadians(0));
     Pose2d redBoardCord = new Pose2d(-35, -38, Math.toRadians(0));
-    public static Vector2d beforeTrussCord = new Vector2d(-38, -10);
-    public static Vector2d afterTrussCord = new Vector2d(12, -10);
+    public static Pose2d beforeTrussCord = new Pose2d(-38, -10, Math.toRadians(180));
+    public static Pose2d afterTrussCord = new Pose2d(12, -10, Math.toRadians(180));
     public static  Pose2d redParkCord = new Pose2d(-48, -64, Math.toRadians(0));
 
     /*
@@ -281,8 +280,8 @@ public class AutoProgramRedAway extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
                     trussPath = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .splineTo(beforeTrussCord, Math.toRadians(180))
-                            .splineTo(afterTrussCord, Math.toRadians(180))
+                            .lineToLinearHeading(beforeTrussCord)
+                            .lineToLinearHeading(afterTrussCord)
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     drive.followTrajectoryAsync(trussPath);
