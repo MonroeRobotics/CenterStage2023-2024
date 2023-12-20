@@ -43,7 +43,9 @@ public class AxonTest extends OpMode {
             servo2.setPosition(0);
         }
         telemetry.addData("Servo 1 Reading", servo1Input.getVoltage());
-        telemetry.addData("Servo 1 Reading", servo1Input.getVoltage());
+        telemetry.addData("Servo 2 Reading", servo2Input.getVoltage());
+
+        telemetry.update();
 
 
     }
