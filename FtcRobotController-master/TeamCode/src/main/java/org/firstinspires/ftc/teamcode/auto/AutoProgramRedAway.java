@@ -106,12 +106,12 @@ public class AutoProgramRedAway extends OpMode {
     Pose2d spikeLocation;
 
     Pose2d spikeRight = new Pose2d(-10,-30, Math.toRadians(0));
-    Vector2d spikeRightSpline = new Vector2d(-11,-32);
-    Pose2d spikeCenter = new Pose2d(-20,-25.5, Math.toRadians(0));
-    Pose2d spikeLeft = new Pose2d(-32.5,-30, Math.toRadians(0));
+    Vector2d spikeRightSpline = new Vector2d(-24.5,-29);
+    Pose2d spikeCenter = new Pose2d(-37,-24, Math.toRadians(0));
+    Pose2d spikeLeft = new Pose2d(-46,-29, Math.toRadians(180));
     //endregion
 
-    Pose2d STARTING_DRIVE_POS = new Pose2d(-10, -62, Math.toRadians(270));
+    Pose2d STARTING_DRIVE_POS = new Pose2d(-36, -62, Math.toRadians(270));
 
     //y was previously -35
     Pose2d centerRedBoardCord = new Pose2d(-35, -36, Math.toRadians(0));
