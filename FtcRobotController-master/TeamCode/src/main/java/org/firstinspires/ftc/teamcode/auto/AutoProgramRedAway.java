@@ -71,6 +71,8 @@ public class AutoProgramRedAway extends OpMode {
     Trajectory toSpikeMark;
     Trajectory toRedBoard;
     Trajectory trussPath;
+    Trajectory trussPath2;
+    Trajectory trussPath3;
     Trajectory redBoardPark;
     //endregion
 
@@ -281,7 +283,17 @@ public class AutoProgramRedAway extends OpMode {
                     intakeMotor.setPower(0);
                     trussPath = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(beforeTrussCord)
+                            .addDisplacementMarker(()->{
+                                drive.followTrajectoryAsync(trussPath2);
+                            })
+                            .build();
+                    trussPath2 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(afterTrussCord)
+                            .addDisplacementMarker(()->{
+                                drive.followTrajectoryAsync(trussPath3);
+                            })
+                            .build();
+                    trussPath3 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     drive.followTrajectoryAsync(trussPath);
