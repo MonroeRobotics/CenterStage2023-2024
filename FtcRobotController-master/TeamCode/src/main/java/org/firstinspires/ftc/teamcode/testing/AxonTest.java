@@ -11,10 +11,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class AxonTest extends OpMode {
 
-    public double targetPosition = 1;  // Set your desired target position
-    public double kP = 0.1;  // Proportional constant
-    public double kI = 0; // Integral constant
-    public double kD = 0.05; // Derivative constant
+    public static double targetPosition = 1;  // Set your desired target position
+    public static double kP = 0.1;  // Proportional constant
+    public static double kI = 0; // Integral constant
+    public static double kD = 0.05; // Derivative constant
 
     double integral = 0;
     double previousError = 0;
