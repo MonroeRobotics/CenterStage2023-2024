@@ -50,7 +50,7 @@ public class main extends OpMode {
     public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
 
     double outtakeTimer = 0; //Timer to control outtake
-    public static double OUTTAKE_TIME = 150; //How Long Outtake runs for (ms)
+    public static double OUTTAKE_TIME = 300; //How Long Outtake runs for (ms)
     //endregion
 
     //region Intake Variables
