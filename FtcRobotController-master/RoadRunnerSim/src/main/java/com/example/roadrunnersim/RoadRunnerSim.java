@@ -2,6 +2,7 @@ package com.example.roadrunnersim;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
@@ -28,15 +29,23 @@ public class RoadRunnerSim {
 
         // Declare our first bot
         Vector2d spikeLeftSpline = new Vector2d(11,-32);// Math.toRadians(180));
+
+        Trajectory trussPath;
+        Trajectory trussPath2;
+        Trajectory trussPath3;
+
+        Pose2d beforeTrussCord = new Pose2d(-38, -10, Math.toRadians(180));
+        Pose2d afterTrussCord = new Pose2d(12, -10, Math.toRadians(180));
+        //Pose2d redParkCord = new Pose2d(-48, -64, Math.toRadians(0));
+
         RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(15.25,18)
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60,60,Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(10, 62, Math.toRadians(90)))
-                                .lineToLinearHeading(new Pose2d(20,25.5, Math.toRadians(180)))
-                                .lineToLinearHeading(blueBoardCord)
-                                .lineToLinearHeading(blueParkCord)
+                        drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(90)))
+                                .lineToLinearHeading(beforeTrussCord)
+                                .lineToLinearHeading(afterTrussCord)
                                 .build()
                 );
         //region red board position
