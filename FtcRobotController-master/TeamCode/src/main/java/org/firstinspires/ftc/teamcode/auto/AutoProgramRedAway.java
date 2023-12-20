@@ -111,15 +111,15 @@ public class AutoProgramRedAway extends OpMode {
     Pose2d spikeLeft = new Pose2d(-36,-29, Math.toRadians(180));
     //endregion
 
-    Pose2d STARTING_DRIVE_POS = new Pose2d(-36, -62, Math.toRadians(270));
+    Pose2d STARTING_DRIVE_POS = new Pose2d(-36, -63.25, Math.toRadians(270));
 
     //y was previously -35
     Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
     Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
     Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static Pose2d beforeTrussCord = new Pose2d(-36, -10, Math.toRadians(180));
-    public static Pose2d afterTrussCord = new Pose2d(12, -10, Math.toRadians(180));
+    public static Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
+    public static Pose2d afterTrussCord = new Pose2d(12, -12, Math.toRadians(180));
     public static  Pose2d redParkCord = new Pose2d(-48, -64, Math.toRadians(180));
 
     /*
