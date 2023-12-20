@@ -296,7 +296,7 @@ public class AutoProgramRedAway extends OpMode {
                     trussPath3 = drive.trajectoryBuilder(trussPath2.end())
                             .lineToLinearHeading(redBoardCord)
                             .build();
-                    queuedState = autoState.HOME_TAG;
+                    //queuedState = autoState.HOME_TAG;
                 }
                 break;
             case HOME_TAG:
