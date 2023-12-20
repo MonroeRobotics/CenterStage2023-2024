@@ -287,13 +287,13 @@ public class AutoProgramRedAway extends OpMode {
                                 drive.followTrajectoryAsync(trussPath2);
                             })
                             .build();
-                    trussPath2 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    trussPath2 = drive.trajectoryBuilder(trussPath.end())
                             .lineToLinearHeading(afterTrussCord)
                             .addDisplacementMarker(()->{
                                 drive.followTrajectoryAsync(trussPath3);
                             })
                             .build();
-                    trussPath3 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    trussPath3 = drive.trajectoryBuilder(trussPath2.end())
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     drive.followTrajectoryAsync(trussPath);
