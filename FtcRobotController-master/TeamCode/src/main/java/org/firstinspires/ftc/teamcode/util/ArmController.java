@@ -18,7 +18,7 @@ public class ArmController {
     public static double SLIDE_MAX_VELO = 2000; //Max Linear Slide Velocity
 
 
-    enum ArmState { //Creates States that arm could be in for logic use
+    public enum ArmState { //Creates States that arm could be in for logic use
         INTAKE,
         OUTTAKE_READY,
         OUTTAKE_ACTIVE
@@ -95,18 +95,23 @@ public class ArmController {
 
         //endregion
     }
-    public void changeArmState(){
+    public void switchArmState(){
         switch (currentArmState) {
             case INTAKE:
                 currentArmState = ArmState.OUTTAKE_READY;
-                changeArmState();
+                updateArmState();
                 break;
             case OUTTAKE_READY:
                 currentArmState = ArmState.INTAKE;
-                changeArmState();
+                updateArmState();
                 break;
         }
     }
+
+    public void setOuttakePower(double power){
+        outtakeServo.setPower(power);
+    }
+
 
     public void updateArmState(){
         switch (currentArmState){
@@ -147,11 +152,31 @@ public class ArmController {
         SLIDE_HEIGHT = slideHeight;
     }
 
+    public ArmState getCurrentArmState(){
+        return currentArmState;
+    }
+
     public void setArmPos(double ARM_POSITION){
 
     }
 
-    public void start
+    public void startOuttake(){
+        if (outtakeTimer <= System.currentTimeMillis()) {
+            outtakeTimer = System.currentTimeMillis() + OUTTAKE_TIME;
+            outtakeServo.setPower(1);
+        }
+        else if (outtakeTimer >= System.currentTimeMillis() && outtakeTimer <= (System.currentTimeMillis() + (OUTTAKE_TIME * 2))){
+            outtakeTimer += OUTTAKE_TIME;
+            outtakeServo.setPower(1);
+        }
+    }
+
+    public void checkOuttakeTimer(){
+        if(outtakeTimer <= System.currentTimeMillis() && currentArmState == ArmState.OUTTAKE_READY){
+            outtakeServo.setPower(0);
+        }
+    }
+
 
     public void updateArm(){
         //Sets Slides Arm and Box to respective positions as determined by the previous logic
@@ -170,5 +195,6 @@ public class ArmController {
         else if(currentArmState != ArmState.INTAKE) {
             boxServo.setPosition(BOX_SERVO_POSITION);
         }
+        checkOuttakeTimer();
     }
 }
