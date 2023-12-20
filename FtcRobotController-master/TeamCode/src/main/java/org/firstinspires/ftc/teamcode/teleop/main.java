@@ -24,34 +24,6 @@ public class main extends OpMode {
 
     //region variable declarations
 
-    //region Arm Variables
-
-    int SLIDE_HEIGHT = 20; //Live Updating Slide height
-    int SLIDE_STAGE = 0; //Used for incremental Slide Height
-    public static double SLIDE_POWER = 0.5; //Max Linear Slide Power
-    public static double SLIDE_MAX_VELO = 2000; //Max Linear Slide Velocity
-
-
-    enum ArmState { //Creates States that arm could be in for logic use
-        INTAKE,
-        OUTTAKE_READY,
-        OUTTAKE_ACTIVE
-    }
-
-    ArmState currentArmState = ArmState.INTAKE; //Creates a variables to store current Arm State
-
-    double ARM_POSITION = 0.04; //Live Updating Arm Servo Position (1 is intake position)
-    public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
-    public static double ARM_SERVO_BACKWARD = 0.8;//Stores Value of Arm outtake Position
-
-    double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
-    public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
-    public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
-    public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
-
-    double outtakeTimer = 0; //Timer to control outtake
-    public static double OUTTAKE_TIME = 300; //How Long Outtake runs for (ms)
-    //endregion
 
     //region Intake Variables
     public static double INTAKE_POWER = .8; //Power of Intake Motor
@@ -90,15 +62,6 @@ public class main extends OpMode {
 
     //endRegion
 
-    //region Arm Objects
-    Servo armServoRight;
-    Servo armServoLeft;
-    Servo boxServo;
-    CRServo outtakeServo;
-    DcMotorEx rightLinear;
-    DcMotorEx leftLinear;
-    //endregion
-
     //region Intake Objects
     DcMotor intakeMotor;
     Servo intakeServo;
@@ -131,48 +94,6 @@ public class main extends OpMode {
         //creates and sets up RR Mecanum Drive
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //region Arm Init
-        //region Arm Hardware Map
-
-        armServoLeft = hardwareMap.get(Servo.class, "armServoLeft");
-        armServoRight = hardwareMap.get(Servo.class, "armServoRight");
-        boxServo = hardwareMap.get(Servo.class, "boxServo");
-        outtakeServo = hardwareMap.get(CRServo.class,"outtakeServo");
-        leftLinear = hardwareMap.get(DcMotorEx.class ,"leftLinear");
-        rightLinear = hardwareMap.get(DcMotorEx.class, "rightLinear");
-
-        //endregion
-
-        //region Arm Lift Motor Settings
-        leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        rightLinear.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        leftLinear.setTargetPosition(SLIDE_HEIGHT);
-        rightLinear.setTargetPosition(SLIDE_HEIGHT);
-
-        leftLinear.setPower(SLIDE_POWER);
-        rightLinear.setPower(SLIDE_POWER);
-
-        leftLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftLinear.setVelocity(SLIDE_MAX_VELO);
-        rightLinear.setVelocity(SLIDE_MAX_VELO);
-        //endregion
-
-        //region Initial Servo Pos
-        armServoLeft.setPosition(ARM_POSITION);
-        armServoRight.setPosition(1 - ARM_POSITION);
-        boxServo.setPosition(BOX_SERVO_POSITION);
-        //endregion
-
-        //endregion
 
         //region Intake Init
         //region Intake Hardware Map
@@ -292,26 +213,15 @@ public class main extends OpMode {
         //region Arm Logic
 
         //Increases or Decreases Slide Stage on Dpad up or down within [0,7]
-        if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up && SLIDE_STAGE < 7) {
-            SLIDE_STAGE++;
-            changeArmState();
-        } else if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down && SLIDE_STAGE > 0) {
-            SLIDE_STAGE--;
-            changeArmState();
+        if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
+            armController.changeStage(1);
+        } else if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
+            armController.changeStage(-1);
         }
 
         //Changes Arm State on Triangle Press
         if (currentGamepad2.triangle && !previousGamepad2.triangle) {
-            switch (currentArmState) {
-                case INTAKE:
-                    currentArmState = ArmState.OUTTAKE_READY;
-                    changeArmState();
-                    break;
-                case OUTTAKE_READY:
-                    currentArmState = ArmState.INTAKE;
-                    changeArmState();
-                    break;
-            }
+            armController.changeArmState();
         }
         //Resets Arm to Intake Position on square press
         else if (currentGamepad2.square && !previousGamepad2.square && outtakeTimer <= System.currentTimeMillis()) {
@@ -330,12 +240,13 @@ public class main extends OpMode {
         //Manual Jog For Slides (In Case of emergency)
         if(currentGamepad2.right_bumper && currentGamepad2.left_bumper){
             if(currentGamepad2.left_trigger >= 0.1){
-                SLIDE_HEIGHT -= 10;
+                armController.setSlideHeight(armController.getSlideHeight() -= 10);
             }
             else if(currentGamepad2.right_trigger >= 0.1){
-                SLIDE_HEIGHT += 10;
+                armController.setSlideHeight(armController.getSlideHeight() += 10);
             }
         }
+
 
         /*
         //Changes Arm State back to intake once outtake timer runs out
@@ -345,22 +256,7 @@ public class main extends OpMode {
         }*/
 
 
-        //Sets Slides Arm and Box to respective positions as determined by the previous logic
-        leftLinear.setTargetPosition(SLIDE_HEIGHT);
-        rightLinear.setTargetPosition(SLIDE_HEIGHT);
 
-        armServoLeft.setPosition(ARM_POSITION);
-        armServoRight.setPosition(1 - ARM_POSITION);
-
-        if (currentArmState == ArmState.INTAKE && leftLinear.getCurrentPosition() <= 80){
-            boxServo.setPosition(BOX_SERVO_POSITION);
-        }
-        else if(currentArmState == ArmState.INTAKE) {
-            boxServo.setPosition(BOX_SERVO_TRANSITION);
-        }
-        else if(currentArmState != ArmState.INTAKE) {
-            boxServo.setPosition(BOX_SERVO_POSITION);
-        }
 
         //endregion
 
@@ -441,25 +337,5 @@ public class main extends OpMode {
 
     }
 
-    public void changeArmState(){
-        switch (currentArmState){
-            case INTAKE:
-                BOX_SERVO_POSITION = BOX_SERVO_FORWARD;
-                ARM_POSITION = ARM_SERVO_FORWARD;
-                outtakeServo.setPower(0);
-                SLIDE_HEIGHT = 20;
-                break;
-            case OUTTAKE_READY:
-                BOX_SERVO_POSITION = BOX_SERVO_BACKWARD;
-                ARM_POSITION = ARM_SERVO_BACKWARD;
-                outtakeServo.setPower(0);
-                if (SLIDE_STAGE == 0) {
-                    SLIDE_HEIGHT = 690;
-                }
-                else{
-                    SLIDE_HEIGHT = 690 + (SLIDE_STAGE * 150);
-                }
-                break;
-        }
-    }
+
 }
