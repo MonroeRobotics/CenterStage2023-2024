@@ -117,8 +117,6 @@ public class AutoProgramRedBoard extends OpMode {
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
-    public static Pose2d beforeTrussCord = new Pose2d(-38, -10, Math.toRadians(180));
-    public static Pose2d afterTrussCord = new Pose2d(12, -10, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -271,8 +269,6 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
                     toRedBoard = drive.trajectoryBuilder(toSpikeMark.end())
-                            .lineToLinearHeading(beforeTrussCord)
-                            .lineToLinearHeading(afterTrussCord)
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     leftLinear.setTargetPosition(PLACEMENT_SLIDE_HEIGHT);

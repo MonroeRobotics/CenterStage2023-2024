@@ -28,17 +28,15 @@ public class RoadRunnerSim {
 
         // Declare our first bot
         Vector2d spikeLeftSpline = new Vector2d(11,-32);// Math.toRadians(180));
-        Vector2d spikeRightSpline = new Vector2d(11,32);
-
         RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(15.25,18)
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60,60,Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
-                                .splineTo(spikeLeftSpline, (Math.toRadians(180)))
-                                .lineToLinearHeading(redBoardCord)
-                                .lineToLinearHeading(redParkCord)
+                        drive.trajectorySequenceBuilder(new Pose2d(10, 62, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(20,25.5, Math.toRadians(180)))
+                                .lineToLinearHeading(blueBoardCord)
+                                .lineToLinearHeading(blueParkCord)
                                 .build()
                 );
         //region red board position
@@ -212,8 +210,8 @@ public class RoadRunnerSim {
                 .setColorScheme(new ColorSchemeBlueDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(10, 62, Math.toRadians(270)))
-                                .splineTo(spikeRightSpline, (Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(new Pose2d(10, 62, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(13,30, Math.toRadians(0)))
                                 .lineToLinearHeading(blueBoardCord)
                                 .lineToLinearHeading(blueParkCord)
                                 .build()
@@ -229,14 +227,14 @@ public class RoadRunnerSim {
                 //.addEntity(secondBot)
                 //.addEntity(thirdBot)
                 //.addEntity(fourBot)
-                .addEntity(fiveBot)
+                //.addEntity(fiveBot)
                 //.addEntity(sixBot)
                 //.addEntity(sevenBot)
                 //.addEntity(eightBot)
-                 .addEntity(nineBot)
+                //.addEntity(nineBot)
                 //.addEntity(tenBot)
                 //.addEntity(elevenBot)
-                .addEntity(twelveBot)
+                //.addEntity(twelveBot)
                 .start();
     }
 }
