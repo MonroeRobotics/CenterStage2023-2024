@@ -42,6 +42,10 @@ public class AxonTest extends OpMode {
             servo1.setPosition(1);
             servo2.setPosition(0);
         }
+
+
+        previousGamePad.copy(currentGamePad);
+        currentGamePad.copy(gamepad1);
         telemetry.addData("Servo 1 Reading", servo1Input.getVoltage());
         telemetry.addData("Servo 2 Reading", servo2Input.getVoltage());
 
