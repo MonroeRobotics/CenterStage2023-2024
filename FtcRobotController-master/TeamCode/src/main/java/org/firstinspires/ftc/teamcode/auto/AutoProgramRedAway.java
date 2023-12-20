@@ -70,6 +70,7 @@ public class AutoProgramRedAway extends OpMode {
     //region Trajectory Declarations
     Trajectory toSpikeMark;
     Trajectory toRedBoard;
+    Trajectory trussPath;
     Trajectory redBoardPark;
     //endregion
 
