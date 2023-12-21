@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class AxonTest extends OpMode {
 
-    public static double targetPosition = 1;  // Set your desired target position
+    public static double targetPosition = 0.4;  // Set your desired target position
     public static double kP = 0.1;  // Proportional constant
     public static double kI = 0; // Integral constant
     public static double kD = 0.05; // Derivative constant
@@ -66,7 +66,7 @@ public class AxonTest extends OpMode {
     }
 
     public double servoPID(){
-        double currentPosition = servo1Input.getVoltage();
+        double currentPosition = servo1Input.getVoltage()/2.88;
         double error = targetPosition - currentPosition;
 
         double proportionalTerm = kP * error;
