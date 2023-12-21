@@ -27,7 +27,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "Red Board Auto", group = "Main")
+@Autonomous(name = "new Red Board Auto", group = "Main")
 @Config
 public class AutoProgramRedBoardArmController extends OpMode {
 
@@ -226,7 +226,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 break;
             case PLACE_BOARD:
                 if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
-                    armController.setOuttakePower(1);
+                    armController.startOuttake();
                     waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
                     queuedState = autoState.PARK;
                     break;
@@ -244,7 +244,6 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 break;
             case PARK:
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
-                    armController.setOuttakePower(0);
                     //Trajectory to Park Pos
                     redBoardPark2 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(redParkCord)
