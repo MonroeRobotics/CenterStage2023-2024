@@ -148,6 +148,8 @@ public class ArmController {
         return SLIDE_HEIGHT;
     }
 
+    public int getCurrentSlideHeight(){return leftLinear.getCurrentPosition();}
+
     public void setSlideHeight(int slideHeight){
         SLIDE_HEIGHT = slideHeight;
     }
