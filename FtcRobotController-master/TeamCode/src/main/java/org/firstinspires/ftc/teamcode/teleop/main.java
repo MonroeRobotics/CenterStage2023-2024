@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 
 @TeleOp(name="Main Drive", group = "Main")
 @Config
-public class main extends OpMode {
+public class    main extends OpMode {
 
     //region variable declarations
 

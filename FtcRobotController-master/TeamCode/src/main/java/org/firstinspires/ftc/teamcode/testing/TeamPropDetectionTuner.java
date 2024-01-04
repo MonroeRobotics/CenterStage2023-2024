@@ -60,26 +60,26 @@ public class TeamPropDetectionTuner extends OpMode {
             }
         }
 
-        switch (currentColor){
-            case RED:
-                if (!visionPortal.getProcessorEnabled(propDetectorRed)) {
-                    visionPortal.setProcessorEnabled(propDetectorBlue, false);
-                    visionPortal.setProcessorEnabled(propDetectorRed, true);
-                }
-                propDetectorRed.changeHSV(lowHSVRed, highHSVRed);
-                screenSector = propDetectorRed.getScreenSector();
-                telemetry.addData("Screen sector", screenSector);
-                break;
-            case BLUE:
-                if (!visionPortal.getProcessorEnabled(propDetectorBlue)) {
-                    visionPortal.setProcessorEnabled(propDetectorRed, false);
-                    visionPortal.setProcessorEnabled(propDetectorBlue, true);
-                }
-                propDetectorBlue.changeHSV(lowHSVBlue,highHSVBlue);
-                screenSector = propDetectorBlue.getScreenSector();
-                telemetry.addData("Screen sector", screenSector);
-                break;
-        }
+//        switch (currentColor){
+//            case RED:
+//                if (!visionPortal.getProcessorEnabled(propDetectorRed)) {
+//                    visionPortal.setProcessorEnabled(propDetectorBlue, false);
+//                    visionPortal.setProcessorEnabled(propDetectorRed, true);
+//                }
+//                propDetectorRed.changeHSV(lowHSVRed, highHSVRed);
+//                screenSector = propDetectorRed.getScreenSector();
+//                telemetry.addData("Screen sector", screenSector);
+//                break;
+//            case BLUE:
+//                if (!visionPortal.getProcessorEnabled(propDetectorBlue)) {
+//                    visionPortal.setProcessorEnabled(propDetectorRed, false);
+//                    visionPortal.setProcessorEnabled(propDetectorBlue, true);
+//                }
+//                propDetectorBlue.changeHSV(lowHSVBlue,highHSVBlue);
+//                screenSector = propDetectorBlue.getScreenSector();
+//                telemetry.addData("Screen sector", screenSector);
+//                break;
+//        }
 
         previousGamepad.copy(currentGamepad);
         currentGamepad.copy(gamepad1);
