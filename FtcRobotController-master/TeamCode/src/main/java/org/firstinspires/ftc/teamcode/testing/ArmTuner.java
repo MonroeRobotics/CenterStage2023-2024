@@ -3,137 +3,271 @@ package org.firstinspires.ftc.teamcode.testing;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.util.ArmController;
+import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 
-@TeleOp(name="Arm Tuner", group = "Testing")
+@TeleOp(name="Arm Tuner", group = "Main")
 @Config
 public class ArmTuner extends OpMode {
 
-    public static int SLIDE_HEIGHT = 20;
-    public static double SLIDE_POWER = 0.5;
-    public static double SLIDE_MAX_VELO = 2000;
-
-    public static double ARM_POSITION = 0.05;
-    public static double ARM_SERVO_FORWARD = 0.05;
-    public static double ARM_SERVO_BACKWARD = 0.7;
-
-    public static double BOX_SERVO_POSITION = 1;
-    public static double BOX_SERVO_FORWARD = 1;
-    public static double BOX_SERVO_BACKWARD = 0.5;
-
-    /*public static double Pv = 1;
-    public static double Iv = 0;
-    public static double Dv = 0;
-    public static double Fv = 10;
-    public static double Pp = 1;
-*/
+    //region variable declarations
 
 
+    //region FTC Dashboard config variables
+    public static double ARM_POSITION = 0.5;
+    public static double OUTTAKE_POWER = 0;
+    public static int SLIDE_HEIGHT = 30;
 
+    public static double BOX_POS = 0.5;
 
-    //region Declare Objects
-    Servo armServoRight;
-    Servo armServoLeft;
+    public static int RIGGING_POSITION = 20;
 
-    Servo boxServo;
-    DcMotorEx rightLinear;
-    DcMotorEx leftLinear;
+    //endregion
+
+    //region Intake Variables
+    public static double INTAKE_POWER = .8; //Power of Intake Motor
+    public static double INTAKE_POSITION = .3; //Position of Intake Servo
+    boolean intakeActive = false;
+    boolean reverseIntake = false;
+
+    public static boolean controllerMode = true;
+
+    public static double PIXEL_DETECTION_DISTANCE = 1; //Distance from color sensor to pixel for detection (CM)
+    public double reverseTimer = 0; //timer for reversing intake
+    public static double REVERSE_TIME = 1000; //How long to Reverse intake
+
 
     //endregion
 
 
+    public static int RIGGING_EXTENDED_POS = 14500;
+
+    //endregion
+
+    //region Declare Objects
+
+    //region EndGame Objects
+    DcMotorEx hangMotor;
+
+    Servo droneServo;
+
+    //endregion
+
+    ArmController armController;
+
+    //region Intake Objects
+    DcMotor intakeMotor;
+    Servo intakeServo;
+
+    PixelGamepadDetector pixelGamepadDetector;
+
+    RevColorSensorV3 colorSensor1;
+    RevColorSensorV3 colorSensor2;
+
+    //endregion
+
+    //Creates Gamepad objects to store current and previous Gamepad states
+    Gamepad currentGamepad1;
+    Gamepad currentGamepad2;
+
+    Gamepad previousGamepad1;
+    Gamepad previousGamepad2;
+    //endregion
+
+    double droneTimer = 0;
+
+
     @Override
     public void init() {
+        //Sets up telemetry to work with FTC Dashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        //region Hardware Map
-
-        armServoLeft = hardwareMap.get(Servo.class, "armServoLeft");
-        armServoRight = hardwareMap.get(Servo.class, "armServoRight");
-        boxServo = hardwareMap.get(Servo.class, "boxServo");
-        leftLinear = hardwareMap.get(DcMotorEx.class ,"leftLinear");
-        rightLinear = hardwareMap.get(DcMotorEx.class, "rightLinear");
-
+        //region Intake Init
+        //region Intake Hardware Map
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         //endregion
 
-        //region Motor Settings
-        leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armController = new ArmController(hardwareMap);
+        armController.initArm();
 
-        leftLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        rightLinear.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        leftLinear.setTargetPosition(SLIDE_HEIGHT);
-        rightLinear.setTargetPosition(SLIDE_HEIGHT);
-
-        leftLinear.setPower(SLIDE_POWER);
-        rightLinear.setPower(SLIDE_POWER);
-
-        /*leftLinear.setPositionPIDFCoefficients(Pp);
-        rightLinear.setPositionPIDFCoefficients(Pp);
-
-        leftLinear.setVelocityPIDFCoefficients(Pv, Iv, Dv, Fv);
-        rightLinear.setVelocityPIDFCoefficients(Pv, Iv, Dv, Fv);*/
-
-        leftLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftLinear.setVelocity(SLIDE_MAX_VELO);
-        rightLinear.setVelocity(SLIDE_MAX_VELO);
+       /* //region Intake Settings
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeServo.setPosition(1);
+        //endregion*/
         //endregion
 
-        //region Initial Servo Pos
-        armServoLeft.setPosition(ARM_POSITION);
-        armServoRight.setPosition(1 - ARM_POSITION);
-        boxServo.setPosition(BOX_SERVO_POSITION);
-        //endregion
+       /* //region Rigging Init
+        hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        hangMotor.setPower(1);
+        hangMotor.setTargetPosition(0);
+        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        droneServo = hardwareMap.get(Servo.class, "droneServo");
+        droneServo.setPosition(0);
+        //endregion*/
+
+      /*  colorSensor1 = hardwareMap.get(RevColorSensorV3.class,"colorSensor1");
+        colorSensor2 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
+
+        currentGamepad1 = new Gamepad();
+        currentGamepad2 = new Gamepad();
+
+        previousGamepad1 = new Gamepad();
+        previousGamepad2 = new Gamepad();*/
+
+        //See util.PixelGamepadDetector
+//        pixelGamepadDetector = new PixelGamepadDetector(this.gamepad1, this.gamepad2, colorSensor1, colorSensor2);
     }
     @Override
     public void loop() {
-        if (gamepad1.x) {
-            BOX_SERVO_POSITION = BOX_SERVO_FORWARD;
-            ARM_POSITION = ARM_SERVO_FORWARD;
-        }
-        else if (gamepad1.y){
-            BOX_SERVO_POSITION = BOX_SERVO_BACKWARD;
-            ARM_POSITION = ARM_SERVO_BACKWARD;
-        }
 
-        leftLinear.setTargetPosition(SLIDE_HEIGHT);
-        rightLinear.setTargetPosition(SLIDE_HEIGHT);
+       /* if (controllerMode) {
+            if (droneTimer == 0) {
+                droneTimer = System.currentTimeMillis() + 100000;
+            }
 
-        armServoLeft.setPosition(ARM_POSITION);
-        armServoRight.setPosition(1 - ARM_POSITION);
+            if (currentGamepad2.ps && !previousGamepad2.ps) {
+                droneTimer = 1;
+            }
 
-        boxServo.setPosition(BOX_SERVO_POSITION);
+            if (currentGamepad2.options && System.currentTimeMillis() >= droneTimer) {
+                hangMotor.setPower(1);
+
+                hangMotor.setTargetPosition(5020);
+            }
+            if (currentGamepad2.touchpad && System.currentTimeMillis() >= droneTimer) {
+                droneServo.setPosition(1);
+            }
+
+            //region Arm Logic
+
+            //Increases or Decreases Slide Stage on Dpad up or down within [0,7]
+            if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
+                armController.changeStage(1);
+            } else if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
+                armController.changeStage(-1);
+            }
+
+            //Changes Arm State on Triangle Press
+            if (currentGamepad2.triangle && !previousGamepad2.triangle) {
+                armController.switchArmState();
+            }
+            //Resets Arm to Intake Position on square press
+            else if (currentGamepad2.square && !previousGamepad2.square) {
+                armController.startOuttake();
+            }
 
 
+            //Manual Jog For Slides (In Case of emergency)
+            if (currentGamepad2.right_bumper && currentGamepad2.left_bumper) {
+                if (currentGamepad2.left_trigger >= 0.1) {
+                    armController.setSlideHeight(armController.getSlideHeight() - 10);
+                } else if (currentGamepad2.right_trigger >= 0.1) {
+                    armController.setSlideHeight(armController.getSlideHeight() + 10);
+                }
+            }
+            //endregion
 
-        telemetry.addData("Slide Target Height", SLIDE_HEIGHT);
-        telemetry.addData("Right Slide Height", rightLinear.getCurrentPosition());
-        telemetry.addData("left Slide Height", leftLinear.getCurrentPosition());
-        telemetry.addData("Right Slide Volt", rightLinear.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("left Slide Volt", leftLinear.getCurrent(CurrentUnit.AMPS));
+            //region Intake Logic
 
+            //On cross start intake (Only if arm is in intake position)
+            if (armController.getCurrentArmState() == ArmController.ArmState.INTAKE) {
+                if (currentGamepad2.cross && !previousGamepad2.cross) {
+                    intakeActive = true;
+                } else if (currentGamepad2.circle && !previousGamepad2.circle) {
+                    intakeActive = false;
+                    reverseIntake = false;
+                    armController.setOuttakePower(0);
+                }
+            }
+            //if arm is not in take position cancel intake
+            else {
+                intakeActive = false;
+            }
+            //On right bumper reverse intake
+            if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
+                intakeActive = false;
+                reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
+                reverseIntake = true;
+                armController.setOuttakePower(0);
+            }
 
-        telemetry.addData("Right Servo Pos:", armServoRight.getPosition());
-        telemetry.addData("Left Servo Pos:", armServoLeft.getPosition());
+            if (intakeActive) {
 
-        telemetry.update();
+                intakeMotor.setPower(INTAKE_POWER);
+                intakeServo.setPosition(INTAKE_POSITION);
+
+                armController.setOuttakePower(-1);
+
+                //If two pixels are detected within specified distance, start reversal of intake
+                if (colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) {
+                    intakeActive = false;
+                    reverseIntake = true;
+                    reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
+                }
+            }
+            //Checks if reverse is on and timer is still on
+            else if (reverseIntake && reverseTimer > System.currentTimeMillis()) {
+                intakeServo.setPosition(INTAKE_POSITION);
+                intakeMotor.setPower(-INTAKE_POWER);
+                armController.setOuttakePower(0);
+            } else {
+                intakeMotor.setPower(0);
+                intakeServo.setPosition(1);
+            }
+            //endregion
+
+            //region Rigging Logic
+            if (currentGamepad2.left_stick_button && !previousGamepad2.left_stick_button) {
+                hangMotor.setPower(1);
+                hangMotor.setTargetPosition(RIGGING_EXTENDED_POS);
+            }
+            if (currentGamepad2.right_stick_button) {
+                hangMotor.setTargetPosition(hangMotor.getTargetPosition() - 80);
+
+            }
+            //endregion
+
+            armController.updateArm();
+
+            pixelGamepadDetector.updateControllerColors();
+
+            previousGamepad1.copy(currentGamepad1);
+            previousGamepad2.copy(currentGamepad2);
+
+            currentGamepad1.copy(gamepad1);
+            currentGamepad2.copy(gamepad2);
+        }*/
+            armController.setArmPos(ARM_POSITION);
+            armController.setSlideHeight(SLIDE_HEIGHT);
+            armController.setOuttakePower(OUTTAKE_POWER);
+            armController.setBoxPos(BOX_POS);
+
+            armController.updateArmABS();
+
+//            hangMotor.setPower(1);
+//            hangMotor.setTargetPosition(RIGGING_POSITION);
     }
 
 
-
-    @Override
-    public void stop() {
-    }
 }
