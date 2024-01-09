@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+@Config
 public class ArmController {
     HardwareMap hardwareMap;
 
@@ -28,12 +30,12 @@ public class ArmController {
 
     double ARM_POSITION = 0.04; //Live Updating Arm Servo Position (1 is intake position)
     public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
-    public static double ARM_SERVO_BACKWARD = 0.8;//Stores Value of Arm outtake Position
+    public static double ARM_SERVO_BACKWARD = 0.9;//Stores Value of Arm outtake Position
 
     double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
     public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
     public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
-    public static double BOX_SERVO_BACKWARD = 0.3; //Stores value of Box Outtake position
+    public static double BOX_SERVO_BACKWARD = 0.85; //Stores value of Box Outtake position
 
     double outtakeTimer = 0; //Timer to control outtake
     public static double OUTTAKE_TIME = 300; //How Long Outtake runs for (ms)
@@ -156,8 +158,12 @@ public class ArmController {
         return currentArmState;
     }
 
-    public void setArmPos(double ARM_POSITION){
+    public void setArmPos(double armPos){
+        ARM_POSITION = armPos;
+    }
 
+    public void setBoxPos(double boxPos){
+        BOX_SERVO_POSITION = boxPos;
     }
 
     public void startOuttake(){
@@ -196,5 +202,16 @@ public class ArmController {
             boxServo.setPosition(BOX_SERVO_POSITION);
         }
         checkOuttakeTimer();
+    }
+
+    public void updateArmABS(){
+        //Sets Slides Arm and Box to respective positions as determined by the previous logic
+        leftLinear.setTargetPosition(SLIDE_HEIGHT);
+        rightLinear.setTargetPosition(SLIDE_HEIGHT);
+
+        armServoLeft.setPosition(ARM_POSITION);
+        armServoRight.setPosition(1 - ARM_POSITION);
+
+        boxServo.setPosition(BOX_SERVO_POSITION);
     }
 }

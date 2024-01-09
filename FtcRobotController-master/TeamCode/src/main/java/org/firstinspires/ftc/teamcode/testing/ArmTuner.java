@@ -30,6 +30,8 @@ public class ArmTuner extends OpMode {
     public static double OUTTAKE_POWER = 0;
     public static int SLIDE_HEIGHT = 30;
 
+    public static double BOX_POS = 0.5;
+
     public static int RIGGING_POSITION = 20;
 
     //endregion
@@ -101,13 +103,13 @@ public class ArmTuner extends OpMode {
         armController = new ArmController(hardwareMap);
         armController.initArm();
 
-        //region Intake Settings
+       /* //region Intake Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeServo.setPosition(1);
-        //endregion
+        //endregion*/
         //endregion
 
-        //region Rigging Init
+       /* //region Rigging Init
         hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
         hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -122,24 +124,24 @@ public class ArmTuner extends OpMode {
 
         droneServo = hardwareMap.get(Servo.class, "droneServo");
         droneServo.setPosition(0);
-        //endregion
+        //endregion*/
 
-        colorSensor1 = hardwareMap.get(RevColorSensorV3.class,"colorSensor1");
+      /*  colorSensor1 = hardwareMap.get(RevColorSensorV3.class,"colorSensor1");
         colorSensor2 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
 
         currentGamepad1 = new Gamepad();
         currentGamepad2 = new Gamepad();
 
         previousGamepad1 = new Gamepad();
-        previousGamepad2 = new Gamepad();
+        previousGamepad2 = new Gamepad();*/
 
         //See util.PixelGamepadDetector
-        pixelGamepadDetector = new PixelGamepadDetector(this.gamepad1, this.gamepad2, colorSensor1, colorSensor2);
+//        pixelGamepadDetector = new PixelGamepadDetector(this.gamepad1, this.gamepad2, colorSensor1, colorSensor2);
     }
     @Override
     public void loop() {
 
-        if (controllerMode) {
+       /* if (controllerMode) {
             if (droneTimer == 0) {
                 droneTimer = System.currentTimeMillis() + 100000;
             }
@@ -255,15 +257,16 @@ public class ArmTuner extends OpMode {
 
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
-        }
-        else{
+        }*/
             armController.setArmPos(ARM_POSITION);
             armController.setSlideHeight(SLIDE_HEIGHT);
             armController.setOuttakePower(OUTTAKE_POWER);
+            armController.setBoxPos(BOX_POS);
 
-            hangMotor.setPower(1);
-            hangMotor.setTargetPosition(RIGGING_POSITION);
-        }
+            armController.updateArmABS();
+
+//            hangMotor.setPower(1);
+//            hangMotor.setTargetPosition(RIGGING_POSITION);
     }
 
 
