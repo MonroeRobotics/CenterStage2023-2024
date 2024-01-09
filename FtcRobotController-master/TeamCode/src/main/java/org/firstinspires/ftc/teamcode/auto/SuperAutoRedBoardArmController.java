@@ -8,10 +8,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -29,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "new Red Board Auto", group = "Main")
 @Config
-public class AutoProgramRedBoardArmController extends OpMode {
+public class SuperAutoRedBoardArmController extends OpMode {
 
     //region Dashboard Variable Declarations
 
@@ -58,6 +56,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
     Trajectory toRedBoard;
     Trajectory redBoardPark1;
     Trajectory redBoardPark2;
+    Trajectory grabWhite;
     //endregion
 
     ArmController armController;
@@ -95,6 +94,9 @@ public class AutoProgramRedBoardArmController extends OpMode {
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+    public static Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
+    public static Pose2d afterTrussCord = new Pose2d(12, -12, Math.toRadians(180));
+    public static Pose2d whiteStackCord = new Pose2d(-56, -11, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -103,6 +105,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
         TO_BOARD,
         HOME_TAG,
         PLACE_BOARD,
+        GRAB_WHITE,
         PARK,
         STOP
     }
@@ -230,7 +233,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
                     armController.startOuttake();
                     waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
-                    queuedState = autoState.PARK;
+                    queuedState = autoState.GRAB_WHITE;
                     break;
                 }
                 if(aprilTagHomer.getCurrentTagPose() != null) {
@@ -244,6 +247,17 @@ public class AutoProgramRedBoardArmController extends OpMode {
 
                 aprilTagHomer.updateDrive();
                 break;
+            case GRAB_WHITE:
+                if(!drive.isBusy()){
+                    grabWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(afterTrussCord)
+                            .lineToLinearHeading(beforeTrussCord)
+                            .lineToLinearHeading(whiteStackCord)
+                            .build();
+                    drive.followTrajectoryAsync(grabWhite);
+                    armController.setOuttakePower(1);
+                    queuedState = autoState.PARK;
+                }
             case PARK:
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     //Trajectory to Park Pos
