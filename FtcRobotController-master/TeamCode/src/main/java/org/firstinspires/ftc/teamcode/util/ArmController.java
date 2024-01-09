@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+
 @Config
 public class ArmController {
     HardwareMap hardwareMap;
@@ -150,6 +151,7 @@ public class ArmController {
         return SLIDE_HEIGHT;
     }
 
+
     public void setSlideHeight(int slideHeight){
         SLIDE_HEIGHT = slideHeight;
     }
@@ -158,12 +160,14 @@ public class ArmController {
         return currentArmState;
     }
 
+
     public void setArmPos(double armPos){
         ARM_POSITION = armPos;
     }
 
     public void setBoxPos(double boxPos){
         BOX_SERVO_POSITION = boxPos;
+
     }
 
     public void startOuttake(){

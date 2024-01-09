@@ -50,7 +50,10 @@ public class TeamPropDetection implements VisionProcessor {
         return screenSector;
     }
 
-
+    public void changeHSV(Scalar lowHSV, Scalar highHSV){
+        this.lowHSV = new Scalar(lowHSV.val[0], lowHSV.val[1],lowHSV.val[2]);
+        this.highHSV = new Scalar(highHSV.val[0], highHSV.val[1],highHSV.val[2]);
+    }
 
     @Override
     public void init(int width, int height, CameraCalibration calibration) {

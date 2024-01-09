@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.testing;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,9 +15,9 @@ public class suspensionTuner extends OpMode{
 
     DcMotorEx hangMotor;
     Servo servo;
-    double servoPos = 0;
+    public static double servoPos = 0;
 
-    int riggingHeight = 0;
+    public static int riggingHeight = 0;
     public static int riggingHeightMin = 0;
 
     public static int riggingHeightMax = 14500; //
@@ -28,31 +28,28 @@ public class suspensionTuner extends OpMode{
     public static int droneRelease = 1;
 
     Gamepad currentGamepad;
-    Gamepad previousGamepad;
+
+    Gamepad prevoiousGamepad;
 
     @Override
     public void init() {
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         servo = hardwareMap.get(Servo.class, "droneServo");
 
-        riggingHeight = 0;
-
-        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        hangMotor.setPower(1);
-
         hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        hangMotor.setPower(1);
         hangMotor.setTargetPosition(riggingHeight);
+
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         servo.setPosition(servoPos);
 
         currentGamepad = new Gamepad();
-        previousGamepad = new Gamepad();
+        prevoiousGamepad = new Gamepad();
         currentGamepad.copy(gamepad1);
-        previousGamepad.copy(gamepad1);
+        prevoiousGamepad.copy(gamepad1);
     }
 
     @Override
@@ -72,7 +69,7 @@ public class suspensionTuner extends OpMode{
         telemetry.addData("Rigging Height", riggingHeight);
         telemetry.update();
 
-        if(currentGamepad.a && !previousGamepad.a){
+        if(currentGamepad.a && !prevoiousGamepad.a){
             if(servoPos == droneStart) {
                 servoPos = droneRelease;
             }
@@ -83,7 +80,7 @@ public class suspensionTuner extends OpMode{
 
         servo.setPosition(servoPos);
 
-        previousGamepad.copy(currentGamepad);
+        prevoiousGamepad.copy(currentGamepad);
         currentGamepad.copy(gamepad1);
     }
 }

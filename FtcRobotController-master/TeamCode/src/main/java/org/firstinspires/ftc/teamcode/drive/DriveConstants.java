@@ -23,8 +23,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 425.6;
-    public static final double MAX_RPM = 394.736842;
+    public static final double TICKS_PER_REV = 366.8;
+    public static final double MAX_RPM = 458.02;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -94,9 +94,9 @@ public class DriveConstants {
     public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR =
             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
-    //actual max is 61.0254372797
-    public static double MAX_VEL = 51.8716216878;
-    public static double MAX_ACCEL = 51.8716216878;
+    //actual max is 70.805780713
+    public static double MAX_VEL = 56.644;
+    public static double MAX_ACCEL = 56.644;
     public static double MAX_ANG_VEL = 4.80051;
     public static double MAX_ANG_ACCEL = Math.toRadians(180.98870192307692);
 

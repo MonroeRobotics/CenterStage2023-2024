@@ -103,10 +103,10 @@ public class AutoProgramRedBoard extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(180));
+    Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(0));
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    Pose2d spikeCenter = new Pose2d(20,-25.5, Math.toRadians(180));
-    Pose2d spikeRight = new Pose2d(32.5,-30, Math.toRadians(180));
+    Pose2d spikeCenter = new Pose2d(12,-33, Math.toRadians(270));
+    Pose2d spikeRight = new Pose2d(19,-37, Math.toRadians(240));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
@@ -117,8 +117,7 @@ public class AutoProgramRedBoard extends OpMode {
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
-    public static Pose2d beforeTrussCord = new Pose2d(-38, -10, Math.toRadians(180));
-    public static Pose2d afterTrussCord = new Pose2d(12, -10, Math.toRadians(180));
+
     enum autoState {
         START,
         TO_SPIKE_MARK,
@@ -235,14 +234,16 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
+                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
                 }
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .back(24)
-                            .splineTo(spikeLeftSpline, Math.toRadians(0))
+                            .back(12)
+                            .lineToLinearHeading(spikeLeft)
+                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -270,8 +271,6 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
                     toRedBoard = drive.trajectoryBuilder(toSpikeMark.end())
-                            .lineToLinearHeading(beforeTrussCord)
-                            .lineToLinearHeading(afterTrussCord)
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     leftLinear.setTargetPosition(PLACEMENT_SLIDE_HEIGHT);
