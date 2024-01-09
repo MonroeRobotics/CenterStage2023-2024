@@ -246,8 +246,8 @@ public class AutoProgramRedAway extends OpMode {
                 if(!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
-                            .forward(6)
-                            .strafeRight(6)
+                            .forward(12)
+                            .strafeRight(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;

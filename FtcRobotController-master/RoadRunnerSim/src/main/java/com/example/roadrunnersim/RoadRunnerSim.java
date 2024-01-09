@@ -39,7 +39,7 @@ public class RoadRunnerSim {
         Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
         Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
         Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-        Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
+        Pose2d beforeTrussCord = new Pose2d(-48, -12, Math.toRadians(180));
         Pose2d afterTrussCord = new Pose2d(12, -12, Math.toRadians(180));
         Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
 
@@ -126,8 +126,8 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(270)))
                                 .lineToLinearHeading(new Pose2d(-35,-33, Math.toRadians(270))) //drop off
-                                .forward(6) //dropping off action
-                                .strafeRight(6)
+                                .forward(12) //dropping off action
+                                .strafeRight(12)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
@@ -144,8 +144,8 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(270)))
                                 .lineToLinearHeading(new Pose2d(-33,-28, Math.toRadians(180))) //drop off cord
-                                .forward(6) //dropping off action
-                                .strafeRight(6)
+                                .forward(12) //dropping off action
+                                .strafeRight(12)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
@@ -161,8 +161,8 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(90)))
                                 .lineToLinearHeading(new Pose2d(-38,-30, Math.toRadians(0)))
-                                .forward(6) //dropping off action
-                                .strafeRight(6)
+                                .forward(12) //dropping off action
+                                .strafeRight(12)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
@@ -271,7 +271,7 @@ public class RoadRunnerSim {
                 //.addEntity(thirdBot)
                 .addEntity(fourBot)
                 //.addEntity(fiveBot)
-                //.addEntity(sixBot)
+                .addEntity(sixBot)
                 //.addEntity(sevenBot)
                 //.addEntity(eightBot)
                 //.addEntity(nineBot)
