@@ -28,12 +28,12 @@ public class ArmController {
 
     ArmState currentArmState = ArmState.INTAKE; //Creates a variables to store current Arm State
 
-    double ARM_POSITION = 0.04; //Live Updating Arm Servo Position (1 is intake position)
-    public static double ARM_SERVO_FORWARD = 0.04;//Stores Value of Arm intake Position
+    double ARM_POSITION = 0; //Live Updating Arm Servo Position (0 is intake position)
+    public static double ARM_SERVO_FORWARD = 0;//Stores Value of Arm intake Position
     public static double ARM_SERVO_BACKWARD = 0.9;//Stores Value of Arm outtake Position
 
-    double BOX_SERVO_POSITION = 1; //Live Updating Box Position (1 is intake position)
-    public static double BOX_SERVO_FORWARD = 1; //Stores Value of Box intake Position
+    double BOX_SERVO_POSITION = 1; //Live Updating Box Position (.15 is intake position)
+    public static double BOX_SERVO_FORWARD = .15; //Stores Value of Box intake Position
     public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
     public static double BOX_SERVO_BACKWARD = 0.85; //Stores value of Box Outtake position
 
