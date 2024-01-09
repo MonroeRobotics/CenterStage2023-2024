@@ -43,7 +43,7 @@ public class RoadRunnerSim {
         Pose2d afterTrussCord = new Pose2d(12, -12, Math.toRadians(180));
         Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
 
-        Vector2d redBoardSpline = new Vector2d(35, -36);
+        Pose2d whiteStackCord = new Pose2d(-56, -11, Math.toRadians(180));
 
         // Declare our first bot
         Vector2d spikeLeftSpline = new Vector2d(11,-32);// Math.toRadians(180));
@@ -111,6 +111,12 @@ public class RoadRunnerSim {
                                 .back(12)
                                 .lineToLinearHeading(new Pose2d(10, -30, Math.toRadians(0)))
                                 .forward(12)
+                                .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(afterTrussCord)
+                                .lineToLinearHeading(beforeTrussCord)
+                                .lineToLinearHeading(whiteStackCord)
+                                .lineToLinearHeading(beforeTrussCord)
+                                .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
@@ -267,8 +273,8 @@ public class RoadRunnerSim {
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
                 //.addEntity(testBot)
-                .addEntity(firstBot)
-                .addEntity(secondBot)
+                //.addEntity(firstBot)
+                //.addEntity(secondBot)
                 .addEntity(thirdBot)
                 //.addEntity(fourBot)
                 //.addEntity(fiveBot)
