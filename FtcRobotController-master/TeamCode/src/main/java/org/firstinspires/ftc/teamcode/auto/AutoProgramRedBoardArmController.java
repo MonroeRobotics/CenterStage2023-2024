@@ -249,7 +249,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 break;
             case GRAB_WHITE:
                 if(!drive.isBusy()){
-                    grabWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
+//                    grabWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
                     queuedState = autoState.PARK;
                 }
             case PARK:
@@ -277,7 +277,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 break;
             case STOP:
                 if(!drive.isBusy()){
-                    telemetry.addData("Slide Height",  armController.getCurrentSlideHeight());
+//                    telemetry.addData("Slide Height",  armController.getCurrentSlideHeight());
                     telemetry.update();
                 }
         }
