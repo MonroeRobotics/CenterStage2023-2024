@@ -105,10 +105,9 @@ public class AutoProgramRedAway extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    Pose2d spikeRight = new Pose2d(-10,-30, Math.toRadians(0));
-    Vector2d spikeRightSpline = new Vector2d(-34,-29);
-    Pose2d spikeCenter = new Pose2d(-48,-24, Math.toRadians(0));
-    Pose2d spikeLeft = new Pose2d(-36,-29, Math.toRadians(180));
+    Pose2d spikeRight = new Pose2d(-35,-33, Math.toRadians(270));
+    Pose2d spikeCenter = new Pose2d(-35,-33, Math.toRadians(270));
+    Pose2d spikeLeft = new Pose2d(-38,-30, Math.toRadians(0));
     //endregion
 
     Pose2d STARTING_DRIVE_POS = new Pose2d(-36, -63.25, Math.toRadians(270));
@@ -244,18 +243,11 @@ public class AutoProgramRedAway extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() && !screenSector.equals("R")) {
+                if(!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
-                            .build();
-                    drive.followTrajectoryAsync(toSpikeMark);
-                    queuedState = autoState.OUTTAKE_SPIKE;
-                }
-                else if (!drive.isBusy()) {
-                    toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .back(24)
-                            .splineTo(spikeRightSpline, Math.toRadians(180))
-                            .back(2)
+                            .forward(6)
+                            .strafeRight(6)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
