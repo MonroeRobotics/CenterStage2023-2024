@@ -66,7 +66,7 @@ public class TeamPropDetectionTuner extends OpMode {
                     visionPortal.setProcessorEnabled(propDetectorBlue, false);
                     visionPortal.setProcessorEnabled(propDetectorRed, true);
                 }
-                propDetectorRed.changeHSV(lowHSVRed, highHSVRed);
+//                propDetectorRed.changeHSV(lowHSVRed, highHSVRed);
                 screenSector = propDetectorRed.getScreenSector();
                 telemetry.addData("Screen sector", screenSector);
                 break;
@@ -75,7 +75,7 @@ public class TeamPropDetectionTuner extends OpMode {
                     visionPortal.setProcessorEnabled(propDetectorRed, false);
                     visionPortal.setProcessorEnabled(propDetectorBlue, true);
                 }
-                propDetectorBlue.changeHSV(lowHSVBlue,highHSVBlue);
+//                propDetectorBlue.changeHSV(lowHSVBlue,highHSVBlue);
                 screenSector = propDetectorBlue.getScreenSector();
                 telemetry.addData("Screen sector", screenSector);
                 break;
