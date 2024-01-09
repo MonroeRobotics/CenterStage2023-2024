@@ -76,20 +76,20 @@ public class RoadRunnerSim {
         //region red board position
         //right
         RoadRunnerBotEntity firstBot = new DefaultBotBuilder(meepMeep)
-                .setDimensions(14,18)
+                .setDimensions(16,18)
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
                                 .lineToLinearHeading(new Pose2d(19,-37, Math.toRadians(240)))
-                                .forward(16)
+                                .forward(12)
                                 .lineToLinearHeading(redBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
                 );
         //center
         RoadRunnerBotEntity secondBot = new DefaultBotBuilder(meepMeep)
-                .setDimensions(14,18)
+                .setDimensions(16,18)
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
@@ -102,13 +102,14 @@ public class RoadRunnerSim {
                 );
         //left
         RoadRunnerBotEntity thirdBot = new DefaultBotBuilder(meepMeep)
-                .setDimensions(14,16)
+                .setDimensions(16,18)
                 // We set this bot to be blue
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
-                                .lineToLinearHeading(new Pose2d(10,-30, Math.toRadians(0)))
+                                .back(12)
+                                .lineToLinearHeading(new Pose2d(10, -30, Math.toRadians(0)))
                                 .forward(12)
                                 .lineToLinearHeading(redBoardCord)
                                 .lineToLinearHeading(redParkCord)
@@ -266,12 +267,12 @@ public class RoadRunnerSim {
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
                 //.addEntity(testBot)
-                //.addEntity(firstBot)
-                //.addEntity(secondBot)
-                //.addEntity(thirdBot)
-                .addEntity(fourBot)
+                .addEntity(firstBot)
+                .addEntity(secondBot)
+                .addEntity(thirdBot)
+                //.addEntity(fourBot)
                 //.addEntity(fiveBot)
-                .addEntity(sixBot)
+                //.addEntity(sixBot)
                 //.addEntity(sevenBot)
                 //.addEntity(eightBot)
                 //.addEntity(nineBot)
