@@ -57,6 +57,7 @@ public class SuperAutoRedBoardArmController extends OpMode {
     Trajectory redBoardPark1;
     Trajectory redBoardPark2;
     Trajectory grabWhite;
+    Trajectory dropWhite;
     //endregion
 
     ArmController armController;
@@ -70,6 +71,7 @@ public class SuperAutoRedBoardArmController extends OpMode {
     TeamPropDetection propDetection = new TeamPropDetection("red");
     String screenSector;
     int targetTagId;
+    int whiteTargetTagId;
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
     AprilTagHomer aprilTagHomer;
@@ -106,6 +108,8 @@ public class SuperAutoRedBoardArmController extends OpMode {
         HOME_TAG,
         PLACE_BOARD,
         GRAB_WHITE,
+        HOME_WHITE,
+        PLACE_WHITE,
         PARK,
         STOP
     }
@@ -160,14 +164,17 @@ public class SuperAutoRedBoardArmController extends OpMode {
                         spikeLocation = spikeLeft;
                         redBoardCord = leftRedBoardCord;
                         targetTagId = 4;
+                        whiteTargetTagId = 6;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
                         redBoardCord = centerRedBoardCord;
                         targetTagId = 5;
+                        whiteTargetTagId = 6;
                     } else {
                         spikeLocation = spikeRight;
                         redBoardCord = rightRedBoardCord;
                         targetTagId = 6;
+                        whiteTargetTagId = 4;
                     }
 
                     queuedState = autoState.TO_SPIKE_MARK;
@@ -254,11 +261,45 @@ public class SuperAutoRedBoardArmController extends OpMode {
                             .lineToLinearHeading(beforeTrussCord)
                             .lineToLinearHeading(whiteStackCord)
                             .build();
+                    dropWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(beforeTrussCord)
+                            .lineToLinearHeading(afterTrussCord)
+                            .lineToLinearHeading(redBoardCord)
+                            .build();
                     drive.followTrajectoryAsync(grabWhite);
                     armController.setOuttakePower(1);
-                    waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
-                    queuedState = autoState.PARK;
+                    waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
+                    if(System.currentTimeMillis() > waitTimer){
+                        armController.setOuttakePower(0);
+                        drive.followTrajectoryAsync(dropWhite);
+                        queuedState = autoState.HOME_WHITE;
+                    }
                 }
+            case HOME_WHITE:
+                if (!drive.isBusy()){
+                    aprilTagHomer.changeTarget(whiteTargetTagId);
+                    aprilTagHomer.updateDrive();
+                    waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
+                    queuedState = autoState.PLACE_WHITE;
+                }
+            case PLACE_WHITE:
+                if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
+                    armController.startOuttake();
+                    waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
+                    queuedState = autoState.GRAB_WHITE;
+                    break;
+                }
+                if(aprilTagHomer.getCurrentTagPose() != null) {
+                    telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                    telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                    telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+
+                }
+                else{telemetry.addLine("No Tag Detected");
+                }
+
+                aprilTagHomer.updateDrive();
+                break;
             case PARK:
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     //Trajectory to Park Pos
