@@ -46,7 +46,11 @@ public class main extends OpMode {
     double headingPower;
     //endregion
 
+    public static int HANG_DRONE_HEIGHT = 5500;
     public static int RIGGING_EXTENDED_POS = 14500;
+
+    public static double DRONE_LAUNCH_POS = 0.3;
+    public static double DRONE_START_POS = 0;
 
     //endregion
 
@@ -122,7 +126,7 @@ public class main extends OpMode {
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         droneServo = hardwareMap.get(Servo.class, "droneServo");
-        droneServo.setPosition(0);
+        droneServo.setPosition(DRONE_START_POS);
         //endregion
 
         colorSensor1 = hardwareMap.get(RevColorSensorV3.class,"colorSensor1");
@@ -150,10 +154,10 @@ public class main extends OpMode {
         if (currentGamepad2.options && System.currentTimeMillis() >= droneTimer){
             hangMotor.setPower(1);
 
-            hangMotor.setTargetPosition(5020);
+            hangMotor.setTargetPosition(HANG_DRONE_HEIGHT);
         }
         if (currentGamepad2.touchpad && System.currentTimeMillis() >= droneTimer){
-            droneServo.setPosition(1);
+            droneServo.setPosition(DRONE_LAUNCH_POS);
         }
 
         //region Drive Logic
