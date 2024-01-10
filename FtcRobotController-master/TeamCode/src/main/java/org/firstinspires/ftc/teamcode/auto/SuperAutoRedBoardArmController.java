@@ -256,6 +256,7 @@ public class SuperAutoRedBoardArmController extends OpMode {
                             .build();
                     drive.followTrajectoryAsync(grabWhite);
                     armController.setOuttakePower(1);
+                    waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                     queuedState = autoState.PARK;
                 }
             case PARK:
