@@ -25,7 +25,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "new Red Board Auto", group = "Main")
+@Autonomous(name = "Super new Red Board Auto", group = "Main")
 @Config
 public class SuperAutoRedBoardArmController extends OpMode {
 
