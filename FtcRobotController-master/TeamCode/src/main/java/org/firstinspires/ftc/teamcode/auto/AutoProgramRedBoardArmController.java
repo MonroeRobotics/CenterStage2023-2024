@@ -36,7 +36,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
     //region Auto Timer
 
     public static double SPIKE_OUTTAKE_TIME = 1000; //Time Spike Pixel Outtakes In auto
-    public static double BOARD_OUTTAKE_TIME = 1000;//Time Board Pixel Outtakes in auto
+    public static double BOARD_OUTTAKE_TIME = 500;//Time Board Pixel Outtakes in auto
     public static double PARK_TIME = 2000; //Time to go to park pos
     public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
 
@@ -55,6 +55,8 @@ public class AutoProgramRedBoardArmController extends OpMode {
 
     //region Trajectory Declarations
     Trajectory toSpikeMark;
+    Trajectory toSpikeMark2;
+    Trajectory toSpikeMark3;
     Trajectory toRedBoard;
     Trajectory redBoardPark1;
     Trajectory redBoardPark2;
@@ -83,8 +85,8 @@ public class AutoProgramRedBoardArmController extends OpMode {
 
     Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(0));
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    Pose2d spikeCenter = new Pose2d(12,-33, Math.toRadians(270));
-    Pose2d spikeRight = new Pose2d(19,-37, Math.toRadians(240));
+    Pose2d spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
+    Pose2d spikeRight = new Pose2d(19.75,-37, Math.toRadians(240));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
@@ -174,6 +176,12 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
+                            .addDisplacementMarker(()->{
+                                drive.followTrajectoryAsync(toSpikeMark2);
+                            })
+
+                            .build();
+                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
                             .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
@@ -182,7 +190,18 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .back(12)
+                            .addDisplacementMarker(() ->{
+                                drive.followTrajectoryAsync(toSpikeMark2);
+                            })
+                            .build();
+                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
                             .lineToLinearHeading(spikeLeft)
+                            .addDisplacementMarker(() ->{
+                                drive.followTrajectoryAsync(toSpikeMark3);
+                            })
+                            .build();
+
+                    toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
                             .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
@@ -202,15 +221,13 @@ public class AutoProgramRedBoardArmController extends OpMode {
                     // Set Gain.
                     GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
                     gainControl.setGain(CAMERA_GAIN);
-                    waitTimer = System.currentTimeMillis() + SPIKE_OUTTAKE_TIME;
-                    intakeMotor.setPower(-SPIKE_OUTTAKE_POWER);
                     queuedState = autoState.TO_BOARD;
                 }
                 break;
             case TO_BOARD:
-                if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
+                if(!drive.isBusy()){
                     intakeMotor.setPower(0);
-                    toRedBoard = drive.trajectoryBuilder(toSpikeMark.end())
+                    toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     armController.switchArmState();
@@ -247,9 +264,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
             case PARK:
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     //Trajectory to Park Pos
-                    redBoardPark2 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(redParkCord)
-                            .build();
+
                     redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .forward(5)
                             .addDisplacementMarker(() -> {
@@ -257,6 +272,9 @@ public class AutoProgramRedBoardArmController extends OpMode {
                                 armController.setSlideHeight(-10);
                                 drive.followTrajectoryAsync(redBoardPark2);
                             })
+                            .build();
+                    redBoardPark2 = drive.trajectoryBuilder(redBoardPark1.end())
+                            .lineToLinearHeading(redParkCord)
                             .build();
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(redBoardPark1);

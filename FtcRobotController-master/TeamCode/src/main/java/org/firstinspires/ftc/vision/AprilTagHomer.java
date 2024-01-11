@@ -20,8 +20,8 @@ public class AprilTagHomer {
     double acptOffsetYaw = 1;
     double yawGain = 30;
     double cameraYawError = 0;
-    double horizGain = 25;
-    double vertGain = 60;
+    double horizGain = 18.75;
+    double vertGain = 45;
     double decelRate = 0.01;
 
     double drivePowerY = 0;
