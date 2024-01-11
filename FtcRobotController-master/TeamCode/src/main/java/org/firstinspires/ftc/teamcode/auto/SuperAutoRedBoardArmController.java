@@ -260,6 +260,7 @@ public class SuperAutoRedBoardArmController extends OpMode {
                             .lineToLinearHeading(afterTrussCord)
                             .lineToLinearHeading(beforeTrussCord)
                             .lineToLinearHeading(whiteStackCord)
+                            //need more advanced grab
                             .build();
                     dropWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(beforeTrussCord)
