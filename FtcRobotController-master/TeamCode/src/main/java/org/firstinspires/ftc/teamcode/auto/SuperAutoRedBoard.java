@@ -275,7 +275,6 @@ public class SuperAutoRedBoard extends OpMode {
                         drive.followTrajectoryAsync(dropWhite);
                         queuedState = autoState.HOME_WHITE;
                     }
->>>>>>> skrimage-1-12-24:FtcRobotController-master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/auto/SuperAutoRedBoard.java
                 }
             case HOME_WHITE:
                 if (!drive.isBusy()){
@@ -327,11 +326,6 @@ public class SuperAutoRedBoard extends OpMode {
                 break;
             case STOP:
                 if(!drive.isBusy()){
-<<<<<<< HEAD:FtcRobotController-master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/auto/AutoProgramRedBoardArmController.java
-//                    telemetry.addData("Slide Height",  armController.getCurrentSlideHeight());
-                    telemetry.update();
-=======
->>>>>>> skrimage-1-12-24:FtcRobotController-master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/auto/SuperAutoRedBoard.java
                 }
         }
 
