@@ -8,10 +8,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -27,9 +25,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "new Red Board Auto", group = "Main")
+@Autonomous(name = "Super Red Board Auto", group = "Main")
 @Config
-public class AutoProgramRedBoardArmController extends OpMode {
+public class SuperAutoRedBoard extends OpMode {
 
     //region Dashboard Variable Declarations
 
@@ -59,6 +57,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
     Trajectory redBoardPark1;
     Trajectory redBoardPark2;
     Trajectory grabWhite;
+    Trajectory dropWhite;
     //endregion
 
     ArmController armController;
@@ -72,6 +71,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
     TeamPropDetection propDetection = new TeamPropDetection("red");
     String screenSector;
     int targetTagId;
+    int whiteTargetTagId;
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
     AprilTagHomer aprilTagHomer;
@@ -96,7 +96,9 @@ public class AutoProgramRedBoardArmController extends OpMode {
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
-    Pose2d whiteStackCord = new Pose2d(-56, -11, Math.toRadians(180));
+    public static Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
+    public static Pose2d afterTrussCord = new Pose2d(12, -12, Math.toRadians(180));
+    public static Pose2d whiteStackCord = new Pose2d(-56, -11, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -106,6 +108,8 @@ public class AutoProgramRedBoardArmController extends OpMode {
         HOME_TAG,
         PLACE_BOARD,
         GRAB_WHITE,
+        HOME_WHITE,
+        PLACE_WHITE,
         PARK,
         STOP
     }
@@ -160,14 +164,17 @@ public class AutoProgramRedBoardArmController extends OpMode {
                         spikeLocation = spikeLeft;
                         redBoardCord = leftRedBoardCord;
                         targetTagId = 4;
+                        whiteTargetTagId = 6;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
                         redBoardCord = centerRedBoardCord;
                         targetTagId = 5;
+                        whiteTargetTagId = 6;
                     } else {
                         spikeLocation = spikeRight;
                         redBoardCord = rightRedBoardCord;
                         targetTagId = 6;
+                        whiteTargetTagId = 4;
                     }
 
                     queuedState = autoState.TO_SPIKE_MARK;
@@ -249,9 +256,52 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 break;
             case GRAB_WHITE:
                 if(!drive.isBusy()){
-//                    grabWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
-                    queuedState = autoState.PARK;
+                    grabWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(afterTrussCord)
+                            .lineToLinearHeading(beforeTrussCord)
+                            .lineToLinearHeading(whiteStackCord)
+                            //need more advanced grab
+                            .build();
+                    dropWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(beforeTrussCord)
+                            .lineToLinearHeading(afterTrussCord)
+                            .lineToLinearHeading(redBoardCord)
+                            .build();
+                    drive.followTrajectoryAsync(grabWhite);
+                    armController.setOuttakePower(1);
+                    waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
+                    if(System.currentTimeMillis() > waitTimer){
+                        armController.setOuttakePower(0);
+                        drive.followTrajectoryAsync(dropWhite);
+                        queuedState = autoState.HOME_WHITE;
+                    }
+>>>>>>> skrimage-1-12-24:FtcRobotController-master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/auto/SuperAutoRedBoard.java
                 }
+            case HOME_WHITE:
+                if (!drive.isBusy()){
+                    aprilTagHomer.changeTarget(whiteTargetTagId);
+                    aprilTagHomer.updateDrive();
+                    waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
+                    queuedState = autoState.PLACE_WHITE;
+                }
+            case PLACE_WHITE:
+                if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
+                    armController.startOuttake();
+                    waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
+                    queuedState = autoState.GRAB_WHITE;
+                    break;
+                }
+                if(aprilTagHomer.getCurrentTagPose() != null) {
+                    telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                    telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                    telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+
+                }
+                else{telemetry.addLine("No Tag Detected");
+                }
+
+                aprilTagHomer.updateDrive();
+                break;
             case PARK:
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     //Trajectory to Park Pos
@@ -277,8 +327,11 @@ public class AutoProgramRedBoardArmController extends OpMode {
                 break;
             case STOP:
                 if(!drive.isBusy()){
+<<<<<<< HEAD:FtcRobotController-master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/auto/AutoProgramRedBoardArmController.java
 //                    telemetry.addData("Slide Height",  armController.getCurrentSlideHeight());
                     telemetry.update();
+=======
+>>>>>>> skrimage-1-12-24:FtcRobotController-master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/auto/SuperAutoRedBoard.java
                 }
         }
 
