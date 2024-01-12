@@ -16,36 +16,35 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import javax.xml.transform.sax.SAXSource;
+
 public class TeamPropDetection implements VisionProcessor {
 
     String alliance;
 
-    public TeamPropDetection(String alliance) {
-        this.alliance = alliance;
-        if(alliance.equals("red")){
-            //pink range
-            lowHSV = new Scalar(168,60,60);
-            highHSV = new Scalar(178,250,250);
-            //red range
-            //lowHSV = new Scalar(0,60,60);
-            //highHSV = new Scalar(6,250,250);
-        }else if(alliance.equals("blue")){
-            //blue range
-            highHSV = new Scalar(120,240,100);
-            lowHSV = new Scalar(100,70,80);
-        }
-    }
-
-
     //Creates the upper and lower range for the accepted HSV values for color
-    public Scalar lowHSV = new Scalar(0,0,0);
-    public Scalar highHSV = new Scalar(179,255,255);
+    Scalar lowHSV;
+    Scalar highHSV;
     Mat cropL = new Mat();
     Mat cropC = new Mat();
     Mat cropR = new Mat();
     int width = 640;
     int height = 480;
     String screenSector;
+
+    public TeamPropDetection(String alliance) {
+        this.alliance = alliance;
+        if(alliance.equals("red")){
+            //pink range
+            highHSV = new Scalar(180,250,250);
+            lowHSV = new Scalar(168,60,60);
+        }else if (alliance.equals("blue")){
+            //blue range
+            highHSV = new Scalar(120,240,240);
+            lowHSV = new Scalar(100,80,80);
+        }
+    }
+
     public String getScreenSector(){
         return screenSector;
     }
