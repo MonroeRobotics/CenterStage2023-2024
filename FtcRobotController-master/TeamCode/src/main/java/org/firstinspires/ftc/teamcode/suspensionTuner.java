@@ -25,7 +25,7 @@ public class suspensionTuner extends OpMode{
     //drone rigging height max 5620
 
     public static int droneStart = 0;
-    public static int droneRelease = 1;
+    public static double droneRelease = 0.3;
 
     Gamepad currentGamepad;
 
@@ -35,6 +35,7 @@ public class suspensionTuner extends OpMode{
     public void init() {
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         servo = hardwareMap.get(Servo.class, "droneServo");
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
