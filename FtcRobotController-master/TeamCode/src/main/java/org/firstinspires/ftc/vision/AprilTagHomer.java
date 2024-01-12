@@ -16,12 +16,12 @@ public class AprilTagHomer {
     AprilTagPoseFtc currentTagPose;
     int targetTagId = 6;
     double acptOffsetX = 1;
-    double acptOffsetY = 4;
-    double acptOffsetYaw = 1;
-    double yawGain = 30;
+    double acptOffsetY = 2;
+    double acptOffsetYaw = 0.5;
+    double yawGain = 40;
     double cameraYawError = 0;
-    double horizGain = 18.75;
-    double vertGain = 45;
+    double horizGain = 30;
+    double vertGain = 50;
     double decelRate = 0.01;
 
     double drivePowerY = 0;

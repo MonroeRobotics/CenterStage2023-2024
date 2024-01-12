@@ -8,10 +8,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -27,9 +25,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "new Red Board Auto", group = "Main")
+@Autonomous(name = "new Blue Board Auto", group = "Main")
 @Config
-public class AutoProgramRedBoardArmController extends OpMode {
+public class AutoProgramBlueBoardArmController extends OpMode {
 
     //region Dashboard Variable Declarations
 
@@ -83,20 +81,20 @@ public class AutoProgramRedBoardArmController extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    Pose2d spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
+    Pose2d spikeRight = new Pose2d(4,40, Math.toRadians(135));
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    Pose2d spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
-    Pose2d spikeRight = new Pose2d(19.75,-37, Math.toRadians(240));
+    Pose2d spikeCenter = new Pose2d(12,34.5, Math.toRadians(90));
+    Pose2d spikeLeft = new Pose2d(19.75,37, Math.toRadians(45));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
+    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
 
     //y was previously -35
-    public static Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
-    public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
-    public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
-    public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+    public static Pose2d centerRedBoardCord = new Pose2d(35, 36, Math.toRadians(180));
+    public static Pose2d rightRedBoardCord = new Pose2d(35, 40, Math.toRadians(180));
+    public static Pose2d leftRedBoardCord = new Pose2d(35, 32, Math.toRadians(180));
+    public static Pose2d redBoardCord = new Pose2d(35, 38, Math.toRadians(180));
+    public static Pose2d redParkCord = new Pose2d(48, 64, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -140,7 +138,7 @@ public class AutoProgramRedBoardArmController extends OpMode {
 
         aprilTagHomer = new AprilTagHomer(aprilTagDetector, drive);
 
-        propDetection = new TeamPropDetection("red");
+        propDetection = new TeamPropDetection("blue");
 
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
@@ -158,22 +156,22 @@ public class AutoProgramRedBoardArmController extends OpMode {
                     if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
                         redBoardCord = leftRedBoardCord;
-                        targetTagId = 4;
+                        targetTagId = 1;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
                         redBoardCord = centerRedBoardCord;
-                        targetTagId = 5;
+                        targetTagId = 2;
                     } else {
                         spikeLocation = spikeRight;
                         redBoardCord = rightRedBoardCord;
-                        targetTagId = 6;
+                        targetTagId = 3;
                     }
 
                     queuedState = autoState.TO_SPIKE_MARK;
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
+                if(!drive.isBusy() && !Objects.equals(screenSector, "R")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(()->{
