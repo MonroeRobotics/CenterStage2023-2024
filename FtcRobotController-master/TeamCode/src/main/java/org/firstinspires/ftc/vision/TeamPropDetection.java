@@ -31,8 +31,8 @@ public class TeamPropDetection implements VisionProcessor {
             //highHSV = new Scalar(6,250,250);
         }else if(alliance.equals("blue")){
             //blue range
-            highHSV = new Scalar(110,255,200);
-            lowHSV = new Scalar(100,140,130);
+            highHSV = new Scalar(120,240,100);
+            lowHSV = new Scalar(100,70,80);
         }
     }
 
@@ -68,25 +68,11 @@ public class TeamPropDetection implements VisionProcessor {
         //changes Mat input from RGB to HSV and saves to Mat HSV
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
-
-        if(alliance.equals("red")){
-             //pink range
-             lowHSV = new Scalar(170,60,60);
-             highHSV = new Scalar(176,250,250);
-        }else if(alliance.equals("blue")){
-             //purple range
-             lowHSV = new Scalar(130,40,40);
-             highHSV = new Scalar(136,240,240);
-        }
-
-
         //Returns Output Mat "thresh" that only contains pixels that are within low and high boundaries (lowHSV, highHSV)
 
         Core.inRange(input, lowHSV, highHSV, input);
 
         Imgproc.morphologyEx(input, input, MORPH_OPEN, Imgproc.getStructuringElement(MORPH_RECT, new Size(3, 3)));
-
-
 
         Rect leftScreen = new Rect(0, 0, width/4, height);
 
