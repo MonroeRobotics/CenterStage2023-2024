@@ -19,7 +19,7 @@ public class TeamPropDetectionTuner extends OpMode {
         BLUE
     }
 
-    public static colorAlliance currentColor = colorAlliance.RED;
+    public static colorAlliance currentColor = colorAlliance.BLUE;
 
     public static Scalar lowHSVRed = new Scalar(168,60,60);
     public static Scalar highHSVRed = new Scalar(178,250,250);
@@ -39,13 +39,13 @@ public class TeamPropDetectionTuner extends OpMode {
         propDetectorBlue = new TeamPropDetection("blue");
         propDetectorRed = new TeamPropDetection("red");
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), propDetectorRed, propDetectorBlue);
-        visionPortal.setProcessorEnabled(propDetectorBlue, false);
+        visionPortal.setProcessorEnabled(propDetectorRed, false);
 
         currentGamepad = new Gamepad();
         previousGamepad = new Gamepad();
 
         currentGamepad.copy(gamepad1);
-        currentGamepad.copy(gamepad1);
+        previousGamepad.copy(gamepad1);
     }
 
     @Override
@@ -63,19 +63,19 @@ public class TeamPropDetectionTuner extends OpMode {
         switch (currentColor){
             case RED:
                 if (!visionPortal.getProcessorEnabled(propDetectorRed)) {
-                    visionPortal.setProcessorEnabled(propDetectorBlue, false);
                     visionPortal.setProcessorEnabled(propDetectorRed, true);
+                    visionPortal.setProcessorEnabled(propDetectorBlue, false);
                 }
-//                propDetectorRed.changeHSV(lowHSVRed, highHSVRed);
+                propDetectorRed.changeHSV(lowHSVRed, highHSVRed);
                 screenSector = propDetectorRed.getScreenSector();
                 telemetry.addData("Screen sector", screenSector);
                 break;
             case BLUE:
                 if (!visionPortal.getProcessorEnabled(propDetectorBlue)) {
-                    visionPortal.setProcessorEnabled(propDetectorRed, false);
                     visionPortal.setProcessorEnabled(propDetectorBlue, true);
+                    visionPortal.setProcessorEnabled(propDetectorRed, false);
                 }
-//                propDetectorBlue.changeHSV(lowHSVBlue,highHSVBlue);
+                propDetectorBlue.changeHSV(lowHSVBlue,highHSVBlue);
                 screenSector = propDetectorBlue.getScreenSector();
                 telemetry.addData("Screen sector", screenSector);
                 break;

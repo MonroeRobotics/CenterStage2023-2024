@@ -27,7 +27,9 @@ public class RoadRunnerSim {
         Pose2d spikeRight = new Pose2d(-10,-30, Math.toRadians(0));
         Vector2d spikeRightSpline = new Vector2d(-34,-29);
         Pose2d spikeCenter = new Pose2d(-48,-24, Math.toRadians(0));
-        Pose2d spikeLeft = new Pose2d(-36,-29, Math.toRadians(180));
+        Pose2d awaySpikeLeft = new Pose2d(-36,-29, Math.toRadians(180));
+        Pose2d spikeLeft = new Pose2d(8,-32, Math.toRadians(330));
+
         //endregion
 
         //Pose2d redBoardCord = new Pose2d(35, -36, Math.toRadians(180));
@@ -66,7 +68,7 @@ public class RoadRunnerSim {
                 .setConstraints(60,60,Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-36, -62, Math.toRadians(90)))
-                                .lineToLinearHeading(spikeLeft)
+                                .lineToLinearHeading(awaySpikeLeft)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
@@ -109,7 +111,7 @@ public class RoadRunnerSim {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(STARTING_DRIVE_POS)
                                 .back(12)
-                                .lineToLinearHeading(new Pose2d(10, -30, Math.toRadians(0)))
+                                .lineToLinearHeading(spikeLeft)
                                 .forward(12)
                                 .lineToLinearHeading(redBoardCord)
                                 .lineToLinearHeading(afterTrussCord)
@@ -275,7 +277,7 @@ public class RoadRunnerSim {
                 //.addEntity(testBot)
                 //.addEntity(firstBot)
                 //.addEntity(secondBot)
-                .addEntity(thirdBot)
+                //.addEntity(thirdBot)
                 //.addEntity(fourBot)
                 //.addEntity(fiveBot)
                 //.addEntity(sixBot)

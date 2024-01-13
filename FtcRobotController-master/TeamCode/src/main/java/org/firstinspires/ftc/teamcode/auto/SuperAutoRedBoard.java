@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.vision.AprilTagHomer;
@@ -21,17 +23,18 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "Red Board Auto", group = "Main")
+@Autonomous(name = "Super Red Board Auto", group = "Main")
 @Config
-public class AutoProgramRedBoard extends OpMode {
+public class SuperAutoRedBoard extends OpMode {
 
     //region Dashboard Variable Declarations
 
     //region Auto Timer
 
     public static double SPIKE_OUTTAKE_TIME = 1000; //Time Spike Pixel Outtakes In auto
-    public static double BOARD_OUTTAKE_TIME = 500;//Time Board Pixel Outtakes in auto
+    public static double BOARD_OUTTAKE_TIME = 1000;//Time Board Pixel Outtakes in auto
     public static double PARK_TIME = 2000; //Time to go to park pos
     public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
 
@@ -50,11 +53,11 @@ public class AutoProgramRedBoard extends OpMode {
 
     //region Trajectory Declarations
     Trajectory toSpikeMark;
-    Trajectory toSpikeMark2;
-    Trajectory toSpikeMark3;
     Trajectory toRedBoard;
     Trajectory redBoardPark1;
     Trajectory redBoardPark2;
+    Trajectory grabWhite;
+    Trajectory dropWhite;
     //endregion
 
     ArmController armController;
@@ -65,9 +68,10 @@ public class AutoProgramRedBoard extends OpMode {
     //endregion
 
     //region Vision Objects
-    TeamPropDetection propDetection;
+    TeamPropDetection propDetection = new TeamPropDetection("red");
     String screenSector;
     int targetTagId;
+    int whiteTargetTagId;
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
     AprilTagHomer aprilTagHomer;
@@ -78,10 +82,10 @@ public class AutoProgramRedBoard extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    Pose2d spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
+    Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(0));
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    Pose2d spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
-    Pose2d spikeRight = new Pose2d(19.75,-37, Math.toRadians(240));
+    Pose2d spikeCenter = new Pose2d(12,-33, Math.toRadians(270));
+    Pose2d spikeRight = new Pose2d(19,-37, Math.toRadians(240));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
@@ -92,6 +96,9 @@ public class AutoProgramRedBoard extends OpMode {
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+    public static Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
+    public static Pose2d afterTrussCord = new Pose2d(12, -12, Math.toRadians(180));
+    public static Pose2d whiteStackCord = new Pose2d(-56, -11, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -100,6 +107,9 @@ public class AutoProgramRedBoard extends OpMode {
         TO_BOARD,
         HOME_TAG,
         PLACE_BOARD,
+        GRAB_WHITE,
+        HOME_WHITE,
+        PLACE_WHITE,
         PARK,
         STOP
     }
@@ -154,14 +164,17 @@ public class AutoProgramRedBoard extends OpMode {
                         spikeLocation = spikeLeft;
                         redBoardCord = leftRedBoardCord;
                         targetTagId = 4;
+                        whiteTargetTagId = 6;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
                         redBoardCord = centerRedBoardCord;
                         targetTagId = 5;
+                        whiteTargetTagId = 6;
                     } else {
                         spikeLocation = spikeRight;
                         redBoardCord = rightRedBoardCord;
                         targetTagId = 6;
+                        whiteTargetTagId = 4;
                     }
 
                     queuedState = autoState.TO_SPIKE_MARK;
@@ -171,12 +184,7 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
-                            .addDisplacementMarker(()->{
-                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                        .forward(12)
-                                        .build();
-                                drive.followTrajectoryAsync(toSpikeMark2);
-                            })
+                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -184,18 +192,8 @@ public class AutoProgramRedBoard extends OpMode {
                 else if (!drive.isBusy()) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .back(12)
-                            .addDisplacementMarker(() ->{
-                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                        .lineToLinearHeading(spikeLocation)
-                                        .addDisplacementMarker(() ->{
-                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-                                                    .forward(12)
-                                                    .build();
-                                            drive.followTrajectoryAsync(toSpikeMark3);
-                                        })
-                                        .build();
-                                drive.followTrajectoryAsync(toSpikeMark2);
-                            })
+                            .lineToLinearHeading(spikeLeft)
+                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -205,7 +203,7 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy()){
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
-                    /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
                     if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                         exposureControl.setMode(ExposureControl.Mode.Manual);
                     }
@@ -213,14 +211,16 @@ public class AutoProgramRedBoard extends OpMode {
 
                     // Set Gain.
                     GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-                    gainControl.setGain(CAMERA_GAIN);*/
+                    gainControl.setGain(CAMERA_GAIN);
+                    waitTimer = System.currentTimeMillis() + SPIKE_OUTTAKE_TIME;
+                    intakeMotor.setPower(-SPIKE_OUTTAKE_POWER);
                     queuedState = autoState.TO_BOARD;
                 }
                 break;
             case TO_BOARD:
-                if(!drive.isBusy()){
+                if(!drive.isBusy() && System.currentTimeMillis() >= waitTimer){
                     intakeMotor.setPower(0);
-                    toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    toRedBoard = drive.trajectoryBuilder(toSpikeMark.end())
                             .lineToLinearHeading(redBoardCord)
                             .build();
                     armController.switchArmState();
@@ -240,7 +240,54 @@ public class AutoProgramRedBoard extends OpMode {
                 if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
                     armController.startOuttake();
                     waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
-                    queuedState = autoState.PARK;
+                    queuedState = autoState.GRAB_WHITE;
+                    break;
+                }
+                if(aprilTagHomer.getCurrentTagPose() != null) {
+                    telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                    telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                    telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+
+                }
+                else{telemetry.addLine("No Tag Detected");
+                }
+
+                aprilTagHomer.updateDrive();
+                break;
+            case GRAB_WHITE:
+                if(!drive.isBusy()){
+                    grabWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(afterTrussCord)
+                            .lineToLinearHeading(beforeTrussCord)
+                            .lineToLinearHeading(whiteStackCord)
+                            //need more advanced grab
+                            .build();
+                    dropWhite = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(beforeTrussCord)
+                            .lineToLinearHeading(afterTrussCord)
+                            .lineToLinearHeading(redBoardCord)
+                            .build();
+                    drive.followTrajectoryAsync(grabWhite);
+                    armController.setOuttakePower(1);
+                    waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
+                    if(System.currentTimeMillis() > waitTimer){
+                        armController.setOuttakePower(0);
+                        drive.followTrajectoryAsync(dropWhite);
+                        queuedState = autoState.HOME_WHITE;
+                    }
+                }
+            case HOME_WHITE:
+                if (!drive.isBusy()){
+                    aprilTagHomer.changeTarget(whiteTargetTagId);
+                    aprilTagHomer.updateDrive();
+                    waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
+                    queuedState = autoState.PLACE_WHITE;
+                }
+            case PLACE_WHITE:
+                if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
+                    armController.startOuttake();
+                    waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
+                    queuedState = autoState.GRAB_WHITE;
                     break;
                 }
                 if(aprilTagHomer.getCurrentTagPose() != null) {
@@ -257,7 +304,9 @@ public class AutoProgramRedBoard extends OpMode {
             case PARK:
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     //Trajectory to Park Pos
-
+                    redBoardPark2 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(redParkCord)
+                            .build();
                     redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .forward(5)
                             .addDisplacementMarker(() -> {
@@ -265,9 +314,6 @@ public class AutoProgramRedBoard extends OpMode {
                                 armController.setSlideHeight(-10);
                                 drive.followTrajectoryAsync(redBoardPark2);
                             })
-                            .build();
-                    redBoardPark2 = drive.trajectoryBuilder(redBoardPark1.end())
-                            .lineToLinearHeading(redParkCord)
                             .build();
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(redBoardPark1);
