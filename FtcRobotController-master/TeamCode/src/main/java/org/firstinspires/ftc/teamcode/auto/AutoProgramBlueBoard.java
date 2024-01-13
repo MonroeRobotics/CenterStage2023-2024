@@ -172,12 +172,11 @@ public class AutoProgramBlueBoard extends OpMode {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(()->{
+                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
+                                        .forward(12)
+                                        .build();
                                 drive.followTrajectoryAsync(toSpikeMark2);
                             })
-
-                            .build();
-                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -186,18 +185,17 @@ public class AutoProgramBlueBoard extends OpMode {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .back(12)
                             .addDisplacementMarker(() ->{
+                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
+                                        .lineToLinearHeading(spikeLocation)
+                                        .addDisplacementMarker(() ->{
+                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
+                                                    .forward(12)
+                                                    .build();
+                                            drive.followTrajectoryAsync(toSpikeMark3);
+                                        })
+                                        .build();
                                 drive.followTrajectoryAsync(toSpikeMark2);
                             })
-                            .build();
-                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                            .lineToLinearHeading(spikeLocation)
-                            .addDisplacementMarker(() ->{
-                                drive.followTrajectoryAsync(toSpikeMark3);
-                            })
-                            .build();
-
-                    toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -207,7 +205,7 @@ public class AutoProgramBlueBoard extends OpMode {
                 if(!drive.isBusy()){
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
-                   /* ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+                    /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
                     if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                         exposureControl.setMode(ExposureControl.Mode.Manual);
                     }

@@ -13,8 +13,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.vision.AprilTagHomer;
@@ -23,7 +21,6 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "Red Board Auto", group = "Main")
 @Config
@@ -175,12 +172,11 @@ public class AutoProgramRedBoard extends OpMode {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(()->{
+                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
+                                        .forward(12)
+                                        .build();
                                 drive.followTrajectoryAsync(toSpikeMark2);
                             })
-
-                            .build();
-                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -189,18 +185,17 @@ public class AutoProgramRedBoard extends OpMode {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .back(12)
                             .addDisplacementMarker(() ->{
+                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
+                                        .lineToLinearHeading(spikeLocation)
+                                        .addDisplacementMarker(() ->{
+                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
+                                                    .forward(12)
+                                                    .build();
+                                            drive.followTrajectoryAsync(toSpikeMark3);
+                                        })
+                                        .build();
                                 drive.followTrajectoryAsync(toSpikeMark2);
                             })
-                            .build();
-                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                            .lineToLinearHeading(spikeLocation)
-                            .addDisplacementMarker(() ->{
-                                drive.followTrajectoryAsync(toSpikeMark3);
-                            })
-                            .build();
-
-                    toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-                            .forward(12)
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                     queuedState = autoState.OUTTAKE_SPIKE;
@@ -210,7 +205,7 @@ public class AutoProgramRedBoard extends OpMode {
                 if(!drive.isBusy()){
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
-                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+                    /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
                     if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                         exposureControl.setMode(ExposureControl.Mode.Manual);
                     }
@@ -218,7 +213,7 @@ public class AutoProgramRedBoard extends OpMode {
 
                     // Set Gain.
                     GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-                    gainControl.setGain(CAMERA_GAIN);
+                    gainControl.setGain(CAMERA_GAIN);*/
                     queuedState = autoState.TO_BOARD;
                 }
                 break;
