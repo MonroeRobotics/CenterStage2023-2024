@@ -37,6 +37,7 @@ public class ArmController {
     public static double BOX_SERVO_FORWARD = .15; //Stores Value of Box intake Position
     public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
     public static double BOX_SERVO_BACKWARD = 0.85; //Stores value of Box Outtake position
+    public static int SLIDE_HEIGHT_SERVO_TRANSITION = 1000;
 
     double outtakeTimer = 0; //Timer to control outtake
     public static double OUTTAKE_TIME = 300; //How Long Outtake runs for (ms)
@@ -196,7 +197,7 @@ public class ArmController {
         armServoLeft.setPosition(ARM_POSITION);
         armServoRight.setPosition(1 - ARM_POSITION);
 
-        if (currentArmState == ArmState.INTAKE && leftLinear.getCurrentPosition() <= 80){
+        if (currentArmState == ArmState.INTAKE && leftLinear.getCurrentPosition() <= SLIDE_HEIGHT_SERVO_TRANSITION){
             boxServo.setPosition(BOX_SERVO_POSITION);
         }
         else if(currentArmState == ArmState.INTAKE) {
