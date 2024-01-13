@@ -194,7 +194,7 @@ public class AutoProgramBlueAway extends OpMode {
                             })
                             .build();
                     toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                            .lineToLinearHeading(spikeLeft)
+                            .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(() ->{
                                 drive.followTrajectoryAsync(toSpikeMark3);
                             })

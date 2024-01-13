@@ -46,7 +46,7 @@ public class main extends OpMode {
     double headingPower;
     //endregion
 
-    public static int HANG_DRONE_HEIGHT = 5200;
+    public static int HANG_DRONE_HEIGHT = 5500;
     public static int RIGGING_EXTENDED_POS = 14500;
 
     public static double DRONE_LAUNCH_POS = 0.3;

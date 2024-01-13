@@ -37,11 +37,11 @@ public class TeamPropDetection implements VisionProcessor {
         if(alliance.equals("red")){
             //pink range
             highHSV = new Scalar(180,250,250);
-            lowHSV = new Scalar(168,60,60);
+            lowHSV = new Scalar(168,100,60);
         }else if (alliance.equals("blue")){
             //blue range
-            highHSV = new Scalar(120,240,240);
-            lowHSV = new Scalar(100,80,80);
+            highHSV = new Scalar(115,240,240);
+            lowHSV = new Scalar(105,100,80);
         }
     }
 
@@ -73,11 +73,11 @@ public class TeamPropDetection implements VisionProcessor {
 
         Imgproc.morphologyEx(input, input, MORPH_OPEN, Imgproc.getStructuringElement(MORPH_RECT, new Size(3, 3)));
 
-        Rect leftScreen = new Rect(0, 0, width/4, height);
+        Rect leftScreen = new Rect(0, height/2, width/4, height/2);
 
-        Rect centerScreen = new Rect(width/4, 0, width/2, height);
+        Rect centerScreen = new Rect(width/4, height/2, width/2, height/2);
 
-        Rect rightScreen = new Rect((width/4)*3, 0, width/4, height);
+        Rect rightScreen = new Rect((width/4)*3, height/2, width/4, height/2);
 
 
         cropL = input.submat(leftScreen);

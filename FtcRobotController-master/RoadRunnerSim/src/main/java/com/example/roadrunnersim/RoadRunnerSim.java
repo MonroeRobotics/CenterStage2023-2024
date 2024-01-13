@@ -277,7 +277,7 @@ public class RoadRunnerSim {
                 //.addEntity(testBot)
                 //.addEntity(firstBot)
                 //.addEntity(secondBot)
-                .addEntity(thirdBot)
+                //.addEntity(thirdBot)
                 //.addEntity(fourBot)
                 //.addEntity(fiveBot)
                 //.addEntity(sixBot)
