@@ -168,10 +168,10 @@ public class RoadRunnerSim {
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(270)))
                                 .lineToLinearHeading(new Pose2d(-38,-30, Math.toRadians(0)))
-                                .forward(12) //dropping off action
-                                .strafeRight(12)
+                                .forward(6) //dropping off action
+                                .strafeLeft(12)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
@@ -279,7 +279,7 @@ public class RoadRunnerSim {
                 //.addEntity(secondBot)
                 //.addEntity(thirdBot)
                 //.addEntity(fourBot)
-                //.addEntity(fiveBot)
+                .addEntity(fiveBot)
                 //.addEntity(sixBot)
                 //.addEntity(sevenBot)
                 //.addEntity(eightBot)
