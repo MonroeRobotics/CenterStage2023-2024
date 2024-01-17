@@ -89,7 +89,7 @@ public class AutoProgramRedAway extends OpMode {
 
     Pose2d spikeLeft = new Pose2d(-42,-35, Math.toRadians(315));
 
-    Pose2d beforeTrussCord = new Pose2d(-48, -12, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
     Pose2d afterTrussCord = new Pose2d(30, -12, Math.toRadians(180));
     //endregion
 
