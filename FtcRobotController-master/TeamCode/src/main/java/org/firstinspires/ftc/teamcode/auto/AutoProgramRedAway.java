@@ -95,10 +95,10 @@ public class AutoProgramRedAway extends OpMode {
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(-35, -62, Math.toRadians(270));
 
     public static Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
-    public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
+    public static Pose2d rightRedBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+    public static Pose2d redParkCord = new Pose2d(40, -20, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -176,32 +176,32 @@ public class AutoProgramRedAway extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() && !Objects.equals(screenSector, "R")) {
+                if(!drive.isBusy() && Objects.equals(screenSector, "R")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(()->{
                                 toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
                                         .forward(12)
-                                        /*.addDisplacementMarker(()->{
-                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark.end())
-                                                    .strafeRight(12)
-                                                    .build();
-                                            drive.followTrajectoryAsync(toSpikeMark3);
-                                        })*/
+//                                        .addDisplacementMarker(()->{
+//                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
+//                                                    .strafeRight(12)
+//                                                    .build();
+//                                            drive.followTrajectoryAsync(toSpikeMark3);
+//                                        })
                                         .build();
                                 drive.followTrajectoryAsync(toSpikeMark2);
                             })
                             .build();
                     drive.followTrajectoryAsync(toSpikeMark);
                 }
-                if(!drive.isBusy() && !Objects.equals(screenSector, "C")) {
+                if(!drive.isBusy() && Objects.equals(screenSector, "C")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(()->{
                                 toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
                                         .forward(12)
                                         .addDisplacementMarker(()->{
-                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark.end())
+                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
                                                     .strafeRight(12)
                                                     .build();
                                             drive.followTrajectoryAsync(toSpikeMark3);
@@ -213,8 +213,9 @@ public class AutoProgramRedAway extends OpMode {
                     drive.followTrajectoryAsync(toSpikeMark);
 
                 }
-                else if (!drive.isBusy() && !Objects.equals(screenSector, "L")) {
+                else if (!drive.isBusy() &&  Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .back(18)
                             .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(() ->{
                                 toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
