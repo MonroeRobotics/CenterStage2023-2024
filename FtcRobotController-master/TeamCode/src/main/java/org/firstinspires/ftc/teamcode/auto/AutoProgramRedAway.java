@@ -52,6 +52,7 @@ public class AutoProgramRedAway extends OpMode {
     Trajectory toSpikeMark;
     Trajectory toSpikeMark2;
     Trajectory toSpikeMark3;
+    Trajectory toSpikeMark4;
     Trajectory toPreTruss;
     Trajectory toPostTruss;
     Trajectory toRedBoard;
@@ -86,7 +87,7 @@ public class AutoProgramRedAway extends OpMode {
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
     Pose2d spikeCenter = new Pose2d(-35,-33, Math.toRadians(270));
 
-    Pose2d spikeLeft = new Pose2d(-38,-30, Math.toRadians(0));
+    Pose2d spikeLeft = new Pose2d(-42,-35, Math.toRadians(315));
 
     Pose2d beforeTrussCord = new Pose2d(-48, -12, Math.toRadians(180));
     Pose2d afterTrussCord = new Pose2d(30, -12, Math.toRadians(180));
@@ -178,16 +179,16 @@ public class AutoProgramRedAway extends OpMode {
             case TO_SPIKE_MARK:
                 if(!drive.isBusy() && Objects.equals(screenSector, "R")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(spikeLocation)
+                            .back(18)
                             .addDisplacementMarker(()->{
                                 toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                        .forward(12)
-//                                        .addDisplacementMarker(()->{
-//                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-//                                                    .strafeRight(12)
-//                                                    .build();
-//                                            drive.followTrajectoryAsync(toSpikeMark3);
-//                                        })
+                                        .lineToLinearHeading(spikeLocation)
+                                        .addDisplacementMarker(()->{
+                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
+                                                    .forward(12)
+                                                    .build();
+                                            drive.followTrajectoryAsync(toSpikeMark3);
+                                        })
                                         .build();
                                 drive.followTrajectoryAsync(toSpikeMark2);
                             })
@@ -215,14 +216,20 @@ public class AutoProgramRedAway extends OpMode {
                 }
                 else if (!drive.isBusy() &&  Objects.equals(screenSector, "L")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .back(18)
-                            .lineToLinearHeading(spikeLocation)
+                            .back(12)
                             .addDisplacementMarker(() ->{
+                                Pose2d tempCord = drive.getPoseEstimate();
                                 toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                        .forward(4)
+                                        .lineToLinearHeading(spikeLocation)
                                         .addDisplacementMarker(() ->{
                                             toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-                                                    .strafeLeft(12)
+                                                    .lineToLinearHeading(tempCord)
+                                                    .addDisplacementMarker(() ->{
+                                                        toSpikeMark4 = drive.trajectoryBuilder(toSpikeMark3.end())
+                                                                .back(32)
+                                                                .build();
+                                                        drive.followTrajectoryAsync(toSpikeMark4);
+                                                    })
                                                     .build();
                                             drive.followTrajectoryAsync(toSpikeMark3);
                                         })
