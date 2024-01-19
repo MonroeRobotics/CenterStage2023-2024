@@ -27,7 +27,7 @@ public class main extends OpMode {
 
     //region Intake Variables
     public static double INTAKE_POWER = .8; //Power of Intake Motor
-    public static double INTAKE_POSITION = .3; //Position of Intake Servo
+    public static double INTAKE_POSITION = 0; //Position of Intake Servo
     boolean intakeActive = false;
     boolean reverseIntake = false;
 
