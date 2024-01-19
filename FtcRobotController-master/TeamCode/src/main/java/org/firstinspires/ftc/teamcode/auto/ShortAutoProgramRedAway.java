@@ -22,7 +22,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Short Red Away Auto", group = "Main")
+@Autonomous(name = "Short Red Away Auto", group = "Short")
 @Config
 public class ShortAutoProgramRedAway extends OpMode {
 

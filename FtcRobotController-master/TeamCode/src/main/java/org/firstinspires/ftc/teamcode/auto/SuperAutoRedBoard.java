@@ -22,7 +22,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Super Red Board Auto", group = "Main")
+@Autonomous(name = "Super Red Board Auto", group = "Super")
 @Config
 public class SuperAutoRedBoard extends OpMode {
 
