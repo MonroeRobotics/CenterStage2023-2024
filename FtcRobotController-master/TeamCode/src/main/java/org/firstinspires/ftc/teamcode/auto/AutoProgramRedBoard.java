@@ -81,7 +81,7 @@ public class AutoProgramRedBoard extends OpMode {
     Pose2d spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
     Pose2d spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
-    Pose2d spikeRight = new Pose2d(19.75,-37, Math.toRadians(240));
+    Pose2d spikeRight = new Pose2d(19,-37, Math.toRadians(240));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));

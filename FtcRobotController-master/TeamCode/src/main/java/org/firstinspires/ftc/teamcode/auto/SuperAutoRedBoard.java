@@ -13,8 +13,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.vision.AprilTagHomer;
@@ -23,9 +21,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "Super Red Board Auto", group = "Main")
+@Autonomous(name = "Super Red Board Auto", group = "Super")
 @Config
 public class SuperAutoRedBoard extends OpMode {
 
@@ -82,10 +79,10 @@ public class SuperAutoRedBoard extends OpMode {
     //region red board spike locations
     Pose2d spikeLocation;
 
-    Pose2d spikeLeft = new Pose2d(10,-30, Math.toRadians(0));
+    Pose2d spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    Pose2d spikeCenter = new Pose2d(12,-33, Math.toRadians(270));
-    Pose2d spikeRight = new Pose2d(19,-37, Math.toRadians(240));
+    Pose2d spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
+    Pose2d spikeRight = new Pose2d(19.75,-37, Math.toRadians(240));
     //endregion
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
@@ -203,7 +200,7 @@ public class SuperAutoRedBoard extends OpMode {
                 if(!drive.isBusy()){
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
-                    ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+                    /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
                     if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                         exposureControl.setMode(ExposureControl.Mode.Manual);
                     }
@@ -211,9 +208,7 @@ public class SuperAutoRedBoard extends OpMode {
 
                     // Set Gain.
                     GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-                    gainControl.setGain(CAMERA_GAIN);
-                    waitTimer = System.currentTimeMillis() + SPIKE_OUTTAKE_TIME;
-                    intakeMotor.setPower(-SPIKE_OUTTAKE_POWER);
+                    gainControl.setGain(CAMERA_GAIN);*/
                     queuedState = autoState.TO_BOARD;
                 }
                 break;
