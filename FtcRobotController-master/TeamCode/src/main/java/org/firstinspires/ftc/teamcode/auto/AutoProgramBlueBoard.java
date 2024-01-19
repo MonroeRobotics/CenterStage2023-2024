@@ -87,9 +87,9 @@ public class AutoProgramBlueBoard extends OpMode {
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
 
     //y was previously -35
-    public static Pose2d centerRedBoardCord = new Pose2d(35, 36, Math.toRadians(180));
-    public static Pose2d leftRedBoardCord = new Pose2d(35, 40, Math.toRadians(180));
-    public static Pose2d rightRedBoardCord = new Pose2d(35, 32, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
+    public static Pose2d leftBlueBoardCord = new Pose2d(35, 42, Math.toRadians(180));
+    public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, 38, Math.toRadians(180));
     public static Pose2d redParkCord = new Pose2d(48, 64, Math.toRadians(180));
 
@@ -152,15 +152,15 @@ public class AutoProgramBlueBoard extends OpMode {
                 if(screenSector != null) {
                     if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
-                        redBoardCord = leftRedBoardCord;
+                        redBoardCord = leftBlueBoardCord;
                         targetTagId = 1;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
-                        redBoardCord = centerRedBoardCord;
+                        redBoardCord = centerBlueBoardCord;
                         targetTagId = 2;
                     } else {
                         spikeLocation = spikeRight;
-                        redBoardCord = rightRedBoardCord;
+                        redBoardCord = rightBlueBoardCord;
                         targetTagId = 3;
                     }
 

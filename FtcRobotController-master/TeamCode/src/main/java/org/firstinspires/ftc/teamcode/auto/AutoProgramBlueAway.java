@@ -100,9 +100,9 @@ public class AutoProgramBlueAway extends OpMode {
 
     public static Pose2d STARTING_DRIVE_POS = new Pose2d(-35, 62, Math.toRadians(90));
 
-    public static Pose2d centerBlueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static Pose2d leftBlueBoardCord = new Pose2d(35, 40, Math.toRadians(180));
-    public static Pose2d rightBlueBoardCord = new Pose2d(35, 34, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 39, Math.toRadians(180));
+    public static Pose2d leftBlueBoardCord = new Pose2d(35, 41, Math.toRadians(180));
+    public static Pose2d rightBlueBoardCord = new Pose2d(35, 37, Math.toRadians(180));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
     public static Pose2d blueParkCord = new Pose2d(40, 20, Math.toRadians(180));
 
@@ -238,7 +238,6 @@ public class AutoProgramBlueAway extends OpMode {
                 break;
             case PRE_TRUSS:
                 if(!drive.isBusy()){
-                    drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), (drive.getPoseEstimate().getHeading() + Math.toRadians(TURN_ADJ))));
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
                     /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
@@ -259,6 +258,7 @@ public class AutoProgramBlueAway extends OpMode {
                 break;
             case POST_TRUSS:
                 if(!drive.isBusy()){
+                    drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), (drive.getPoseEstimate().getHeading() + Math.toRadians(TURN_ADJ))));
                     toPostTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(afterTrussCord)
                             .build();
