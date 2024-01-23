@@ -27,7 +27,7 @@ public class main extends OpMode {
 
     //region Intake Variables
     public static double INTAKE_POWER = .8; //Power of Intake Motor
-    public static double INTAKE_POSITION = .3; //Position of Intake Servo
+    public static double INTAKE_POSITION = 0; //Position of Intake Servo
     boolean intakeActive = false;
     boolean reverseIntake = false;
 
@@ -151,12 +151,12 @@ public class main extends OpMode {
             droneTimer = 1;
         }
 
-        if (currentGamepad2.options && System.currentTimeMillis() >= droneTimer){
+        if (currentGamepad2.options && !previousGamepad2.options && System.currentTimeMillis() >= droneTimer){
             hangMotor.setPower(1);
 
             hangMotor.setTargetPosition(HANG_DRONE_HEIGHT);
         }
-        if (currentGamepad2.touchpad && System.currentTimeMillis() >= droneTimer){
+        if (currentGamepad2.touchpad && currentGamepad2.options && System.currentTimeMillis() >= droneTimer){
             droneServo.setPosition(DRONE_LAUNCH_POS);
         }
 

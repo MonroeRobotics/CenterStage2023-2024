@@ -40,7 +40,7 @@ public class ArmController {
     public static int SLIDE_HEIGHT_SERVO_TRANSITION = 1000;
 
     double outtakeTimer = 0; //Timer to control outtake
-    public static double OUTTAKE_TIME = 300; //How Long Outtake runs for (ms)
+    public static double OUTTAKE_TIME = 150; //How Long Outtake runs for (ms)
     //endregion
 
     //region Arm Objects

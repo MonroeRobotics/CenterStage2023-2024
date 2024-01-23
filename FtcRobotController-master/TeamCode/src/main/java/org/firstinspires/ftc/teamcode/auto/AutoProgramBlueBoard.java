@@ -239,6 +239,7 @@ public class AutoProgramBlueBoard extends OpMode {
             case PLACE_BOARD:
                 if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
                     armController.startOuttake();
+                    armController.startOuttake();
                     waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
                     queuedState = autoState.PARK;
                     break;
