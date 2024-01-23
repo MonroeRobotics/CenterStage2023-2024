@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -11,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-public class TrackingHelper {
+public class HeadingHelper {
     SampleMecanumDrive drive;
     HardwareMap hardwareMap;
     IMU imu;
@@ -30,7 +29,7 @@ public class TrackingHelper {
 
     double timer;
 
-    public TrackingHelper(SampleMecanumDrive drive, HardwareMap hardwareMap, Telemetry telemetry, double initialHeading) {
+    public HeadingHelper(SampleMecanumDrive drive, HardwareMap hardwareMap, Telemetry telemetry, double initialHeading) {
         this.drive = drive;
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
