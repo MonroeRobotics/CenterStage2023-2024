@@ -29,12 +29,12 @@ public class HeadingHelper {
 
     double timer;
 
-    public HeadingHelper(SampleMecanumDrive drive, HardwareMap hardwareMap, Telemetry telemetry, double initialHeading) {
+    public HeadingHelper(SampleMecanumDrive drive, HardwareMap hardwareMap, Telemetry telemetry) {
         this.drive = drive;
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
 
-        this.initialHeading = initialHeading;
+        initialHeading = drive.getPoseEstimate().getHeading();
 
         timer = System.currentTimeMillis();
 

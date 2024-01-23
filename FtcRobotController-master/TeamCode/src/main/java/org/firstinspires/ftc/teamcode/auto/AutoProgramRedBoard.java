@@ -10,11 +10,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
+import org.firstinspires.ftc.teamcode.util.HeadingHelper;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -47,6 +49,8 @@ public class AutoProgramRedBoard extends OpMode {
     //endregion
 
     SampleMecanumDrive drive;
+
+    HeadingHelper headingHelper;
 
     //region Trajectory Declarations
     Trajectory toSpikeMark;
@@ -114,6 +118,8 @@ public class AutoProgramRedBoard extends OpMode {
         drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(STARTING_DRIVE_POS);
+
+        headingHelper = new HeadingHelper(drive, hardwareMap, telemetry);
 
         armController = new ArmController(hardwareMap);
 
