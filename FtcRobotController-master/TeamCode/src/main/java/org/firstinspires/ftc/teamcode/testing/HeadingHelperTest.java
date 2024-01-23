@@ -17,7 +17,7 @@ public class HeadingHelperTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        HeadingHelper hHelper = new HeadingHelper(drive, hardwareMap, telemetry , 90);
+        HeadingHelper hHelper = new HeadingHelper(drive, hardwareMap, telemetry);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
