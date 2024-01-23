@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.testing;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,12 +10,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.TrackingHelper;
 @TeleOp(group = "drive")
+@Config
 public class TrackingHelperTest extends LinearOpMode {
+
+    public static double initialHeading = 90;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        TrackingHelper tHelper = new TrackingHelper(drive, hardwareMap, telemetry , 0);
+        TrackingHelper tHelper = new TrackingHelper(drive, hardwareMap, telemetry , 90);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -30,6 +34,8 @@ public class TrackingHelperTest extends LinearOpMode {
             );
 
             drive.update();
+
+            tHelper.setInitialHeading(initialHeading);
 
             tHelper.loopMethod();
 

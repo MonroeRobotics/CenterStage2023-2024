@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import android.os.health.SystemHealthManager;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -11,17 +9,15 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Config
 public class TrackingHelper {
     SampleMecanumDrive drive;
     HardwareMap hardwareMap;
     IMU imu;
     Telemetry telemetry;
 
-    double initalHeading = 0;
+    double initialHeading;
 
     public static double pollInterval = 2000;
 
@@ -34,12 +30,12 @@ public class TrackingHelper {
 
     double timer;
 
-    public TrackingHelper(SampleMecanumDrive drive, HardwareMap hardwareMap, Telemetry telemetry, double initalHeading) {
+    public TrackingHelper(SampleMecanumDrive drive, HardwareMap hardwareMap, Telemetry telemetry, double initialHeading) {
         this.drive = drive;
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
 
-        this.initalHeading = initalHeading;
+        this.initialHeading = initialHeading;
 
         timer = System.currentTimeMillis();
 
@@ -58,12 +54,14 @@ public class TrackingHelper {
         YawPitchRollAngles yPR = getImuReading();
         telemetry.addData("Yaw", yPR.getYaw(AngleUnit.DEGREES));
         telemetry.addData("Adj. Yaw", getAdjustedYaw());
+        telemetry.addData("Adj. Yaw Radians", Math.toRadians(getAdjustedYaw()));
         telemetry.addData("Pitch", yPR.getPitch(AngleUnit.DEGREES));
         telemetry.addData("Roll", yPR.getRoll(AngleUnit.DEGREES));
+        telemetry.addData("Timer", timer);
 
-        if (timer > System.currentTimeMillis()){
+        if (timer < System.currentTimeMillis()){
             Pose2d currPose = drive.getPoseEstimate();
-            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), getAdjustedYaw())); // TODO: Check if this is in radians!!!! ***
+            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(getAdjustedYaw()))); // TODO: Check if this is in radians!!!! ***
             timer = System.currentTimeMillis() + pollInterval;
         }
     }
@@ -73,7 +71,11 @@ public class TrackingHelper {
     }
 
     public double getAdjustedYaw(){
-        return getImuReading().getYaw(AngleUnit.DEGREES) - initalHeading;
+        return getImuReading().getYaw(AngleUnit.DEGREES) + initialHeading;
+    }
+
+    public void setInitialHeading(double initialHeading){
+        this.initialHeading = initialHeading;
     }
 
 }
