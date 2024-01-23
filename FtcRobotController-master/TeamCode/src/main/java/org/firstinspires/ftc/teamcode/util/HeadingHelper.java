@@ -18,7 +18,7 @@ public class HeadingHelper {
 
     double initialHeading;
 
-    public static double pollInterval = 2000;
+    public static double pollInterval = 800;
 
 
     //USB Backward, Logo Left
@@ -34,7 +34,7 @@ public class HeadingHelper {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
 
-        initialHeading = drive.getPoseEstimate().getHeading();
+        initialHeading = Math.toDegrees(drive.getPoseEstimate().getHeading());
 
         timer = System.currentTimeMillis();
 

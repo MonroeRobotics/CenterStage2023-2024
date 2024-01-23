@@ -290,6 +290,8 @@ public class AutoProgramRedBoard extends OpMode {
                 }
         }
 
+        headingHelper.loopMethod();
+
         telemetry.update();
 
         drive.update();
