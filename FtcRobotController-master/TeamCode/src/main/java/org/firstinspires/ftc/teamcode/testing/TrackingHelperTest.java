@@ -14,7 +14,7 @@ public class TrackingHelperTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        TrackingHelper tHelper = new TrackingHelper(drive, hardwareMap, telemetry);
+        TrackingHelper tHelper = new TrackingHelper(drive, hardwareMap, telemetry , 0);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
