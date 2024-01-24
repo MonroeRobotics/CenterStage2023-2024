@@ -219,4 +219,15 @@ public class ArmController {
 
         boxServo.setPosition(BOX_SERVO_POSITION);
     }
+
+    public void resetSlideZero(){
+
+        leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        setSlideHeight(0);
+    }
 }

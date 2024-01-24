@@ -230,6 +230,15 @@ public class main extends OpMode {
             armController.startOuttake();
         }
 
+        if(currentGamepad2.left_bumper) {
+            if (currentGamepad2.right_trigger > 0.2)
+                armController.setSlideHeight(armController.getSlideHeight() + 20);
+            else if (currentGamepad2.left_trigger > 0.2)
+                armController.setSlideHeight(armController.getSlideHeight() - 20);
+        }
+
+        if(currentGamepad2.left_stick_button && currentGamepad2.right_stick_button && armController.getSlideHeight() != 0)
+            armController.resetSlideZero();
 
         //Manual Jog For Slides (In Case of emergency)
         if(currentGamepad2.right_bumper && currentGamepad2.left_bumper){
