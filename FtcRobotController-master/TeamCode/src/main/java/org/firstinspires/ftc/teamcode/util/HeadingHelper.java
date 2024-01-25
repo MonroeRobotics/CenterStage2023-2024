@@ -60,7 +60,7 @@ public class HeadingHelper {
 
         if (timer < System.currentTimeMillis()){
             Pose2d currPose = drive.getPoseEstimate();
-            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(getAdjustedYaw()))); // TODO: Check if this is in radians!!!! ***
+            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(getAdjustedYaw())));
             timer = System.currentTimeMillis() + pollInterval;
         }
     }
