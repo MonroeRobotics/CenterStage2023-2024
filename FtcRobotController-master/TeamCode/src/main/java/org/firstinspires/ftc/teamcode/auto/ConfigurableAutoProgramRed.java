@@ -195,9 +195,10 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
                         queuedState = autoState.TO_SPIKE_MARK;
                     }
+                    waitTimer = System.currentTimeMillis() + autoConfiguration.getDelay();
                     break;
                 case TO_SPIKE_MARK:
-                    if (!drive.isBusy() && !Objects.equals(screenSector, "L")) {
+                    if (!drive.isBusy() && !Objects.equals(screenSector, "L") && System.currentTimeMillis() > waitTimer) {
                         toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(spikeLocation)
                                 .addDisplacementMarker(() -> {
@@ -214,7 +215,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             queuedState = autoState.VISION_SWITCH;
                         }
 
-                    } else if (!drive.isBusy()) {
+                    } else if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
                         toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .back(12)
                                 .addDisplacementMarker(() -> {
@@ -295,6 +296,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case PARK:
                     if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
                         //Trajectory to Park Pos
+
+                        
 
                         redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .forward(5)
