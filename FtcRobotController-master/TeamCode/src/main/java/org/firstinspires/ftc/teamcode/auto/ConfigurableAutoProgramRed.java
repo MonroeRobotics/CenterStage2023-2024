@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
 import org.firstinspires.ftc.teamcode.util.HeadingHelper;
@@ -55,7 +56,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     HeadingHelper headingHelper;
 
     //region Trajectory Declarations
-    Trajectory toSpikeMark;
+    TrajectorySequence toSpikeMark;
     Trajectory toSpikeMark2;
     Trajectory toSpikeMark3;
     Trajectory toRedBoard;
@@ -199,16 +200,11 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case TO_SPIKE_MARK:
                     if (!drive.isBusy() && !Objects.equals(screenSector, "L") && System.currentTimeMillis() > waitTimer) {
-                        toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(spikeLocation)
-                                .addDisplacementMarker(() -> {
-                                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                            .forward(12)
-                                            .build();
-                                    drive.followTrajectoryAsync(toSpikeMark2);
-                                })
+                                .forward(12)
                                 .build();
-                        drive.followTrajectoryAsync(toSpikeMark);
+                        drive.followTrajectorySequenceAsync(toSpikeMark);
                         if(autoConfiguration.isPurplePixelOnly()){
                             queuedState = autoState.STOP;
                         }else{
@@ -216,22 +212,12 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         }
 
                     } else if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
-                        toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .back(12)
-                                .addDisplacementMarker(() -> {
-                                    toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                            .lineToLinearHeading(spikeLocation)
-                                            .addDisplacementMarker(() -> {
-                                                toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-                                                        .forward(12)
-                                                        .build();
-                                                drive.followTrajectoryAsync(toSpikeMark3);
-                                            })
-                                            .build();
-                                    drive.followTrajectoryAsync(toSpikeMark2);
-                                })
+                                .lineToLinearHeading(spikeLocation)
+                                .forward(12)
                                 .build();
-                        drive.followTrajectoryAsync(toSpikeMark);
+                        drive.followTrajectorySequenceAsync(toSpikeMark);
                         if(autoConfiguration.isPurplePixelOnly()){
                             queuedState = autoState.STOP;
                         }else{
