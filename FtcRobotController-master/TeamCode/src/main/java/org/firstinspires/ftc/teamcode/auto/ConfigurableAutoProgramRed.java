@@ -95,7 +95,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
     public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+    public static Pose2d redParkCord;
 
     enum autoState {
         START,
@@ -280,7 +280,11 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
                         //Trajectory to Park Pos
 
-                        
+                        if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.SIDE){
+                            redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+                        }else{
+                            redParkCord = new Pose2d(40, -20, Math.toRadians(180));
+                        }
 
                         redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .forward(5)
@@ -295,7 +299,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .build();
                         //Start Following Trajectory
                         drive.followTrajectoryAsync(redBoardPark1);
-                        //Put slide and arm back to intake position
+
+
 
 
                         waitTimer = System.currentTimeMillis() + PARK_TIME;
