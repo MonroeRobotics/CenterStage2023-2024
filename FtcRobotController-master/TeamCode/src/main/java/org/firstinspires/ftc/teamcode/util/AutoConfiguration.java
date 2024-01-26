@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.qualcomm.robotcore.hardware.Gamepad;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class AutoConfiguration {
@@ -15,8 +17,10 @@ public class AutoConfiguration {
         BLUE
     }
 
-    public enum currVari{
-        delay
+    public enum AdjVariables{
+        DELAY,
+        WHITE_PIXELS,
+        PARKSIDE
     }
 
     boolean whitePixels;
@@ -24,7 +28,12 @@ public class AutoConfiguration {
 
     ParkSide parkSide;
     AllianceColor allianceColor;
-    currVari cV = currVari.delay;
+    AdjVariables currentVariable = AdjVariables.DELAY;
+
+    AdjVariables[] adjVariables = AdjVariables.values();
+
+    int currVIndex = 0;
+
 
     public AutoConfiguration(Telemetry telemetry, AllianceColor allianceColor){
         this.telemetry = telemetry;
@@ -41,7 +50,60 @@ public class AutoConfiguration {
         this.whitePixels = whitePixels;
     }
 
-    public void loopInit(){
-        telemetry.addData(((cV == currVari.delay ? "*" : "") + "Delay"), delay);
+    public void processInput(Gamepad currentGamepad, Gamepad previousGamepad){
+        if(currentGamepad.dpad_down && !previousGamepad.dpad_down && currVIndex < adjVariables.length){
+            currVIndex += 1;
+            currentVariable = adjVariables[currVIndex];
+        }
+        else if(currentGamepad.dpad_up && !previousGamepad.dpad_up && currVIndex > 0){
+            currVIndex -= 1;
+            currentVariable = adjVariables[currVIndex];
+        }
+        else if(currentGamepad.dpad_right && !previousGamepad.dpad_right) {
+            switch (currentVariable) {
+                case DELAY:
+                    if(delay < 30){
+                        delay += 1;
+                    }
+                    break;
+                case WHITE_PIXELS:
+                    whitePixels = !whitePixels;
+                    break;
+                case PARKSIDE:
+                    if(parkSide == ParkSide.SIDE){
+                        parkSide = ParkSide.MIDDLE;
+                    }
+                    else{
+                        parkSide = ParkSide.SIDE;
+                    }
+                    break;
+            }
+        }
+        else if(currentGamepad.dpad_left && !previousGamepad.dpad_left) {
+            switch (currentVariable) {
+                case DELAY:
+                    if(delay > 0){
+                        delay -= 1;
+                    }
+                    break;
+                case WHITE_PIXELS:
+                    whitePixels = !whitePixels;
+                    break;
+                case PARKSIDE:
+                    if(parkSide == ParkSide.SIDE){
+                        parkSide = ParkSide.MIDDLE;
+                    }
+                    else{
+                        parkSide = ParkSide.SIDE;
+                    }
+                    break;
+            }
+        }
+
+        telemetry.addData("Current Color", allianceColor);
+        telemetry.addData(((currentVariable == AdjVariables.DELAY ? "*" : "") + "Delay"), delay);
+        telemetry.addData(((currentVariable == AdjVariables.WHITE_PIXELS ? "*" : "") + "White Pixel"), whitePixels);
+        telemetry.addData(((currentVariable == AdjVariables.PARKSIDE ? "*" : "") + "ParkSide"), parkSide);
+        telemetry.update();
     }
 }

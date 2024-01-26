@@ -23,7 +23,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Red Board Auto", group = "Main")
+@Autonomous(name = "Configurable Red Board Auto", group = "Main")
 @Config
 public class ConfigurableAutoProgramRed extends LinearOpMode {
 
