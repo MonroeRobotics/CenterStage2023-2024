@@ -57,8 +57,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     //region Trajectory Declarations
     TrajectorySequence toSpikeMark;
-    Trajectory toSpikeMark2;
-    Trajectory toSpikeMark3;
     Trajectory toRedBoard;
     Trajectory redBoardPark1;
     Trajectory redBoardPark2;
@@ -86,7 +84,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Pose2d spikeLocation;
 
     Pose2d spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
-    Vector2d spikeLeftSpline = new Vector2d(11,-32);
     Pose2d spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
     Pose2d spikeRight = new Pose2d(19,-37, Math.toRadians(240));
     //endregion
