@@ -18,15 +18,24 @@ public class AutoConfiguration {
     }
 
     public enum AdjVariables{
+        START_POSITION,
         DELAY,
+        PURPLEE_PIXEL_ONLY,
         WHITE_PIXELS,
-        PARKSIDE
+        PARK_SIDE
     }
 
+    public enum StartPosition{
+        BOARD,
+        AWAY
+    }
     boolean whitePixels;
+    boolean purplePixelOnly;
+
     int delay;
 
     ParkSide parkSide;
+    StartPosition startPosition;
     AllianceColor allianceColor;
     AdjVariables currentVariable = AdjVariables.DELAY;
 
@@ -39,19 +48,27 @@ public class AutoConfiguration {
         this.telemetry = telemetry;
         this.allianceColor = allianceColor;
         parkSide = ParkSide.SIDE;
+        startPosition = StartPosition.BOARD;
         delay = 0;
         whitePixels = false;
+        purplePixelOnly = false;
     }
-    public AutoConfiguration(Telemetry telemetry, AllianceColor allianceColor, ParkSide parkSide, int delay, boolean whitePixels){
+    public AutoConfiguration(Telemetry telemetry, AllianceColor allianceColor, ParkSide parkSide, StartPosition startPosition, int delay, boolean whitePixels, boolean purplePixelOnly){
         this.telemetry = telemetry;
         this.allianceColor = allianceColor;
         this.parkSide = parkSide;
+        this.startPosition = startPosition;
         this.delay = delay;
         this.whitePixels = whitePixels;
+        this.purplePixelOnly = purplePixelOnly;
     }
 
     public boolean isWhitePixels() {
         return whitePixels;
+    }
+
+    public boolean isPurplePixelOnly(){
+        return purplePixelOnly;
     }
 
     public int getDelay() {
@@ -60,6 +77,10 @@ public class AutoConfiguration {
 
     public ParkSide getParkSide() {
         return parkSide;
+    }
+
+    public StartPosition getStartPosition(){
+        return startPosition;
     }
 
     public void processInput(Gamepad currentGamepad, Gamepad previousGamepad){
@@ -73,15 +94,26 @@ public class AutoConfiguration {
         }
         else if(currentGamepad.dpad_right && !previousGamepad.dpad_right) {
             switch (currentVariable) {
+                case START_POSITION:
+                    if(startPosition == StartPosition.BOARD){
+                        startPosition = StartPosition.AWAY;
+                    }
+                    else{
+                        startPosition = StartPosition.BOARD;
+                    }
+                    break;
                 case DELAY:
                     if(delay < 30){
                         delay += 1;
                     }
                     break;
+                case PURPLEE_PIXEL_ONLY:
+                    purplePixelOnly = !purplePixelOnly;
+                    break;
                 case WHITE_PIXELS:
                     whitePixels = !whitePixels;
                     break;
-                case PARKSIDE:
+                case PARK_SIDE:
                     if(parkSide == ParkSide.SIDE){
                         parkSide = ParkSide.MIDDLE;
                     }
@@ -93,15 +125,26 @@ public class AutoConfiguration {
         }
         else if(currentGamepad.dpad_left && !previousGamepad.dpad_left) {
             switch (currentVariable) {
+                case START_POSITION:
+                    if(startPosition == StartPosition.BOARD){
+                        startPosition = StartPosition.AWAY;
+                    }
+                    else{
+                        startPosition = StartPosition.BOARD;
+                    }
+                    break;
                 case DELAY:
                     if(delay > 0){
                         delay -= 1;
                     }
                     break;
+                case PURPLEE_PIXEL_ONLY:
+                    purplePixelOnly = !purplePixelOnly;
+                    break;
                 case WHITE_PIXELS:
                     whitePixels = !whitePixels;
                     break;
-                case PARKSIDE:
+                case PARK_SIDE:
                     if(parkSide == ParkSide.SIDE){
                         parkSide = ParkSide.MIDDLE;
                     }
@@ -109,13 +152,16 @@ public class AutoConfiguration {
                         parkSide = ParkSide.SIDE;
                     }
                     break;
+
             }
         }
 
         telemetry.addData("Current Color", allianceColor);
+        telemetry.addData(((currentVariable == AdjVariables.START_POSITION ? "*" : "") + "Start Position"), startPosition);
         telemetry.addData(((currentVariable == AdjVariables.DELAY ? "*" : "") + "Delay"), delay);
+        telemetry.addData(((currentVariable == AdjVariables.PURPLEE_PIXEL_ONLY ? "*" : "") + "Purple Pixel Only"), purplePixelOnly);
         telemetry.addData(((currentVariable == AdjVariables.WHITE_PIXELS ? "*" : "") + "White Pixel"), whitePixels);
-        telemetry.addData(((currentVariable == AdjVariables.PARKSIDE ? "*" : "") + "ParkSide"), parkSide);
+        telemetry.addData(((currentVariable == AdjVariables.PARK_SIDE ? "*" : "") + "Park Side"), parkSide);
         telemetry.update();
     }
 }

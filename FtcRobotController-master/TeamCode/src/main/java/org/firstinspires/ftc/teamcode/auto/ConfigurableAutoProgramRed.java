@@ -11,11 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
+import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
 import org.firstinspires.ftc.teamcode.util.HeadingHelper;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
@@ -100,7 +102,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     enum autoState {
         START,
         TO_SPIKE_MARK,
-        OUTTAKE_SPIKE,
+        VISION_SWITCH,
         TO_BOARD,
         HOME_TAG,
         PLACE_BOARD,
@@ -109,6 +111,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     }
 
     autoState queuedState = autoState.START;
+
+    //region autoConfiguration variables
+    Gamepad currentGamepad;
+    Gamepad previousGamepad;
+    AutoConfiguration autoConfiguration;
+
+
+    //endregion
 
     @Override
     public void runOpMode() {
@@ -146,7 +156,18 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
 
+        currentGamepad = new Gamepad();
+        previousGamepad = new Gamepad();
+        currentGamepad.copy(gamepad1);
+        previousGamepad.copy(gamepad1);
+
+        autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
         while(opModeInInit()){
+            autoConfiguration.processInput(currentGamepad, previousGamepad);
+
+            previousGamepad.copy(currentGamepad);
+            currentGamepad.copy(gamepad1);
+
 
         }
 
@@ -187,7 +208,12 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 })
                                 .build();
                         drive.followTrajectoryAsync(toSpikeMark);
-                        queuedState = autoState.OUTTAKE_SPIKE;
+                        if(autoConfiguration.isPurplePixelOnly()){
+                            queuedState = autoState.STOP;
+                        }else{
+                            queuedState = autoState.VISION_SWITCH;
+                        }
+
                     } else if (!drive.isBusy()) {
                         toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .back(12)
@@ -205,10 +231,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 })
                                 .build();
                         drive.followTrajectoryAsync(toSpikeMark);
-                        queuedState = autoState.OUTTAKE_SPIKE;
+                        if(autoConfiguration.isPurplePixelOnly()){
+                            queuedState = autoState.STOP;
+                        }else{
+                            queuedState = autoState.VISION_SWITCH;
+                        }
                     }
                     break;
-                case OUTTAKE_SPIKE:
+                case VISION_SWITCH:
                     if (!drive.isBusy()) {
                         visionPortal.setProcessorEnabled(propDetection, false);
                         visionPortal.setProcessorEnabled(aprilTagDetector, true);
