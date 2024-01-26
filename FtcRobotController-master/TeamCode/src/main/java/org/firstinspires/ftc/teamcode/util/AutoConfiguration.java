@@ -50,6 +50,18 @@ public class AutoConfiguration {
         this.whitePixels = whitePixels;
     }
 
+    public boolean isWhitePixels() {
+        return whitePixels;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public ParkSide getParkSide() {
+        return parkSide;
+    }
+
     public void processInput(Gamepad currentGamepad, Gamepad previousGamepad){
         if(currentGamepad.dpad_down && !previousGamepad.dpad_down && currVIndex < adjVariables.length){
             currVIndex += 1;
