@@ -94,14 +94,16 @@ public class ArmTuner extends OpMode {
         //Sets up telemetry to work with FTC Dashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        armController = new ArmController(hardwareMap);
+        armController.initArm();
+
         //region Intake Init
         //region Intake Hardware Map
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         //endregion
 
-        armController = new ArmController(hardwareMap);
-        armController.initArm();
+
 
        /* //region Intake Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
