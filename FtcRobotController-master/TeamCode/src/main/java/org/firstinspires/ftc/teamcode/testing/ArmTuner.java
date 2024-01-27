@@ -26,11 +26,11 @@ public class ArmTuner extends OpMode {
 
 
     //region FTC Dashboard config variables
-    public static double ARM_POSITION = 0.5;
+    public static double ARM_POSITION = 0;
     public static double OUTTAKE_POWER = 0;
     public static int SLIDE_HEIGHT = 30;
 
-    public static double BOX_POS = 0.5;
+    public static double BOX_POS = 0.25;
 
     public static int RIGGING_POSITION = 20;
 

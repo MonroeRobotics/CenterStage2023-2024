@@ -31,10 +31,10 @@ public class ArmController {
 
     double ARM_POSITION = 0; //Live Updating Arm Servo Position (0 is intake position)
     public static double ARM_SERVO_FORWARD = 0;//Stores Value of Arm intake Position
-    public static double ARM_SERVO_BACKWARD = 0.9;//Stores Value of Arm outtake Position
+    public static double ARM_SERVO_BACKWARD = 1;//Stores Value of Arm outtake Position
 
-    double BOX_SERVO_POSITION = .2; //Live Updating Box Position (.15 is intake position)
-    public static double BOX_SERVO_FORWARD = .2; //Stores Value of Box intake Position
+    double BOX_SERVO_POSITION = .25; //Live Updating Box Position (.15 is intake position)
+    public static double BOX_SERVO_FORWARD = .25; //Stores Value of Box intake Position
     public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
     public static double BOX_SERVO_BACKWARD = 0.85; //Stores value of Box Outtake position
     public static int SLIDE_HEIGHT_SERVO_TRANSITION = 1000;
