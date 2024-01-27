@@ -110,7 +110,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Pose2d whiteStackCord = new Pose2d(-56, -11, Math.toRadians(180));
 
 
-    Pose2d startingDrivePose;
+    Pose2d startingDrivePose = new Pose2d(10, -62, Math.toRadians(270));
 
     Pose2d startingDrivePoseBoard = new Pose2d(10, -62, Math.toRadians(270));
     Pose2d startingDrivePoseAway = new Pose2d(-35, -62, Math.toRadians(270));
@@ -206,8 +206,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
         drive.setPoseEstimate(startingDrivePose);
 
-
-
+        headingHelper.setInitialHeading(Math.toDegrees(startingDrivePose.getHeading()));
 
         while (opModeIsActive()) {
             telemetry.addData("Next auto State", queuedState);
@@ -240,9 +239,10 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             targetTagId = 6;
                         }
 
-                        queuedState = autoState.TO_SPIKE_MARK;
+
                     }
-                    waitTimer = System.currentTimeMillis() + autoConfiguration.getDelay();
+                    waitTimer = System.currentTimeMillis() + autoConfiguration.getDelay() * 1000L;
+                    queuedState = autoState.TO_SPIKE_MARK;
                     break;
                 case TO_SPIKE_MARK:
                     if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
@@ -340,8 +340,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case GRAB_WHITE:
                     if(!drive.isBusy()) {
-
-
                         if (colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) {
                             intakeActive = false;
                             reverseIntake = true;

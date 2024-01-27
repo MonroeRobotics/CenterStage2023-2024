@@ -8,7 +8,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -24,9 +23,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Blue Board Auto", group = "Main")
+@Autonomous(name = "Configurable Blue Board Auto", group = "Main")
 @Config
-public class ConfigurableAutoProgramBlueBoard extends LinearOpMode {
+public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
     //region Dashboard Variable Declarations
 
@@ -88,7 +87,7 @@ public class ConfigurableAutoProgramBlueBoard extends LinearOpMode {
     Pose2d spikeLeft = new Pose2d(19.75,37, Math.toRadians(120));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
+    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
 
     //y was previously -35
     public static Pose2d centerBlueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
