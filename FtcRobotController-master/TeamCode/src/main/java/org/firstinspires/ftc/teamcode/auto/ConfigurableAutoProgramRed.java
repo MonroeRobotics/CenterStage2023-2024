@@ -58,12 +58,10 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     //region Trajectory Declarations
     TrajectorySequence toSpikeMark;
     Trajectory toRedBoard;
-    Trajectory redBoardPark1;
-    Trajectory redBoardPark2;
+    TrajectorySequence redBoardPark;
     Trajectory toPreTruss;
     Trajectory toPostTruss;
     //endregion
-
     ArmController armController;
 
     //region Intake Objects
@@ -90,10 +88,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Pose2d spikeRight;
     //endregion
 
-    public static Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
-    public static Pose2d afterTrussCord = new Pose2d(30, -12, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, -12, Math.toRadians(180));
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
+    Pose2d startingDrivePose;
+
+    Pose2d startingDrivePoseBoard = new Pose2d(10, -62, Math.toRadians(270));
+    Pose2d startingDrivePoseAway = new Pose2d(-35, -62, Math.toRadians(270));
+
 
     //y was previously -35
     public static Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
@@ -121,18 +123,16 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Gamepad currentGamepad;
     Gamepad previousGamepad;
     AutoConfiguration autoConfiguration;
-
-
     //endregion
 
     @Override
     public void runOpMode() {
 
+        autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         drive = new SampleMecanumDrive(hardwareMap);
-
-        drive.setPoseEstimate(STARTING_DRIVE_POS);
 
         headingHelper = new HeadingHelper(drive, hardwareMap, telemetry);
 
@@ -166,15 +166,22 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         currentGamepad.copy(gamepad1);
         previousGamepad.copy(gamepad1);
 
-        autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
+
         while(opModeInInit()){
             autoConfiguration.processInput(currentGamepad, previousGamepad);
 
             previousGamepad.copy(currentGamepad);
             currentGamepad.copy(gamepad1);
-
-
         }
+
+        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
+            startingDrivePose = startingDrivePoseBoard;
+        }
+        else{
+            startingDrivePose = startingDrivePoseAway;
+        }
+
+        drive.setPoseEstimate(startingDrivePose);
 
 
         while (opModeIsActive()) {
@@ -213,28 +220,69 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     waitTimer = System.currentTimeMillis() + autoConfiguration.getDelay();
                     break;
                 case TO_SPIKE_MARK:
-                    if (!drive.isBusy() && !Objects.equals(screenSector, "L") && System.currentTimeMillis() > waitTimer) {
-                        toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(spikeLocation)
-                                .forward(12)
-                                .build();
-                        drive.followTrajectorySequenceAsync(toSpikeMark);
-                        if(autoConfiguration.isPurplePixelOnly()){
-                            queuedState = autoState.STOP;
-                        }else{
-                            queuedState = autoState.VISION_SWITCH;
-                        }
+                    if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
+                        switch (autoConfiguration.getStartPosition()) { //Switch for Spike Mark Pathing Depending on Side of Board
 
-                    } else if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
-                        toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .back(12)
-                                .lineToLinearHeading(spikeLocation)
-                                .forward(12)
-                                .build();
-                        drive.followTrajectorySequenceAsync(toSpikeMark);
-                        if(autoConfiguration.isPurplePixelOnly()){
+                            //region Board Spike Mark Pathing
+                            case BOARD:
+                                if(!Objects.equals(screenSector, "L")) {
+                                    toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                            .lineToLinearHeading(spikeLocation)
+                                            .forward(12)
+                                            .build();
+                                    drive.followTrajectorySequenceAsync(toSpikeMark);
+                                }
+
+                                else{
+                                    toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                            .back(12)
+                                            .lineToLinearHeading(spikeLocation)
+                                            .forward(12)
+                                            .build();
+                                    drive.followTrajectorySequenceAsync(toSpikeMark);
+
+                                }
+                                break;
+                            //endregion
+
+                            //region Away Spike Mark Pathing
+                            case AWAY:
+                                if(Objects.equals(screenSector, "R")) {
+                                    toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                            .back(18)
+                                            .lineToLinearHeading(spikeLocation)
+                                            .forward(12)
+                                            .build();
+                                    drive.followTrajectorySequenceAsync(toSpikeMark);
+                                }
+                                if(Objects.equals(screenSector, "C")) {
+                                    toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                            .lineToLinearHeading(spikeLocation)
+                                            .forward(12)
+                                            .strafeRight(16)
+                                            .back(28)
+                                            .build();
+                                    drive.followTrajectorySequenceAsync(toSpikeMark);
+                                }
+                                else if (Objects.equals(screenSector, "L")) {
+                                    final Pose2d[] tempCord = {drive.getPoseEstimate()};
+                                    toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                            .back(12)
+                                            .addDisplacementMarker(() ->{
+                                                tempCord[0] = drive.getPoseEstimate();
+                                            })
+                                            .lineToLinearHeading(spikeLocation)
+                                            .lineToLinearHeading(tempCord[0])
+                                            .back(32)
+                                            .build();
+                                    drive.followTrajectorySequenceAsync(toSpikeMark);
+                                }
+                                break;
+                            //endregion
+                        }
+                        if (autoConfiguration.isPurplePixelOnly()) {
                             queuedState = autoState.STOP;
-                        }else{
+                        } else {
                             queuedState = autoState.VISION_SWITCH;
                         }
                     }
@@ -243,37 +291,20 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     if (!drive.isBusy()) {
                         visionPortal.setProcessorEnabled(propDetection, false);
                         visionPortal.setProcessorEnabled(aprilTagDetector, true);
-                    /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-                    if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                        exposureControl.setMode(ExposureControl.Mode.Manual);
-                    }
-                    exposureControl.setExposure((long)CAMERA_EXPOSURE, TimeUnit.MILLISECONDS);
 
-                    // Set Gain.
-                    GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-                    gainControl.setGain(CAMERA_GAIN);*/
+                        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD)
                         queuedState = autoState.TO_BOARD;
+
+                        else queuedState = autoState.PRE_TRUSS;
                     }
                     break;
                 case PRE_TRUSS:
                     if(!drive.isBusy()){
-//                    drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), (drive.getExternalHeading() + TURN_ADJ)));
-                        visionPortal.setProcessorEnabled(propDetection, false);
-                        visionPortal.setProcessorEnabled(aprilTagDetector, true);
-                    /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-                    if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                        exposureControl.setMode(ExposureControl.Mode.Manual);
-                    }
-                    exposureControl.setExposure((long)CAMERA_EXPOSURE, TimeUnit.MILLISECONDS);
-
-                    // Set Gain.
-                    GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-                    gainControl.setGain(CAMERA_GAIN);*/
                         toPreTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(beforeTrussCord)
                                 .build();
                         drive.followTrajectoryAsync(toPreTruss);
-                        queuedState = AutoProgramRedAway.autoState.POST_TRUSS;
+                        queuedState = autoState.POST_TRUSS;
                     }
                     break;
                 case POST_TRUSS:
@@ -282,7 +313,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .lineToLinearHeading(afterTrussCord)
                                 .build();
                         drive.followTrajectoryAsync(toPostTruss);
-                        queuedState = AutoProgramRedAway.autoState.TO_BOARD;
+                        queuedState = autoState.TO_BOARD;
                     }
                     break;
                 case TO_BOARD:
@@ -333,19 +364,16 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             redParkCord = new Pose2d(40, -20, Math.toRadians(180));
                         }
 
-                        redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        redBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .forward(5)
                                 .addDisplacementMarker(() -> {
                                     armController.switchArmState();
                                     armController.setSlideHeight(-10);
-                                    drive.followTrajectoryAsync(redBoardPark2);
                                 })
-                                .build();
-                        redBoardPark2 = drive.trajectoryBuilder(redBoardPark1.end())
                                 .lineToLinearHeading(redParkCord)
                                 .build();
                         //Start Following Trajectory
-                        drive.followTrajectoryAsync(redBoardPark1);
+                        drive.followTrajectorySequenceAsync(redBoardPark);
 
 
 

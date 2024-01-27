@@ -52,7 +52,7 @@ public class AutoProgramRedAway extends OpMode {
     SampleMecanumDrive drive;
 
     //region Trajectory Declarations
-    Trajectory toSpikeMark;
+    TrajectorySequence toSpikeMark;
     TrajectorySequence toSpikeMarkSequence;
     Trajectory toSpikeMark2;
     Trajectory toSpikeMark3;
@@ -182,22 +182,12 @@ public class AutoProgramRedAway extends OpMode {
                 break;
             case TO_SPIKE_MARK:
                 if(!drive.isBusy() && Objects.equals(screenSector, "R")) {
-                    toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    toSpikeMarkSequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .back(18)
-                            .addDisplacementMarker(()->{
-                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                        .lineToLinearHeading(spikeLocation)
-                                        .addDisplacementMarker(()->{
-                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-                                                    .forward(12)
-                                                    .build();
-                                            drive.followTrajectoryAsync(toSpikeMark3);
-                                        })
-                                        .build();
-                                drive.followTrajectoryAsync(toSpikeMark2);
-                            })
+                            .lineToLinearHeading(spikeLocation)
+                            .forward(12)
                             .build();
-                    drive.followTrajectoryAsync(toSpikeMark);
+                    drive.followTrajectorySequenceAsync(toSpikeMark);
                 }
                 if(!drive.isBusy() && Objects.equals(screenSector, "C")) {
                     toSpikeMarkSequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -209,35 +199,22 @@ public class AutoProgramRedAway extends OpMode {
                     drive.followTrajectorySequenceAsync(toSpikeMarkSequence);
                 }
                 else if (!drive.isBusy() &&  Objects.equals(screenSector, "L")) {
-                    toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    final Pose2d[] tempCord = {drive.getPoseEstimate()};
+                    toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .back(12)
                             .addDisplacementMarker(() ->{
-                                Pose2d tempCord = drive.getPoseEstimate();
-                                toSpikeMark2 = drive.trajectoryBuilder(toSpikeMark.end())
-                                        .lineToLinearHeading(spikeLocation)
-                                        .addDisplacementMarker(() ->{
-                                            toSpikeMark3 = drive.trajectoryBuilder(toSpikeMark2.end())
-                                                    .lineToLinearHeading(tempCord)
-                                                    .addDisplacementMarker(() ->{
-                                                        toSpikeMark4 = drive.trajectoryBuilder(toSpikeMark3.end())
-                                                                .back(32)
-                                                                .build();
-                                                        drive.followTrajectoryAsync(toSpikeMark4);
-                                                    })
-                                                    .build();
-                                            drive.followTrajectoryAsync(toSpikeMark3);
-                                        })
-                                        .build();
-                                drive.followTrajectoryAsync(toSpikeMark2);
+                                tempCord[0] = drive.getPoseEstimate();
                             })
+                            .lineToLinearHeading(spikeLocation)
+                            .lineToLinearHeading(tempCord[0])
+                            .back(32)
                             .build();
-                    drive.followTrajectoryAsync(toSpikeMark);
+                    drive.followTrajectorySequenceAsync(toSpikeMark);
                 }
                 queuedState = autoState.PRE_TRUSS;
                 break;
             case PRE_TRUSS:
                 if(!drive.isBusy()){
-//                    drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), (drive.getExternalHeading() + TURN_ADJ)));
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
                     /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
