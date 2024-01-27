@@ -26,11 +26,11 @@ public class ArmTuner extends OpMode {
 
 
     //region FTC Dashboard config variables
-    public static double ARM_POSITION = 0.5;
+    public static double ARM_POSITION = 0;
     public static double OUTTAKE_POWER = 0;
     public static int SLIDE_HEIGHT = 30;
 
-    public static double BOX_POS = 0.5;
+    public static double BOX_POS = 0.25;
 
     public static int RIGGING_POSITION = 20;
 
@@ -94,14 +94,16 @@ public class ArmTuner extends OpMode {
         //Sets up telemetry to work with FTC Dashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        armController = new ArmController(hardwareMap);
+        armController.initArm();
+
         //region Intake Init
         //region Intake Hardware Map
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         //endregion
 
-        armController = new ArmController(hardwareMap);
-        armController.initArm();
+
 
        /* //region Intake Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

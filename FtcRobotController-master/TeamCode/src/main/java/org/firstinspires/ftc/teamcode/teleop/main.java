@@ -104,14 +104,16 @@ public class main extends OpMode {
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         //endregion
 
-        armController = new ArmController(hardwareMap);
-        armController.initArm();
+
 
         //region Intake Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeServo.setPosition(1);
         //endregion
         //endregion
+
+        armController = new ArmController(hardwareMap);
+        armController.initArm();
 
         //region Rigging Init
         hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
@@ -231,6 +233,15 @@ public class main extends OpMode {
             armController.startOuttake();
         }
 
+        if(currentGamepad2.left_bumper) {
+            if (currentGamepad2.right_trigger > 0.2)
+                armController.setSlideHeight(armController.getSlideHeight() + 20);
+            else if (currentGamepad2.left_trigger > 0.2)
+                armController.setSlideHeight(armController.getSlideHeight() - 20);
+        }
+
+        if(currentGamepad2.left_stick_button && currentGamepad2.right_stick_button && armController.getSlideHeight() != 0)
+            armController.resetSlideZero();
 
         //Manual Jog For Slides (In Case of emergency)
         if(currentGamepad2.right_bumper && currentGamepad2.left_bumper){
