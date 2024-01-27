@@ -10,11 +10,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
+import org.firstinspires.ftc.teamcode.util.HeadingHelper;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -48,6 +50,8 @@ public class AutoProgramRedBoard extends OpMode {
 
     SampleMecanumDrive drive;
 
+    HeadingHelper headingHelper;
+
     //region Trajectory Declarations
     Trajectory toSpikeMark;
     Trajectory toSpikeMark2;
@@ -57,7 +61,7 @@ public class AutoProgramRedBoard extends OpMode {
     Trajectory redBoardPark2;
     //endregion
 
-    ArmController armController;
+    //ArmController armController;
 
     //region Intake Objects
     DcMotorEx intakeMotor;
@@ -115,9 +119,11 @@ public class AutoProgramRedBoard extends OpMode {
 
         drive.setPoseEstimate(STARTING_DRIVE_POS);
 
-        armController = new ArmController(hardwareMap);
+        headingHelper = new HeadingHelper(drive, hardwareMap, telemetry);
 
-        armController.initArm();
+        //armController = new ArmController(hardwareMap);
+
+        //armController.initArm();
 
         //region Intake Init
         //region Intake Hardware Map
@@ -223,7 +229,7 @@ public class AutoProgramRedBoard extends OpMode {
                     toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(redBoardCord)
                             .build();
-                    armController.switchArmState();
+                    //armController.switchArmState();
                     drive.followTrajectoryAsync(toRedBoard);
                     queuedState = autoState.HOME_TAG;
                 }
@@ -238,8 +244,8 @@ public class AutoProgramRedBoard extends OpMode {
                 break;
             case PLACE_BOARD:
                 if(aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer){
-                    armController.startOuttake();
-                    armController.startOuttake();
+                    //armController.startOuttake();
+                    //armController.startOuttake();
                     waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
                     queuedState = autoState.PARK;
                     break;
@@ -262,8 +268,8 @@ public class AutoProgramRedBoard extends OpMode {
                     redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .forward(5)
                             .addDisplacementMarker(() -> {
-                                armController.switchArmState();
-                                armController.setSlideHeight(-10);
+                                //armController.switchArmState();
+                                //armController.setSlideHeight(-10);
                                 drive.followTrajectoryAsync(redBoardPark2);
                             })
                             .build();
@@ -288,6 +294,6 @@ public class AutoProgramRedBoard extends OpMode {
 
         drive.update();
 
-        armController.updateArm();
+        //armController.updateArm();
     }
 }

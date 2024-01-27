@@ -52,9 +52,9 @@ public class ShortAutoProgramBlueAway extends OpMode {
     Trajectory toSpikeMark;
     Trajectory toSpikeMark2;
     Trajectory toSpikeMark3;
-    Trajectory toBlueBoard;
-    Trajectory blueBoardPark1;
-    Trajectory blueBoardPark2;
+    Trajectory toRedBoard;
+    Trajectory redBoardPark1;
+    Trajectory redBoardPark2;
     //endregion
 
     ArmController armController;
@@ -75,23 +75,23 @@ public class ShortAutoProgramBlueAway extends OpMode {
 
     //region RR static coordinates
 
-    //region blue board spike locations
+    //region red board spike locations
     Pose2d spikeLocation;
 
-    Pose2d spikeLeft = new Pose2d(4,40, Math.toRadians(315));
+    Pose2d spikeRight = new Pose2d(4,40, Math.toRadians(45));
     Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    Pose2d spikeCenter = new Pose2d(12,34.5, Math.toRadians(270));
-    Pose2d spikeRight = new Pose2d(19,37, Math.toRadians(240));
+    Pose2d spikeCenter = new Pose2d(12,34.5, Math.toRadians(90));
+    Pose2d spikeLeft = new Pose2d(19.75,37, Math.toRadians(120));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(270));
+    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
 
     //y was previously -35
-    public static Pose2d centerblueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
-    public static Pose2d rightblueBoardCord = new Pose2d(35, 40, Math.toRadians(180));
-    public static Pose2d leftblueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
-    public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static Pose2d blueParkCord = new Pose2d(48, 64, Math.toRadians(180));
+    public static Pose2d centerRedBoardCord = new Pose2d(35, 36, Math.toRadians(180));
+    public static Pose2d leftRedBoardCord = new Pose2d(35, 40, Math.toRadians(180));
+    public static Pose2d rightRedBoardCord = new Pose2d(35, 32, Math.toRadians(180));
+    public static Pose2d redBoardCord = new Pose2d(35, 38, Math.toRadians(180));
+    public static Pose2d redParkCord = new Pose2d(48, 64, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -152,15 +152,15 @@ public class ShortAutoProgramBlueAway extends OpMode {
                 if(screenSector != null) {
                     if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
-                        blueBoardCord = leftblueBoardCord;
+                        redBoardCord = leftRedBoardCord;
                         targetTagId = 1;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
-                        blueBoardCord = centerblueBoardCord;
+                        redBoardCord = centerRedBoardCord;
                         targetTagId = 2;
                     } else {
                         spikeLocation = spikeRight;
-                        blueBoardCord = rightblueBoardCord;
+                        redBoardCord = rightRedBoardCord;
                         targetTagId = 3;
                     }
 
@@ -168,7 +168,7 @@ public class ShortAutoProgramBlueAway extends OpMode {
                 }
                 break;
             case TO_SPIKE_MARK:
-                if(!drive.isBusy() && !Objects.equals(screenSector, "L")) {
+                if(!drive.isBusy() && !Objects.equals(screenSector, "R")) {
                     toSpikeMark = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .addDisplacementMarker(()->{
@@ -222,11 +222,11 @@ public class ShortAutoProgramBlueAway extends OpMode {
             case TO_BOARD:
                 if(!drive.isBusy()){
                     intakeMotor.setPower(0);
-                    toBlueBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(blueBoardCord)
+                    toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(redBoardCord)
                             .build();
                     armController.switchArmState();
-                    drive.followTrajectoryAsync(toBlueBoard);
+                    drive.followTrajectoryAsync(toRedBoard);
                     queuedState = autoState.HOME_TAG;
                 }
                 break;
@@ -260,19 +260,19 @@ public class ShortAutoProgramBlueAway extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     //Trajectory to Park Pos
 
-                    blueBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .forward(5)
                             .addDisplacementMarker(() -> {
                                 armController.switchArmState();
                                 armController.setSlideHeight(-10);
-                                drive.followTrajectoryAsync(blueBoardPark2);
+                                drive.followTrajectoryAsync(redBoardPark2);
                             })
                             .build();
-                    blueBoardPark2 = drive.trajectoryBuilder(blueBoardPark1.end())
-                            .lineToLinearHeading(blueParkCord)
+                    redBoardPark2 = drive.trajectoryBuilder(redBoardPark1.end())
+                            .lineToLinearHeading(redParkCord)
                             .build();
                     //Start Following Trajectory
-                    drive.followTrajectoryAsync(blueBoardPark1);
+                    drive.followTrajectoryAsync(redBoardPark1);
                     //Put slide and arm back to intake position
 
 

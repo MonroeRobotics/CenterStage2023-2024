@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -23,9 +23,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Blue Board Auto", group = "Main")
+@Autonomous(name = "Configurable Blue Board Auto", group = "Main")
 @Config
-public class AutoProgramBlueBoard extends OpMode {
+public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
     //region Dashboard Variable Declarations
 
@@ -48,6 +48,8 @@ public class AutoProgramBlueBoard extends OpMode {
     //endregion
 
     SampleMecanumDrive drive;
+
+    HeadingHelper headingHelper;
 
     //region Trajectory Declarations
     Trajectory toSpikeMark;
@@ -85,7 +87,7 @@ public class AutoProgramBlueBoard extends OpMode {
     Pose2d spikeLeft = new Pose2d(19.75,37, Math.toRadians(120));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, 62, Math.toRadians(90));
+    public static Pose2d STARTING_DRIVE_POS = new Pose2d(10, -62, Math.toRadians(270));
 
     //y was previously -35
     public static Pose2d centerBlueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
@@ -108,13 +110,15 @@ public class AutoProgramBlueBoard extends OpMode {
     autoState queuedState = autoState.START;
 
     @Override
-    public void init() {
+    public void runOpMode() {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(STARTING_DRIVE_POS);
+
+        headingHelper = new HeadingHelper(drive, hardwareMap, telemetry);
 
         armController = new ArmController(hardwareMap);
 
@@ -141,11 +145,13 @@ public class AutoProgramBlueBoard extends OpMode {
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
 
-    }
+        while(opModeInInit()){
 
-    @Override
-    public void loop() {
-        telemetry.addData("Next auto State", queuedState);
+        }
+
+
+        while (opModeIsActive()) {
+            telemetry.addData("Next auto State", queuedState);
 
         switch (queuedState){
             case START:
@@ -285,10 +291,13 @@ public class AutoProgramBlueBoard extends OpMode {
                 }
         }
 
-        telemetry.update();
+            headingHelper.loopMethod();
+
+            telemetry.update();
 
         drive.update();
 
-        armController.updateArm();
+            armController.updateArm();
+        }
     }
 }
