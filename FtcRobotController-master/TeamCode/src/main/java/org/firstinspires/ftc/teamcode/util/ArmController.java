@@ -15,6 +15,8 @@ public class ArmController {
 
     //region Arm Variables
 
+
+
     int SLIDE_HEIGHT = 20; //Live Updating Slide height
     int SLIDE_STAGE = 0; //Used for incremental Slide Height
     public static double SLIDE_POWER = 0.5; //Max Linear Slide Power
