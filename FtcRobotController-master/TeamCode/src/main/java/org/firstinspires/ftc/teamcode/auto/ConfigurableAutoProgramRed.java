@@ -54,6 +54,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     public static int CAMERA_GAIN = 255;
     //endregion
 
+    int autoCycleCount = 0;
+
     SampleMecanumDrive drive;
 
     HeadingHelper headingHelper;
@@ -145,6 +147,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Gamepad previousGamepad;
     AutoConfiguration autoConfiguration;
     //endregion
+
+     boolean hasTwoPixel;
 
     @Override
     public void runOpMode() {
@@ -329,12 +333,17 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .lineToLinearHeading(beforeTrussCord)
                                 .build();
                         drive.followTrajectoryAsync(toPreTruss);
-                        queuedState = autoState.POST_TRUSS;
+                        if (!hasTwoPixel && autoConfiguration.isWhitePixels())
+                            queuedState = autoState.TO_WHITE;
+                        else queuedState = autoState.POST_TRUSS;
                     }
                     break;
                 case TO_WHITE:
                     toWhiteStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(whiteStackCord)
+                            .addDisplacementMarker(() -> {
+                                intakeActive = true;
+                            })
                             .build();
                     drive.followTrajectorySequence(toWhiteStack);
                     break;
@@ -343,6 +352,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         if (colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) {
                             intakeActive = false;
                             reverseIntake = true;
+                            hasTwoPixel = true;
                             reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
                             queuedState = autoState.PRE_TRUSS;
                         }
@@ -354,7 +364,12 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .lineToLinearHeading(afterTrussCord)
                                 .build();
                         drive.followTrajectoryAsync(toPostTruss);
-                        queuedState = autoState.TO_BOARD;
+                        if(hasTwoPixel && autoConfiguration.isWhitePixels())
+                            queuedState = autoState.PRE_TRUSS;
+                        else
+                            queuedState = autoState.PLACE_BOARD;
+
+
                     }
                     break;
                 case TO_BOARD:
@@ -381,7 +396,11 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         armController.startOuttake();
                         armController.startOuttake();
                         waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
-                        queuedState = autoState.PARK;
+                        hasTwoPixel = false;
+                        autoCycleCount ++;
+                        if(autoCycleCount <= autoConfiguration.getCycleCount() && autoConfiguration.isWhitePixels())
+                            queuedState = autoState.POST_TRUSS;
+                        else queuedState = autoState.PARK;
                         break;
                     }
                     if (aprilTagHomer.getCurrentTagPose() != null) {
@@ -427,13 +446,13 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
             if(intakeActive){
                 intakeMotor.setPower(INTAKE_POWER);
-                intakeServo.setPosition(INTAKE_POSITION);
+                intakeServo.setPosition(.8 - (.2 * autoCycleCount));
                 armController.setOuttakePower(-1);
 
             }
             //Checks if reverse is on and timer is still on
             else if (reverseIntake && reverseTimer > System.currentTimeMillis()){
-                intakeServo.setPosition(INTAKE_POSITION);
+                intakeServo.setPosition(.8 - (.2 * autoCycleCount));
                 intakeMotor.setPower(-INTAKE_POWER);
                 armController.setOuttakePower(0);
             }

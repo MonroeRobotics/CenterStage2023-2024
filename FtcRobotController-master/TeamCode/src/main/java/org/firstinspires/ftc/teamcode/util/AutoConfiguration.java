@@ -22,6 +22,7 @@ public class AutoConfiguration {
         DELAY,
         PURPLEE_PIXEL_ONLY,
         WHITE_PIXELS,
+        CYCLE_COUNT,
         PARK_SIDE
     }
 
@@ -33,13 +34,17 @@ public class AutoConfiguration {
     boolean purplePixelOnly;
 
     int delay;
+    int cycleCount = 0;
+
+    String indicatorMarker = "֎";
 
     ParkSide parkSide;
     StartPosition startPosition;
     AllianceColor allianceColor;
-    AdjVariables currentVariable = AdjVariables.DELAY;
 
     AdjVariables[] adjVariables = AdjVariables.values();
+
+    AdjVariables currentVariable = adjVariables[0];
 
     int currVIndex = 0;
 
@@ -65,6 +70,10 @@ public class AutoConfiguration {
 
     public boolean isWhitePixels() {
         return whitePixels;
+    }
+
+    public int getCycleCount() {
+        return cycleCount;
     }
 
     public boolean isPurplePixelOnly(){
@@ -104,7 +113,7 @@ public class AutoConfiguration {
                     break;
                 case DELAY:
                     if(delay < 30){
-                        delay += 1;
+                        delay ++;
                     }
                     break;
                 case PURPLEE_PIXEL_ONLY:
@@ -112,6 +121,11 @@ public class AutoConfiguration {
                     break;
                 case WHITE_PIXELS:
                     whitePixels = !whitePixels;
+                    break;
+                case CYCLE_COUNT:
+                    if(cycleCount < 5){
+                        cycleCount ++;
+                    }
                     break;
                 case PARK_SIDE:
                     if(parkSide == ParkSide.SIDE){
@@ -135,7 +149,7 @@ public class AutoConfiguration {
                     break;
                 case DELAY:
                     if(delay > 0){
-                        delay -= 1;
+                        delay --;
                     }
                     break;
                 case PURPLEE_PIXEL_ONLY:
@@ -144,6 +158,10 @@ public class AutoConfiguration {
                 case WHITE_PIXELS:
                     whitePixels = !whitePixels;
                     break;
+                case CYCLE_COUNT:
+                    if(cycleCount > 0) {
+                        cycleCount --;
+                    }
                 case PARK_SIDE:
                     if(parkSide == ParkSide.SIDE){
                         parkSide = ParkSide.MIDDLE;
@@ -157,11 +175,12 @@ public class AutoConfiguration {
         }
 
         telemetry.addData("Current Color", allianceColor);
-        telemetry.addData(((currentVariable == AdjVariables.START_POSITION ? "*" : "") + "Start Position"), startPosition);
-        telemetry.addData(((currentVariable == AdjVariables.DELAY ? "*" : "") + "Delay"), delay);
-        telemetry.addData(((currentVariable == AdjVariables.PURPLEE_PIXEL_ONLY ? "*" : "") + "Purple Pixel Only"), purplePixelOnly);
-        telemetry.addData(((currentVariable == AdjVariables.WHITE_PIXELS ? "*" : "") + "White Pixel"), whitePixels);
-        telemetry.addData(((currentVariable == AdjVariables.PARK_SIDE ? "*" : "") + "Park Side"), parkSide);
+        telemetry.addData(((currentVariable == AdjVariables.START_POSITION ? indicatorMarker : "") + "Start Position"), startPosition);
+        telemetry.addData(((currentVariable == AdjVariables.DELAY ? indicatorMarker : "") + "Delay"), delay);
+        telemetry.addData(((currentVariable == AdjVariables.PURPLEE_PIXEL_ONLY ? indicatorMarker : "") + "Purple Pixel Only"), purplePixelOnly);
+        telemetry.addData(((currentVariable == AdjVariables.WHITE_PIXELS ? indicatorMarker : "") + "White Pixel"), whitePixels);
+        telemetry.addData(((currentVariable == AdjVariables.CYCLE_COUNT ? indicatorMarker : "") + "Max Cycle Count"), cycleCount);
+        telemetry.addData(((currentVariable == AdjVariables.PARK_SIDE ? indicatorMarker : "") + "Park Side"), parkSide);
         telemetry.update();
     }
 }
