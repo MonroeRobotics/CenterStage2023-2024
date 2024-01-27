@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
+import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
 import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 
 @TeleOp(name="Main Drive", group = "Main")
@@ -143,6 +144,8 @@ public class main extends OpMode {
 
         //See util.PixelGamepadDetector
         pixelGamepadDetector = new PixelGamepadDetector(this.gamepad1, this.gamepad2, colorSensor1, colorSensor2);
+
+        AutoConfiguration.hasInitAuto = false;
     }
     @Override
     public void loop() {

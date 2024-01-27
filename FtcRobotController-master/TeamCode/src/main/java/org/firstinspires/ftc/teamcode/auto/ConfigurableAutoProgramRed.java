@@ -153,8 +153,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         drive = new SampleMecanumDrive(hardwareMap);
@@ -193,6 +191,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         previousGamepad = new Gamepad();
         currentGamepad.copy(gamepad1);
         previousGamepad.copy(gamepad1);
+
+        autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
 
         while(opModeInInit()){
             autoConfiguration.processInput(currentGamepad, previousGamepad);
