@@ -73,8 +73,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     DcMotorEx intakeMotor;
     Servo intakeServo;
 
+    public static double INTAKE_POWER = .8; //Power of Intake Motor
+    public static double INTAKE_POSITION = 0; //Position of Intake Servo
     boolean intakeActive = false;
     boolean reverseIntake = false;
+
+    public static double PIXEL_DETECTION_DISTANCE = 1; //Distance from color sensor to pixel for detection (CM)
+    public double reverseTimer = 0; //timer for reversing intake
+    public static double REVERSE_TIME = 1000; //How long to Reverse intake
     //endregion
 
     //region Vision Objects
@@ -340,7 +346,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             intakeActive = false;
                             reverseIntake = true;
                             reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
-                            queuedState = autoState.PRE_TRUSS
+                            queuedState = autoState.PRE_TRUSS;
                         }
                     }
                     break;
