@@ -6,6 +6,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class AutoConfiguration {
 
+    public static boolean hasInitAuto = false;
+
     Telemetry telemetry;
 
     public enum ParkSide{
@@ -50,6 +52,7 @@ public class AutoConfiguration {
 
 
     public AutoConfiguration(Telemetry telemetry, AllianceColor allianceColor){
+        hasInitAuto = true;
         this.telemetry = telemetry;
         this.allianceColor = allianceColor;
         parkSide = ParkSide.SIDE;
@@ -59,6 +62,7 @@ public class AutoConfiguration {
         purplePixelOnly = false;
     }
     public AutoConfiguration(Telemetry telemetry, AllianceColor allianceColor, ParkSide parkSide, StartPosition startPosition, int delay, boolean whitePixels, boolean purplePixelOnly){
+        hasInitAuto = true;
         this.telemetry = telemetry;
         this.allianceColor = allianceColor;
         this.parkSide = parkSide;

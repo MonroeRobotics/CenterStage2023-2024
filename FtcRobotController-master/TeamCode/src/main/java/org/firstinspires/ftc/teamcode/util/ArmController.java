@@ -33,10 +33,10 @@ public class ArmController {
     public static double ARM_SERVO_FORWARD = 0;//Stores Value of Arm intake Position
     public static double ARM_SERVO_BACKWARD = 1;//Stores Value of Arm outtake Position
 
-    double BOX_SERVO_POSITION = .25; //Live Updating Box Position (.15 is intake position)
-    public static double BOX_SERVO_FORWARD = .25; //Stores Value of Box intake Position
+    double BOX_SERVO_POSITION = .1; //Live Updating Box Position (.15 is intake position)
+    public static double BOX_SERVO_FORWARD = .1; //Stores Value of Box intake Position
     public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
-    public static double BOX_SERVO_BACKWARD = 0.85; //Stores value of Box Outtake position
+    public static double BOX_SERVO_BACKWARD = 0.7; //Stores value of Box Outtake position
     public static int SLIDE_HEIGHT_SERVO_TRANSITION = 1000;
 
     double outtakeTimer = 0; //Timer to control outtake
@@ -70,8 +70,10 @@ public class ArmController {
         //endregion
 
         //region Arm Lift Motor Settings
-        leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(!AutoConfiguration.hasInitAuto) {
+            leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
 
         leftLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
