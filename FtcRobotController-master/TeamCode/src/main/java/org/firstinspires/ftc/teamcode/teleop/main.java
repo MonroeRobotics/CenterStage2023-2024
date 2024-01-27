@@ -103,14 +103,16 @@ public class main extends OpMode {
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         //endregion
 
-        armController = new ArmController(hardwareMap);
-        armController.initArm();
+
 
         //region Intake Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeServo.setPosition(1);
         //endregion
         //endregion
+
+        armController = new ArmController(hardwareMap);
+        armController.initArm();
 
         //region Rigging Init
         hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
