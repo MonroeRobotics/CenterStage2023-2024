@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,11 +16,13 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
 import org.firstinspires.ftc.teamcode.util.HeadingHelper;
+import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -61,12 +64,17 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     TrajectorySequence redBoardPark;
     Trajectory toPreTruss;
     Trajectory toPostTruss;
+
+    TrajectorySequence toWhiteStack;
     //endregion
     ArmController armController;
 
     //region Intake Objects
     DcMotorEx intakeMotor;
     Servo intakeServo;
+
+    boolean intakeActive = false;
+    boolean reverseIntake = false;
     //endregion
 
     //region Vision Objects
@@ -76,6 +84,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
     AprilTagHomer aprilTagHomer;
+
+    RevColorSensorV3 colorSensor1;
+    RevColorSensorV3 colorSensor2;
     //endregion
 
     //region RR static coordinates
@@ -90,6 +101,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
     Pose2d afterTrussCord = new Pose2d(30, -12, Math.toRadians(180));
+    Pose2d whiteStackCord = new Pose2d(-56, -11, Math.toRadians(180));
+
 
     Pose2d startingDrivePose;
 
@@ -98,17 +111,19 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
 
     //y was previously -35
-    public static Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
-    public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
-    public static Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
-    public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static Pose2d redParkCord;
+    Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
+    Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
+    Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
+    Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
+    Pose2d redParkCord;
 
     enum autoState {
         START,
         TO_SPIKE_MARK,
         VISION_SWITCH,
         PRE_TRUSS,
+        TO_WHITE,
+        GRAB_WHITE,
         POST_TRUSS,
         TO_BOARD,
         HOME_TAG,
@@ -158,6 +173,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
         propDetection = new TeamPropDetection("red");
 
+        colorSensor1 = hardwareMap.get(RevColorSensorV3.class,"colorSensor1");
+        colorSensor2 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
+
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
 
@@ -165,7 +183,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         previousGamepad = new Gamepad();
         currentGamepad.copy(gamepad1);
         previousGamepad.copy(gamepad1);
-
 
         while(opModeInInit()){
             autoConfiguration.processInput(currentGamepad, previousGamepad);
@@ -182,6 +199,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         }
 
         drive.setPoseEstimate(startingDrivePose);
+
+
 
 
         while (opModeIsActive()) {
@@ -307,6 +326,24 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         queuedState = autoState.POST_TRUSS;
                     }
                     break;
+                case TO_WHITE:
+                    toWhiteStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(whiteStackCord)
+                            .build();
+                    drive.followTrajectorySequence(toWhiteStack);
+                    break;
+                case GRAB_WHITE:
+                    if(!drive.isBusy()) {
+
+
+                        if (colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) {
+                            intakeActive = false;
+                            reverseIntake = true;
+                            reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
+                            queuedState = autoState.PRE_TRUSS
+                        }
+                    }
+                    break;
                 case POST_TRUSS:
                     if(!drive.isBusy()){
                         toPostTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -375,9 +412,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         //Start Following Trajectory
                         drive.followTrajectorySequenceAsync(redBoardPark);
 
-
-
-
                         waitTimer = System.currentTimeMillis() + PARK_TIME;
                         queuedState = autoState.STOP;
                     }
@@ -385,6 +419,23 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case STOP:
                     if (!drive.isBusy()) {
                     }
+            }
+
+            if(intakeActive){
+                intakeMotor.setPower(INTAKE_POWER);
+                intakeServo.setPosition(INTAKE_POSITION);
+                armController.setOuttakePower(-1);
+
+            }
+            //Checks if reverse is on and timer is still on
+            else if (reverseIntake && reverseTimer > System.currentTimeMillis()){
+                intakeServo.setPosition(INTAKE_POSITION);
+                intakeMotor.setPower(-INTAKE_POWER);
+                armController.setOuttakePower(0);
+            }
+            else{
+                intakeMotor.setPower(0);
+                intakeServo.setPosition(1);
             }
 
             headingHelper.loopMethod();
