@@ -118,7 +118,7 @@ public class main extends OpMode {
 
         //region Rigging Init
         hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
-        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(!AutoConfiguration.hasInitAuto) hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         hangMotor.setPower(1);
         hangMotor.setTargetPosition(0);

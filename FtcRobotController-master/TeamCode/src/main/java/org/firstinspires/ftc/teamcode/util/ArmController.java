@@ -132,10 +132,10 @@ public class ArmController {
                 ARM_POSITION = ARM_SERVO_BACKWARD;
                 outtakeServo.setPower(0);
                 if (SLIDE_STAGE == 0) {
-                    SLIDE_HEIGHT = 450;
+                    SLIDE_HEIGHT = 500;
                 }
                 else{
-                    SLIDE_HEIGHT = 450 + (SLIDE_STAGE * 150);
+                    SLIDE_HEIGHT = 500 + (SLIDE_STAGE * 150);
                 }
                 break;
         }
