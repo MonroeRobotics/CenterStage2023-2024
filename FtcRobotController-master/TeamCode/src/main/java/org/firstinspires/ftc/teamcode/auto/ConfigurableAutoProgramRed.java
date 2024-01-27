@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -52,9 +53,13 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     public static double CAMERA_EXPOSURE = 12;
     public static int CAMERA_GAIN = 255;
+
+    public static int whiteIntakeTime = 2000;
     //endregion
 
     int autoCycleCount = 0;
+
+
 
     SampleMecanumDrive drive;
 
@@ -70,6 +75,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     TrajectorySequence toWhiteStack;
     //endregion
     ArmController armController;
+
+    DcMotorEx hangMotor;
 
     //region Intake Objects
     DcMotorEx intakeMotor;
@@ -173,6 +180,20 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeServo.setPosition(1);
         //endregion
+        //endregion
+
+        //region Rigging Init
+        hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        hangMotor.setPower(1);
+        hangMotor.setTargetPosition(0);
+        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //endregion
 
         aprilTagDetector = AprilTagProcessor.easyCreateWithDefaults();
@@ -339,17 +360,21 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }
                     break;
                 case TO_WHITE:
-                    toWhiteStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(whiteStackCord)
-                            .addDisplacementMarker(() -> {
-                                intakeActive = true;
-                            })
-                            .build();
-                    drive.followTrajectorySequence(toWhiteStack);
+                    if (!drive.isBusy()) {
+                        toWhiteStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .lineToLinearHeading(whiteStackCord)
+                                .addDisplacementMarker(() -> {
+                                    intakeActive = true;
+                                    waitTimer = System.currentTimeMillis() + whiteIntakeTime;
+                                })
+                                .build();
+                        drive.followTrajectorySequence(toWhiteStack);
+                        queuedState = autoState.GRAB_WHITE;
+                    }
                     break;
                 case GRAB_WHITE:
                     if(!drive.isBusy()) {
-                        if (colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) {
+                        if ((colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) || System.currentTimeMillis() > waitTimer) {
                             intakeActive = false;
                             reverseIntake = true;
                             hasTwoPixel = true;
@@ -359,17 +384,21 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }
                     break;
                 case POST_TRUSS:
-                    if(!drive.isBusy()){
+                    if(!drive.isBusy() && waitTimer < System.currentTimeMillis()){
                         toPostTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
+                                .addDisplacementMarker(() -> {
+                                    if(armController.getCurrentArmState() == ArmController.ArmState.OUTTAKE_READY) {
+                                        armController.switchArmState();
+                                        armController.setSlideHeight(-10);
+                                    }
+                                })
                                 .lineToLinearHeading(afterTrussCord)
                                 .build();
                         drive.followTrajectoryAsync(toPostTruss);
-                        if(hasTwoPixel && autoConfiguration.isWhitePixels())
+                        if(!hasTwoPixel && autoConfiguration.isWhitePixels())
                             queuedState = autoState.PRE_TRUSS;
                         else
-                            queuedState = autoState.PLACE_BOARD;
-
-
+                            queuedState = autoState.TO_BOARD;
                     }
                     break;
                 case TO_BOARD:
