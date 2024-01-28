@@ -97,7 +97,7 @@ public class AutoConfiguration {
     }
 
     public void processInput(Gamepad currentGamepad, Gamepad previousGamepad){
-        if(currentGamepad.dpad_down && !previousGamepad.dpad_down && currVIndex < adjVariables.length){
+        if(currentGamepad.dpad_down && !previousGamepad.dpad_down && currVIndex < adjVariables.length - 1){
             currVIndex += 1;
             currentVariable = adjVariables[currVIndex];
         }

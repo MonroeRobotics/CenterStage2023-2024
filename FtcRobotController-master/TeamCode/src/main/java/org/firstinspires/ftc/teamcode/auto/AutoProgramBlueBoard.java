@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,7 +14,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
-import org.firstinspires.ftc.teamcode.util.HeadingHelper;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -80,7 +78,6 @@ public class AutoProgramBlueBoard extends OpMode {
     Pose2d spikeLocation;
 
     Pose2d spikeRight = new Pose2d(4,40, Math.toRadians(45));
-    Vector2d spikeLeftSpline = new Vector2d(11,-32);
     Pose2d spikeCenter = new Pose2d(12,34.5, Math.toRadians(90));
     Pose2d spikeLeft = new Pose2d(19.75,37, Math.toRadians(120));
     //endregion
@@ -91,8 +88,8 @@ public class AutoProgramBlueBoard extends OpMode {
     public static Pose2d centerBlueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
     public static Pose2d leftBlueBoardCord = new Pose2d(35, 42, Math.toRadians(180));
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
-    public static Pose2d redBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static Pose2d redParkCord = new Pose2d(48, 64, Math.toRadians(180));
+    public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
+    public static Pose2d blueParkCord = new Pose2d(48, 64, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -153,15 +150,15 @@ public class AutoProgramBlueBoard extends OpMode {
                 if(screenSector != null) {
                     if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
-                        redBoardCord = leftBlueBoardCord;
+                        blueBoardCord = leftBlueBoardCord;
                         targetTagId = 1;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
-                        redBoardCord = centerBlueBoardCord;
+                        blueBoardCord = centerBlueBoardCord;
                         targetTagId = 2;
                     } else {
                         spikeLocation = spikeRight;
-                        redBoardCord = rightBlueBoardCord;
+                        blueBoardCord = rightBlueBoardCord;
                         targetTagId = 3;
                     }
 
@@ -222,7 +219,7 @@ public class AutoProgramBlueBoard extends OpMode {
                 if(!drive.isBusy()){
                     intakeMotor.setPower(0);
                     toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(redBoardCord)
+                            .lineToLinearHeading(blueBoardCord)
                             .build();
                     armController.switchArmState();
                     drive.followTrajectoryAsync(toRedBoard);
@@ -269,7 +266,7 @@ public class AutoProgramBlueBoard extends OpMode {
                             })
                             .build();
                     redBoardPark2 = drive.trajectoryBuilder(redBoardPark1.end())
-                            .lineToLinearHeading(redParkCord)
+                            .lineToLinearHeading(blueParkCord)
                             .build();
                     //Start Following Trajectory
                     drive.followTrajectoryAsync(redBoardPark1);

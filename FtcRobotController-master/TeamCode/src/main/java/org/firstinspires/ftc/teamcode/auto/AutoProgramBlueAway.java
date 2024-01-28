@@ -89,7 +89,6 @@ public class AutoProgramBlueAway extends OpMode {
 
 
     Pose2d spikeLeft = new Pose2d(-33,28, Math.toRadians(180));
-    Vector2d spikeLeftSpline = new Vector2d(11,-32);
     Pose2d spikeCenter = new Pose2d(-35,33, Math.toRadians(90));
 
     Pose2d spikeRight = new Pose2d(-42,35, Math.toRadians(45));

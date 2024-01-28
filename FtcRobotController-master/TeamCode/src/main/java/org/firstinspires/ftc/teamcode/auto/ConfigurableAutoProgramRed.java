@@ -4,12 +4,10 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -23,7 +21,6 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
 import org.firstinspires.ftc.teamcode.util.HeadingHelper;
-import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -38,23 +35,18 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     //region Dashboard Variable Declarations
 
     //region Auto Timer
-
     public static double SPIKE_OUTTAKE_TIME = 1000; //Time Spike Pixel Outtakes In auto
     public static double BOARD_OUTTAKE_TIME = 500;//Time Board Pixel Outtakes in auto
+    public static int White_Intake_Time = 2000;
     public static double PARK_TIME = 2000; //Time to go to park pos
     public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
-
     double waitTimer;
-
-
     //endregion
 
     public static double SPIKE_OUTTAKE_POWER = -0.3; //Stores the power of the reversed intake for spike pixel drop
 
-    public static double CAMERA_EXPOSURE = 12;
-    public static int CAMERA_GAIN = 255;
-
     public static int whiteIntakeTime = 2000;
+
     //endregion
 
     int autoCycleCount = 0;
@@ -74,8 +66,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     TrajectorySequence toWhiteStack;
     //endregion
-    ArmController armController;
 
+    ArmController armController;
     DcMotorEx hangMotor;
 
     //region Intake Objects
@@ -132,7 +124,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     Pose2d redParkCord;
 
-    enum autoState {
+    //endregion
+
+    enum autoState { //Stores Different Auto States
         START,
         TO_SPIKE_MARK,
         VISION_SWITCH,
@@ -149,7 +143,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     autoState queuedState = autoState.START;
 
-    //region autoConfiguration variables
+    //region AutoConfiguration Objects
     Gamepad currentGamepad;
     Gamepad previousGamepad;
     AutoConfiguration autoConfiguration;
@@ -159,6 +153,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        //region Init Objects and Variables
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -196,6 +192,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //endregion
 
+
+        //region Vision Init
+
         aprilTagDetector = AprilTagProcessor.easyCreateWithDefaults();
 
         aprilTagHomer = new AprilTagHomer(aprilTagDetector, drive);
@@ -208,6 +207,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
 
+        //endregion
+
         currentGamepad = new Gamepad();
         previousGamepad = new Gamepad();
         currentGamepad.copy(gamepad1);
@@ -215,13 +216,17 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
         autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
 
+        //endregion
+
         while(opModeInInit()){
+            //Loops for auto configuration UI
             autoConfiguration.processInput(currentGamepad, previousGamepad);
 
             previousGamepad.copy(currentGamepad);
             currentGamepad.copy(gamepad1);
         }
 
+        //Sets starting position based on start position variable
         if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
             startingDrivePose = startingDrivePoseBoard;
         }
@@ -238,6 +243,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
             switch (queuedState) {
                 case START:
+                    //Setts Spike Marks per starting position
                     if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
                         spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
                         spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
@@ -248,6 +254,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         spikeLeft = new Pose2d(-42,-35, Math.toRadians(315));
                     }
 
+                    //Obtains team prop location from propDetector
                     screenSector = propDetection.getScreenSector();
                     if (screenSector != null) {
                         if (screenSector.equals("L")) {
@@ -266,6 +273,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
 
                     }
+
+                    //Adds for
                     waitTimer = System.currentTimeMillis() + autoConfiguration.getDelay() * 1000L;
                     queuedState = autoState.TO_SPIKE_MARK;
                     break;
@@ -330,6 +339,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 break;
                             //endregion
                         }
+
+                        //Stops Program if only Purple Pixel was selected
                         if (autoConfiguration.isPurplePixelOnly()) {
                             queuedState = autoState.STOP;
                         } else {
@@ -339,12 +350,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case VISION_SWITCH:
                     if (!drive.isBusy()) {
+
+                        //Switches CVision Pipeline from team prop to april tag detection
                         visionPortal.setProcessorEnabled(propDetection, false);
                         visionPortal.setProcessorEnabled(aprilTagDetector, true);
 
+                        //If on side close to board goes to place pixel, If not goes to pre truss location
                         if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD)
                         queuedState = autoState.TO_BOARD;
-
                         else queuedState = autoState.PRE_TRUSS;
                     }
                     break;
@@ -354,6 +367,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .lineToLinearHeading(beforeTrussCord)
                                 .build();
                         drive.followTrajectoryAsync(toPreTruss);
+
+                        //If white pixels is enabled and hasn't gone to stack, goes to pixel stack
+                        //If not goes under truss
                         if (!hasTwoPixel && autoConfiguration.isWhitePixels())
                             queuedState = autoState.TO_WHITE;
                         else queuedState = autoState.POST_TRUSS;
@@ -366,6 +382,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .addDisplacementMarker(() -> {
                                     intakeActive = true;
                                     waitTimer = System.currentTimeMillis() + whiteIntakeTime;
+
                                 })
                                 .build();
                         drive.followTrajectorySequence(toWhiteStack);
@@ -374,6 +391,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case GRAB_WHITE:
                     if(!drive.isBusy()) {
+                        //Checks if both sensors have detected white pixel
                         if ((colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) || System.currentTimeMillis() > waitTimer) {
                             intakeActive = false;
                             reverseIntake = true;
@@ -421,6 +439,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }
                     break;
                 case PLACE_BOARD:
+
+                    //Waits until board is in range or the wait timer is up to place pixel on board
                     if (aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) {
                         armController.startOuttake();
                         armController.startOuttake();
@@ -446,11 +466,10 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case PARK:
                     if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
                         //Trajectory to Park Pos
-
                         if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.SIDE){
                             redParkCord = new Pose2d(48, -64, Math.toRadians(180));
                         }else{
-                            redParkCord = new Pose2d(40, -20, Math.toRadians(180));
+                            redParkCord = new Pose2d(48, -20, Math.toRadians(180));
                         }
 
                         redBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -461,9 +480,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 })
                                 .lineToLinearHeading(redParkCord)
                                 .build();
-                        //Start Following Trajectory
                         drive.followTrajectorySequenceAsync(redBoardPark);
-
                         waitTimer = System.currentTimeMillis() + PARK_TIME;
                         queuedState = autoState.STOP;
                     }
