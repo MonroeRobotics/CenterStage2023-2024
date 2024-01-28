@@ -232,7 +232,7 @@ public class main extends OpMode {
             armController.switchArmState();
         }
         //Resets Arm to Intake Position on square press
-        else if (currentGamepad2.square && !previousGamepad2.square) {
+        else if (currentGamepad2.square && !previousGamepad2.square && armController.getCurrentArmState() != ArmController.ArmState.INTAKE) {
             armController.startOuttake();
         }
 
