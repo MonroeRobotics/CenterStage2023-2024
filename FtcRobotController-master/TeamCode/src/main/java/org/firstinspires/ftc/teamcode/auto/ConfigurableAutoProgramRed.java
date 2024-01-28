@@ -61,6 +61,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     TrajectorySequence toWhiteStack;
     //endregion
+
     ArmController armController;
     DcMotorEx hangMotor;
 
