@@ -56,9 +56,9 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.017;
-    public static double kA = 0.0015;
-    public static double kStatic = .07593;
+    public static double kV = 0.012;
+    public static double kA = 0.004;
+    public static double kStatic = .0012;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -95,8 +95,8 @@ public class DriveConstants {
             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
     //actual max is 70.805780713
-    public static double MAX_VEL = 70;
-    public static double MAX_ACCEL = 70;
+    public static double MAX_VEL = 60;
+    public static double MAX_ACCEL = 60;
     public static double MAX_ANG_VEL = 4.80051;
     public static double MAX_ANG_ACCEL = Math.toRadians(180.9987);
 
