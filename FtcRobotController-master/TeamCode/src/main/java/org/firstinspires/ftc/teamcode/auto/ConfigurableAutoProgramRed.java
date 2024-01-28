@@ -44,9 +44,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     //endregion
 
     public static double SPIKE_OUTTAKE_POWER = -0.3; //Stores the power of the reversed intake for spike pixel drop
+
+    public static int whiteIntakeTime = 2000;
+
     //endregion
 
     int autoCycleCount = 0;
+
+
 
     SampleMecanumDrive drive;
 
@@ -186,6 +191,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //endregion
+
 
         //region Vision Init
 
@@ -375,7 +381,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .lineToLinearHeading(whiteStackCord)
                                 .addDisplacementMarker(() -> {
                                     intakeActive = true;
-                                    waitTimer = System.currentTimeMillis() + White_Intake_Time;
+                                    waitTimer = System.currentTimeMillis() + whiteIntakeTime;
+
                                 })
                                 .build();
                         drive.followTrajectorySequence(toWhiteStack);
@@ -384,7 +391,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case GRAB_WHITE:
                     if(!drive.isBusy()) {
-
                         //Checks if both sensors have detected white pixel
                         if ((colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) || System.currentTimeMillis() > waitTimer) {
                             intakeActive = false;
