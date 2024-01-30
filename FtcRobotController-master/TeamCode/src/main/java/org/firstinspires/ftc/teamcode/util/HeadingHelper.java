@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
+@Config
 public class HeadingHelper {
     SampleMecanumDrive drive;
     HardwareMap hardwareMap;
@@ -18,7 +20,7 @@ public class HeadingHelper {
 
     double initialHeading;
 
-    public static double pollInterval = 2000;
+    public static double pollInterval = 500;
 
 
     //USB Backward, Logo Left
@@ -59,6 +61,13 @@ public class HeadingHelper {
         telemetry.addData("Timer", timer);
 
         if (timer < System.currentTimeMillis()){
+            drive.setExternalHeading(getAdjustedYaw());
+            Pose2d currPose = drive.getPoseEstimate();
+            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(getAdjustedYaw())));
+            timer = System.currentTimeMillis() + pollInterval;
+        }
+        else {
+            drive.setExternalHeading(getAdjustedYaw());
             Pose2d currPose = drive.getPoseEstimate();
             drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(getAdjustedYaw())));
             timer = System.currentTimeMillis() + pollInterval;

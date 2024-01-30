@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.HeadingHelper;
 @TeleOp(group = "drive")
 @Config
-@Disabled
 public class HeadingHelperTest extends LinearOpMode {
 
     public static double initialHeading = 90;
