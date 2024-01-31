@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
+import org.firstinspires.ftc.teamcode.util.HeadingHelper;
 import org.firstinspires.ftc.vision.AprilTagHomer;
 import org.firstinspires.ftc.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -53,7 +54,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     SampleMecanumDrive drive;
 
-    //headingHelper //headingHelper;
+    HeadingHelper headingHelper;
 
     //region Trajectory Declarations
     TrajectorySequence toSpikeMark;
@@ -161,7 +162,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
-        //headingHelper = new //headingHelper(drive, hardwareMap, telemetry);
+        headingHelper = new HeadingHelper(drive, hardwareMap, telemetry);
 
         armController = new ArmController(hardwareMap);
 
@@ -237,7 +238,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
         drive.setPoseEstimate(startingDrivePose);
 
-        //headingHelper.setInitialHeading(Math.toDegrees(startingDrivePose.getHeading()));
+        headingHelper.setInitialHeading(Math.toDegrees(startingDrivePose.getHeading()));
 
         while (opModeIsActive()) {
             telemetry.addData("Next auto State", queuedState);
@@ -355,7 +356,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case VISION_SWITCH:
                     if (!drive.isBusy()) {
 
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
 
                         //Switches CVision Pipeline from team prop to april tag detection
                         visionPortal.setProcessorEnabled(propDetection, false);
@@ -369,7 +370,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case PRE_TRUSS:
                     if(!drive.isBusy()){
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
 
                         toPreTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(beforeTrussCord)
@@ -387,7 +388,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case TO_WHITE:
                     if (!drive.isBusy()) {
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
                         toWhiteStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(whiteStackCord,
                                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -405,7 +406,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case GRAB_WHITE:
                     if(!drive.isBusy()) {
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
 
                         //Checks if both sensors have detected white pixel
                         if ((colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) /*|| System.currentTimeMillis() > waitTimer*/) {
@@ -419,7 +420,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case POST_TRUSS:
                     if(!drive.isBusy() && waitTimer < System.currentTimeMillis()){
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
 
                         toPostTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .addDisplacementMarker(() -> {
@@ -439,7 +440,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case TO_BOARD:
                     if (!drive.isBusy()) {
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
 
                         intakeMotor.setPower(0);
                         toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -452,15 +453,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case HOME_TAG:
                     if (!drive.isBusy()) {
-                        //headingHelper.loopMethod();
+                        aprilTagHomer.processRobotPosition();
                         //aprilTagHomer.changeTarget(4); thomas spaget code
                         aprilTagHomer.updateDrive();
                         waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                         queuedState = autoState.PLACE_BOARD;
-
-
                     }
                     if (!drive.isBusy() && pixelsDropped > 1){
+                        aprilTagHomer.processRobotPosition();
                         aprilTagHomer.changeTarget(targetWhiteTagId);
                         aprilTagHomer.updateDrive();
                         waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
@@ -471,7 +471,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
                     //Waits until board is in range or the wait timer is up to place pixel on board
                     if ((aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) && !drive.isBusy()) {
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
 
                         armController.startOuttake();
                         armController.setArmPos(armController.getSlideHeight() + 800);
@@ -509,7 +509,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     break;
                 case PARK:
                     if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
-                        //headingHelper.loopMethod();
+                        headingHelper.loopMethod();
 
 
                         //Trajectory to Park Pos
