@@ -139,6 +139,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
         TO_BOARD,
         HOME_TAG,
         PLACE_BOARD,
+        POST_DROP,
         PARK,
         STOP
     }
@@ -275,7 +276,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             targetTagId = 6;
                             targetWhiteTagId = 5;
                         }
-                        aprilTagHomer.changeTarget(targetTagId);
+                        aprilTagHomer.changeTarget(targetWhiteTagId);
 
                     }
 
@@ -421,7 +422,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case POST_TRUSS:
                     if(!drive.isBusy() && waitTimer < System.currentTimeMillis()){
                         headingHelper.loopMethod();
-
                         toPostTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .addDisplacementMarker(() -> {
                                     if(armController.getCurrentArmState() == ArmController.ArmState.OUTTAKE_READY) {
@@ -441,27 +441,25 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case TO_BOARD:
                     if (!drive.isBusy()) {
                         headingHelper.loopMethod();
-
                         intakeMotor.setPower(0);
                         toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(redBoardCord)
                                 .build();
                         armController.switchArmState();
                         drive.followTrajectoryAsync(toRedBoard);
+                        aprilTagHomer.changeTarget(targetWhiteTagId);
                         queuedState = autoState.HOME_TAG;
                     }
                     break;
                 case HOME_TAG:
                     if (!drive.isBusy()) {
                         aprilTagHomer.processRobotPosition();
-                        //aprilTagHomer.changeTarget(4); thomas spaget code
                         aprilTagHomer.updateDrive();
                         waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                         queuedState = autoState.PLACE_BOARD;
                     }
                     if (!drive.isBusy() && pixelsDropped > 1){
                         aprilTagHomer.processRobotPosition();
-                        aprilTagHomer.changeTarget(targetWhiteTagId);
                         aprilTagHomer.updateDrive();
                         waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                         queuedState = autoState.PLACE_BOARD;
@@ -478,8 +476,23 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
 
                         autoCycleCount ++;
+                        queuedState = autoState.POST_DROP;
+                    }
+                    if (aprilTagHomer.getCurrentTagPose() != null) {
+                        telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
+                        telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
+                        telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
+
+                    } else {
+                        telemetry.addLine("No Tag Detected");
+                    }
+
+                    aprilTagHomer.updateDrive();
+                    break;
+                case POST_DROP:
+                    if(!drive.isBusy() && waitTimer < System.currentTimeMillis()){
                         if(hasTwoPixel){
-                            //aprilTagHomer.changeTarget(5); thomas spaget code
+                            aprilTagHomer.changeTarget(targetTagId);
                             toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                                     .lineToLinearHeading(redBoardCord)
                                     .addDisplacementMarker(() -> {
@@ -494,18 +507,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         else if(autoCycleCount <= autoConfiguration.getCycleCount() && autoConfiguration.isWhitePixels())
                             queuedState = autoState.POST_TRUSS;
                         else queuedState = autoState.PARK;
-                        break;
                     }
-                    if (aprilTagHomer.getCurrentTagPose() != null) {
-                        telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
-                        telemetry.addData("Tag Y:", aprilTagHomer.getCurrentTagPose().y);
-                        telemetry.addData("Tag Yaw:", aprilTagHomer.getCurrentTagPose().yaw);
-
-                    } else {
-                        telemetry.addLine("No Tag Detected");
-                    }
-
-                    aprilTagHomer.updateDrive();
                     break;
                 case PARK:
                     if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
