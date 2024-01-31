@@ -38,7 +38,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     //region Auto Timer
     public static double SPIKE_OUTTAKE_TIME = 1000; //Time Spike Pixel Outtakes In auto
     public static double BOARD_OUTTAKE_TIME = 800;//Time Board Pixel Outtakes in auto
-    public static int WHITE_INTAKE_TIME = 5000;
+    public static int WHITE_INTAKE_TIME = 3000;
     public static double PARK_TIME = 2000; //Time to go to park pos
     public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
     double waitTimer;
@@ -250,7 +250,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     //Setts Spike Marks per starting position
                     if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
                         spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
-                        spikeCenter = new Pose2d(12,-34.5, Math.toRadians(270));
+                        spikeCenter = new Pose2d(12,-33, Math.toRadians(270));
                         spikeRight = new Pose2d(19,-37, Math.toRadians(240));
                     }else{
                         spikeRight = new Pose2d(-33,-28, Math.toRadians(180));
@@ -412,7 +412,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         headingHelper.loopMethod();
 
                         //Checks if both sensors have detected white pixel
-                        if ((colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) /*|| System.currentTimeMillis() > waitTimer*/) {
+                        if ((colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) || System.currentTimeMillis() > waitTimer) {
                             intakeActive = false;
                             reverseIntake = true;
                             hasTwoPixel = true;
