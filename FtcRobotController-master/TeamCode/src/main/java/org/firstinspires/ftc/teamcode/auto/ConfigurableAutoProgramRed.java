@@ -475,13 +475,10 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }
                     break;
                 case PLACE_BOARD:
-
+                    aprilTagHomer.processRobotPosition();
                     //Waits until board is in range or the wait timer is up to place pixel on board
                     if ((aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) && !drive.isBusy()) {
-                        headingHelper.loopMethod();
-
                         armController.startOuttake();
-                        armController.setArmPos(armController.getSlideHeight() + 800);
                         waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
 
                         autoCycleCount ++;
@@ -539,7 +536,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
                         //Trajectory to Park Pos
                         if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.SIDE){
-                            redParkCord = new Pose2d(48, -64, Math.toRadians(180));
+                            redParkCord = new Pose2d(40, -64, Math.toRadians(180));
                         }else{
                             redParkCord = new Pose2d(48, -20, Math.toRadians(180));
                         }
