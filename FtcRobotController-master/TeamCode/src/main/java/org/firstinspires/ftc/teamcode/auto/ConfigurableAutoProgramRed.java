@@ -278,7 +278,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             targetTagIdWhite = 5;
                         }
                         //tag assignment based of starting position
-                        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
                             aprilTagHomer.changeTarget(targetTagIdWhite);
                         }
                         else{
@@ -337,16 +337,11 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
                                 }
                                 else if (Objects.equals(screenSector, "L")) {
-                                    final Pose2d[] tempCord = {drive.getPoseEstimate()};
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .back(12)
-                                            .addDisplacementMarker(() ->{
-                                                tempCord[0] = drive.getPoseEstimate();
-                                            })
                                             .lineToLinearHeading(spikeLocation)
-                                            .lineToLinearHeading(tempCord[0])
-                                            .strafeRight(16)
-                                            .back(28)
+                                            .forward(8)
+                                            .lineToLinearHeading(new Pose2d(beforeTrussCord.getX(), beforeTrussCord.getY(), Math.toRadians(270)))
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
                                 }
@@ -476,9 +471,12 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }
                     break;
                 case PLACE_BOARD:
+
                     aprilTagHomer.processRobotPosition();
                     //Waits until board is in range or the wait timer is up to place pixel on board
                     if ((aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) && !drive.isBusy()) {
+                        armController.changeStage(1);
+
                         armController.startOuttake();
                         waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
 
@@ -503,7 +501,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                                     .lineToLinearHeading(redBoardCord)
                                     .addDisplacementMarker(() -> {
-                                        armController.changeStage(0);
+                                        armController.changeStage(-1);
                                     })
                                     .build();
                             drive.followTrajectoryAsync(toRedBoard);
