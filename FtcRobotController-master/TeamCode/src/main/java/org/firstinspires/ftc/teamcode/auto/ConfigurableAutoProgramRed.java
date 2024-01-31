@@ -345,7 +345,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                             })
                                             .lineToLinearHeading(spikeLocation)
                                             .lineToLinearHeading(tempCord[0])
-                                            .back(32)
+                                            .strafeRight(16)
+                                            .back(28)
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
                                 }
