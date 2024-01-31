@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.ArmController;
@@ -35,22 +36,21 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     //region Dashboard Variable Declarations
 
     //region Auto Timer
-
     public static double SPIKE_OUTTAKE_TIME = 1000; //Time Spike Pixel Outtakes In auto
-    public static double BOARD_OUTTAKE_TIME = 500;//Time Board Pixel Outtakes in auto
-    public static int White_Intake_Time = 2000;
+    public static double BOARD_OUTTAKE_TIME = 800;//Time Board Pixel Outtakes in auto
+    public static int WHITE_INTAKE_TIME = 3000;
     public static double PARK_TIME = 2000; //Time to go to park pos
     public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
-
     double waitTimer;
-
-
     //endregion
 
     public static double SPIKE_OUTTAKE_POWER = -0.3; //Stores the power of the reversed intake for spike pixel drop
+
     //endregion
 
     int autoCycleCount = 0;
+
+
 
     SampleMecanumDrive drive;
 
@@ -64,6 +64,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     Trajectory toPostTruss;
 
     TrajectorySequence toWhiteStack;
+    TrajectorySequence wiggle;
     //endregion
 
     ArmController armController;
@@ -73,12 +74,13 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     DcMotorEx intakeMotor;
     Servo intakeServo;
 
-    public static double INTAKE_POWER = .8; //Power of Intake Motor
+    public static double INTAKE_POWER = 1; //Power of Intake Motor
     public static double INTAKE_POSITION = 0; //Position of Intake Servo
+    boolean intakePrepare = false;
     boolean intakeActive = false;
     boolean reverseIntake = false;
 
-    public static double PIXEL_DETECTION_DISTANCE = 1; //Distance from color sensor to pixel for detection (CM)
+    public static double PIXEL_DETECTION_DISTANCE = 1.25; //Distance from color sensor to pixel for detection (CM)
     public double reverseTimer = 0; //timer for reversing intake
     public static double REVERSE_TIME = 1000; //How long to Reverse intake
     //endregion
@@ -87,6 +89,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     TeamPropDetection propDetection;
     String screenSector;
     int targetTagId;
+    int targetWhiteTagId;
+    int pixelsDropped = 0;
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
     AprilTagHomer aprilTagHomer;
@@ -138,6 +142,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
         TO_BOARD,
         HOME_TAG,
         PLACE_BOARD,
+        POST_DROP,
         PARK,
         STOP
     }
@@ -192,6 +197,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //endregion
+
 
         //region Vision Init
 
@@ -261,16 +267,19 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                             spikeLocation = spikeLeft;
                             blueBoardCord = leftBlueBoardCord;
                             targetTagId = 1;
+                            targetWhiteTagId = 2;
                         } else if (screenSector.equals("C")) {
                             spikeLocation = spikeCenter;
                             blueBoardCord = centerBlueBoardCord;
                             targetTagId = 2;
+                            targetWhiteTagId = 1;
                         } else {
                             spikeLocation = spikeRight;
                             blueBoardCord = rightBlueBoardCord;
                             targetTagId = 3;
+                            targetWhiteTagId = 1;
                         }
-
+                        aprilTagHomer.changeTarget(targetTagId);
 
                     }
 
@@ -289,8 +298,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                             .lineToLinearHeading(spikeLocation)
                                             .forward(12)
                                             .build();
-                                    drive.followTrajectorySequence(toSpikeMark);
-                                    queuedState = autoState.VISION_SWITCH;
+                                    drive.followTrajectorySequenceAsync(toSpikeMark);
                                 }
 
                                 else{
@@ -352,6 +360,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                 case VISION_SWITCH:
                     if (!drive.isBusy()) {
 
+                        headingHelper.loopMethod();
+
                         //Switches CVision Pipeline from team prop to april tag detection
                         visionPortal.setProcessorEnabled(propDetection, false);
                         visionPortal.setProcessorEnabled(aprilTagDetector, true);
@@ -364,6 +374,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     break;
                 case PRE_TRUSS:
                     if(!drive.isBusy()){
+                        headingHelper.loopMethod();
+
                         toPreTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(beforeTrussCord)
                                 .build();
@@ -371,26 +383,35 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
                         //If white pixels is enabled and hasn't gone to stack, goes to pixel stack
                         //If not goes under truss
-                        if (!hasTwoPixel && autoConfiguration.isWhitePixels())
+                        if (!hasTwoPixel && autoConfiguration.isWhitePixels()) {
+                            intakeActive = true;
                             queuedState = autoState.TO_WHITE;
+                            aprilTagHomer.changeTarget(targetWhiteTagId);
+                        }
                         else queuedState = autoState.POST_TRUSS;
                     }
                     break;
                 case TO_WHITE:
                     if (!drive.isBusy()) {
+                        headingHelper.loopMethod();
                         toWhiteStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(whiteStackCord)
+                                .lineToLinearHeading(whiteStackCord,
+                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                                )
                                 .addDisplacementMarker(() -> {
+                                    waitTimer = System.currentTimeMillis() + WHITE_INTAKE_TIME;
                                     intakeActive = true;
-                                    waitTimer = System.currentTimeMillis() + White_Intake_Time;
+
                                 })
                                 .build();
-                        drive.followTrajectorySequence(toWhiteStack);
+                        drive.followTrajectorySequenceAsync(toWhiteStack);
                         queuedState = autoState.GRAB_WHITE;
                     }
                     break;
                 case GRAB_WHITE:
                     if(!drive.isBusy()) {
+                        headingHelper.loopMethod();
 
                         //Checks if both sensors have detected white pixel
                         if ((colorSensor1.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE && colorSensor2.getDistance(DistanceUnit.CM) <= PIXEL_DETECTION_DISTANCE) || System.currentTimeMillis() > waitTimer) {
@@ -400,10 +421,19 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                             reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
                             queuedState = autoState.PRE_TRUSS;
                         }
+                        else {
+                            //wiggle on that jiggle
+                            wiggle = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .turn(Math.toRadians(15))
+                                    .turn(Math.toRadians(-30))
+                                    .build();
+                            drive.followTrajectorySequenceAsync(wiggle);
+                        }
                     }
                     break;
                 case POST_TRUSS:
                     if(!drive.isBusy() && waitTimer < System.currentTimeMillis()){
+                        headingHelper.loopMethod();
                         toPostTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .addDisplacementMarker(() -> {
                                     if(armController.getCurrentArmState() == ArmController.ArmState.OUTTAKE_READY) {
@@ -422,6 +452,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     break;
                 case TO_BOARD:
                     if (!drive.isBusy()) {
+                        headingHelper.loopMethod();
                         intakeMotor.setPower(0);
                         toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .lineToLinearHeading(blueBoardCord)
@@ -433,7 +464,13 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     break;
                 case HOME_TAG:
                     if (!drive.isBusy()) {
-                        aprilTagHomer.changeTarget(targetTagId);
+                        aprilTagHomer.processRobotPosition();
+                        aprilTagHomer.updateDrive();
+                        waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
+                        queuedState = autoState.PLACE_BOARD;
+                    }
+                    if (!drive.isBusy() && pixelsDropped > 1){
+                        aprilTagHomer.processRobotPosition();
                         aprilTagHomer.updateDrive();
                         waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                         queuedState = autoState.PLACE_BOARD;
@@ -442,16 +479,15 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                 case PLACE_BOARD:
 
                     //Waits until board is in range or the wait timer is up to place pixel on board
-                    if (aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) {
+                    if ((aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) && !drive.isBusy()) {
+                        headingHelper.loopMethod();
+
                         armController.startOuttake();
-                        armController.startOuttake();
+                        armController.setArmPos(armController.getSlideHeight() + 800);
                         waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
-                        hasTwoPixel = false;
+
                         autoCycleCount ++;
-                        if(autoCycleCount <= autoConfiguration.getCycleCount() && autoConfiguration.isWhitePixels())
-                            queuedState = autoState.POST_TRUSS;
-                        else queuedState = autoState.PARK;
-                        break;
+                        queuedState = autoState.POST_DROP;
                     }
                     if (aprilTagHomer.getCurrentTagPose() != null) {
                         telemetry.addData("Tag X:", aprilTagHomer.getCurrentTagPose().x);
@@ -464,8 +500,32 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
                     aprilTagHomer.updateDrive();
                     break;
+                case POST_DROP:
+                    if(!drive.isBusy() && waitTimer < System.currentTimeMillis()){
+                        if(hasTwoPixel){
+                            aprilTagHomer.changeTarget(targetTagId);
+                            toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
+                                    .lineToLinearHeading(blueBoardCord)
+                                    .addDisplacementMarker(() -> {
+                                        armController.changeStage(0);
+                                    })
+                                    .build();
+                            drive.followTrajectoryAsync(toRedBoard);
+                            pixelsDropped ++;
+                            aprilTagHomer.changeTarget(targetWhiteTagId);
+                            queuedState = autoState.HOME_TAG;
+                            hasTwoPixel = false;
+                        }
+                        else if(autoCycleCount <= autoConfiguration.getCycleCount() && autoConfiguration.isWhitePixels())
+                            queuedState = autoState.POST_TRUSS;
+                        else queuedState = autoState.PARK;
+                    }
+                    break;
                 case PARK:
                     if (!drive.isBusy() && System.currentTimeMillis() > waitTimer) {
+                        headingHelper.loopMethod();
+
+
                         //Trajectory to Park Pos
                         if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.SIDE){
                             blueParkCord = new Pose2d(48, 64, Math.toRadians(180));
@@ -492,23 +552,27 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
             }
 
             if(intakeActive){
+                intakePrepare = false;
                 intakeMotor.setPower(INTAKE_POWER);
-                intakeServo.setPosition(.8 - (.2 * autoCycleCount));
+                intakeServo.setPosition(0);
                 armController.setOuttakePower(-1);
 
             }
             //Checks if reverse is on and timer is still on
             else if (reverseIntake && reverseTimer > System.currentTimeMillis()){
-                intakeServo.setPosition(.8 - (.2 * autoCycleCount));
+                intakeServo.setPosition(0);
                 intakeMotor.setPower(-INTAKE_POWER);
                 armController.setOuttakePower(0);
+            }
+            else if (intakePrepare){
+                intakeServo.setPosition(0);
+                armController.setOuttakePower(0);
+                intakeMotor.setPower(0);
             }
             else{
                 intakeMotor.setPower(0);
                 intakeServo.setPosition(1);
             }
-
-            headingHelper.loopMethod();
 
             telemetry.update();
 
