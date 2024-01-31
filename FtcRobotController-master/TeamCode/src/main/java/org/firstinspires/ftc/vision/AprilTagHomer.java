@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.vision;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -10,13 +11,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
+@Config
 public class AprilTagHomer {
     AprilTagProcessor aprilTag;
     SampleMecanumDrive drive;
     AprilTagDetection currentTag;
     AprilTagPoseFtc currentTagPose;
 
-    public static double CAMERA_Y_OFF = 0;
+    public static double CAMERA_Y_OFF = 6;
     public static double CAMERA_X_OFF = 0;
     int targetTagId = 6;
     double acptOffsetX = 1;
@@ -53,7 +55,10 @@ public class AprilTagHomer {
     }
 
     public AprilTagPoseFtc getCurrentTagPose() {
-        return currentTag.ftcPose;
+        if(currentTag != null) {
+            return currentTag.ftcPose;
+        }
+        else return null;
     }
     public void setGains (double horizGain, double vertGain, double yawGain){
         this.vertGain = vertGain;
@@ -69,13 +74,11 @@ public class AprilTagHomer {
 
     public void updateTag(){
         currentTag = updateCurrentTag();
-        currentTagPose = currentTag.ftcPose;
     }
 
     public void updateDrive(){
         updateTag();
         if (currentTag != null){
-
             // Y reversed because robot backwards
             //Set Max Possible power to 1
             drivePowerY = Math.min((Math.abs(currentTagPose.x)) / horizGain, 1);
@@ -123,11 +126,13 @@ public class AprilTagHomer {
     }
 
     public void processRobotPosition(){
-        Pose2d currPos = drive.getPoseEstimate();
-        VectorF tagFieldPos = currentTag.metadata.fieldPosition;
-        double newX = tagFieldPos.get(0) - currentTagPose.y - CAMERA_Y_OFF;
-        double newY = tagFieldPos.get(1) - currentTagPose.x - CAMERA_X_OFF;
-        drive.setPoseEstimate(new Pose2d (newX,newY,currPos.getHeading()));
+        if(currentTag !=null) {
+            Pose2d currPos = drive.getPoseEstimate();
+            VectorF tagFieldPos = currentTag.metadata.fieldPosition;
+            double newX = tagFieldPos.get(0) - currentTagPose.y - CAMERA_Y_OFF;
+            double newY = tagFieldPos.get(1) + currentTagPose.x + CAMERA_X_OFF;
+            drive.setPoseEstimate(new Pose2d(newX, newY, currPos.getHeading()));
+        }
     }
 
     public AprilTagDetection updateCurrentTag() {
@@ -137,6 +142,7 @@ public class AprilTagHomer {
         // Step through the list of detections and check if matches target
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null && detection.id == targetTagId) {
+                currentTagPose = detection.ftcPose;
                 return detection;
             }
         }

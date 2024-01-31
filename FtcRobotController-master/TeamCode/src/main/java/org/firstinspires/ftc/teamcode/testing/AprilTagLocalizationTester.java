@@ -13,13 +13,14 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Autonomous(name="AprilTag Homing Tuner", group = "Testing")
+@Autonomous(name="AprilTag Localization Tester", group = "Testing")
 @Config
 public class AprilTagLocalizationTester extends OpMode {
     AprilTagProcessor aprilTag;
     VisionPortal visionPortal;
     SampleMecanumDrive drive;
     AprilTagHomer tagHomer;
+    AprilTagPoseFtc currentTagPose;
 
     public static int targetTag = 6;
 
@@ -36,14 +37,15 @@ public class AprilTagLocalizationTester extends OpMode {
 
     @Override
     public void loop() {
-
-        AprilTagPoseFtc currentTagPose = tagHomer.getCurrentTagPose();
+        if(tagHomer.getCurrentTagPose() != null){
+            currentTagPose = tagHomer.getCurrentTagPose();
+        }
 
         tagHomer.changeTarget(targetTag);
         tagHomer.updateTag();
 
 
-             telemetry.addLine("April Tag Data:");
+        telemetry.addLine("April Tag Data:");
         if(currentTagPose != null) {
             telemetry.addData("Tag X:", currentTagPose.x);
             telemetry.addData("Tag Y:", currentTagPose.y);
@@ -56,6 +58,7 @@ public class AprilTagLocalizationTester extends OpMode {
         }
 
          tagHomer.processRobotPosition();
+        drive.update();
         telemetry.update();
     }
 }
