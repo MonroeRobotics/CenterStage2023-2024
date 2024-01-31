@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.vision;
 
-import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
@@ -13,7 +13,11 @@ import java.util.List;
 public class AprilTagHomer {
     AprilTagProcessor aprilTag;
     SampleMecanumDrive drive;
+    AprilTagDetection currentTag;
     AprilTagPoseFtc currentTagPose;
+
+    public static double CAMERA_Y_OFF = 0;
+    public static double CAMERA_X_OFF = 0;
     int targetTagId = 6;
     double acptOffsetX = 1;
     double acptOffsetY = 2;
@@ -49,7 +53,7 @@ public class AprilTagHomer {
     }
 
     public AprilTagPoseFtc getCurrentTagPose() {
-        return currentTagPose;
+        return currentTag.ftcPose;
     }
     public void setGains (double horizGain, double vertGain, double yawGain){
         this.vertGain = vertGain;
@@ -64,12 +68,13 @@ public class AprilTagHomer {
     }
 
     public void updateTag(){
-        currentTagPose = updateCurrentTagPose();
+        currentTag = updateCurrentTag();
+        currentTagPose = currentTag.ftcPose;
     }
 
     public void updateDrive(){
         updateTag();
-        if (currentTagPose != null){
+        if (currentTag != null){
 
             // Y reversed because robot backwards
             //Set Max Possible power to 1
@@ -117,14 +122,22 @@ public class AprilTagHomer {
         drive.setDrivePower(new Pose2d(drivePowerX,drivePowerY, drivePowerYaw));
     }
 
-    public AprilTagPoseFtc updateCurrentTagPose() {
+    public void processRobotPosition(){
+        Pose2d currPos = drive.getPoseEstimate();
+        VectorF tagFieldPos = currentTag.metadata.fieldPosition;
+        double newX = tagFieldPos.get(0) - currentTagPose.y - CAMERA_Y_OFF;
+        double newY = tagFieldPos.get(1) - currentTagPose.x - CAMERA_X_OFF;
+        drive.setPoseEstimate(new Pose2d (newX,newY,currPos.getHeading()));
+    }
+
+    public AprilTagDetection updateCurrentTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
         // Step through the list of detections and check if matches target
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null && detection.id == targetTagId) {
-                return detection.ftcPose;
+                return detection;
             }
         }
         return null;
@@ -134,7 +147,7 @@ public class AprilTagHomer {
         targetTagId = newId;
     }
     public boolean inRange (){
-        if (currentTagPose != null) {
+        if (currentTag != null) {
             if(Math.abs(currentTagPose.x) <= acptOffsetX && Math.abs(currentTagPose.y) <= acptOffsetY
                     && Math.abs(currentTagPose.yaw) <= acptOffsetYaw) {
                 return true;
