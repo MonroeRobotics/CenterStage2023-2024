@@ -277,7 +277,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             targetTagId = 6;
                             targetWhiteTagId = 5;
                         }
-                        aprilTagHomer.changeTarget(targetWhiteTagId);
+                        aprilTagHomer.changeTarget(targetTagId);
 
                     }
 
@@ -384,6 +384,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         if (!hasTwoPixel && autoConfiguration.isWhitePixels()) {
                             intakeActive = true;
                             queuedState = autoState.TO_WHITE;
+                            aprilTagHomer.changeTarget(targetWhiteTagId);
                         }
                         else queuedState = autoState.POST_TRUSS;
                     }
@@ -456,7 +457,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .build();
                         armController.switchArmState();
                         drive.followTrajectoryAsync(toRedBoard);
-                        aprilTagHomer.changeTarget(targetWhiteTagId);
                         queuedState = autoState.HOME_TAG;
                     }
                     break;
@@ -510,6 +510,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     .build();
                             drive.followTrajectoryAsync(toRedBoard);
                             pixelsDropped ++;
+                            aprilTagHomer.changeTarget(targetWhiteTagId);
                             queuedState = autoState.HOME_TAG;
                             hasTwoPixel = false;
                         }
