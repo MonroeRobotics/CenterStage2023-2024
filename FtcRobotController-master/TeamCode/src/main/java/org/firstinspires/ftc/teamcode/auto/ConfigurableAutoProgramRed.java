@@ -28,7 +28,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Configurable Red Board Auto", group = "Main")
+@Autonomous(name = "Configurable Red Auto", group = "Main")
 @Config
 public class ConfigurableAutoProgramRed extends LinearOpMode {
 
@@ -87,6 +87,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     TeamPropDetection propDetection;
     String screenSector;
     int targetTagId;
+    int targetWhiteTagId;
+    int pixelsDropped = 0;
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
     AprilTagHomer aprilTagHomer;
@@ -260,14 +262,17 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             spikeLocation = spikeLeft;
                             redBoardCord = leftRedBoardCord;
                             targetTagId = 4;
+                            targetWhiteTagId = 5;
                         } else if (screenSector.equals("C")) {
                             spikeLocation = spikeCenter;
                             redBoardCord = centerRedBoardCord;
                             targetTagId = 5;
+                            targetWhiteTagId = 4;
                         } else {
                             spikeLocation = spikeRight;
                             redBoardCord = rightRedBoardCord;
                             targetTagId = 6;
+                            targetWhiteTagId = 5;
                         }
                         aprilTagHomer.changeTarget(targetTagId);
 
@@ -446,12 +451,18 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case HOME_TAG:
                     if (!drive.isBusy()) {
                         //headingHelper.loopMethod();
-                        aprilTagHomer.changeTarget(4);
+                        //aprilTagHomer.changeTarget(4); thomas spaget code
                         aprilTagHomer.updateDrive();
                         waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                         queuedState = autoState.PLACE_BOARD;
 
 
+                    }
+                    if (!drive.isBusy() && pixelsDropped > 1){
+                        aprilTagHomer.changeTarget(targetWhiteTagId);
+                        aprilTagHomer.updateDrive();
+                        waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
+                        queuedState = autoState.PLACE_BOARD;
                     }
                     break;
                 case PLACE_BOARD:
@@ -466,7 +477,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
                         autoCycleCount ++;
                         if(hasTwoPixel){
-                            aprilTagHomer.changeTarget(5);
+                            //aprilTagHomer.changeTarget(5); thomas spaget code
                             toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                                     .lineToLinearHeading(redBoardCord)
                                     .addDisplacementMarker(() -> {
@@ -474,6 +485,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     })
                                     .build();
                             drive.followTrajectoryAsync(toRedBoard);
+                            pixelsDropped ++;
                             queuedState = autoState.HOME_TAG;
                             hasTwoPixel = false;
                         }
