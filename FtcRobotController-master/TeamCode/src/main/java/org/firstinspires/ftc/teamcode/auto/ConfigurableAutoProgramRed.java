@@ -89,7 +89,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     TeamPropDetection propDetection;
     String screenSector;
     int targetTagId;
-    int targetWhiteTagId;
+    int targetTagIdWhite;
     int pixelsDropped = 0;
     AprilTagProcessor aprilTagDetector;
     VisionPortal visionPortal;
@@ -265,19 +265,25 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             spikeLocation = spikeLeft;
                             redBoardCord = leftRedBoardCord;
                             targetTagId = 4;
-                            targetWhiteTagId = 5;
+                            targetTagIdWhite = 5;
                         } else if (screenSector.equals("C")) {
                             spikeLocation = spikeCenter;
                             redBoardCord = centerRedBoardCord;
                             targetTagId = 5;
-                            targetWhiteTagId = 4;
+                            targetTagIdWhite = 4;
                         } else {
                             spikeLocation = spikeRight;
                             redBoardCord = rightRedBoardCord;
                             targetTagId = 6;
-                            targetWhiteTagId = 5;
+                            targetTagIdWhite = 5;
                         }
-                        aprilTagHomer.changeTarget(targetTagId);
+                        //tag assignment based of starting position
+                        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                            aprilTagHomer.changeTarget(targetTagIdWhite);
+                        }
+                        else{
+                            aprilTagHomer.changeTarget(targetTagId);
+                        }
 
                     }
 
@@ -384,7 +390,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         if (!hasTwoPixel && autoConfiguration.isWhitePixels()) {
                             intakeActive = true;
                             queuedState = autoState.TO_WHITE;
-                            aprilTagHomer.changeTarget(targetWhiteTagId);
+                            //aprilTagHomer.changeTarget(targetTagIdWhite);
                         }
                         else queuedState = autoState.POST_TRUSS;
                     }
@@ -467,12 +473,6 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
                         queuedState = autoState.PLACE_BOARD;
                     }
-                    if (!drive.isBusy() && pixelsDropped > 1){
-                        aprilTagHomer.processRobotPosition();
-                        aprilTagHomer.updateDrive();
-                        waitTimer = System.currentTimeMillis() + APRIL_HOMER_LIMIT;
-                        queuedState = autoState.PLACE_BOARD;
-                    }
                     break;
                 case PLACE_BOARD:
 
@@ -501,7 +501,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case POST_DROP:
                     if(!drive.isBusy() && waitTimer < System.currentTimeMillis()){
                         if(hasTwoPixel){
-                            aprilTagHomer.changeTarget(targetTagId);
+                            //aprilTagHomer.changeTarget(targetTagIdWhite);
                             toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
                                     .lineToLinearHeading(redBoardCord)
                                     .addDisplacementMarker(() -> {
@@ -510,7 +510,20 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     .build();
                             drive.followTrajectoryAsync(toRedBoard);
                             pixelsDropped ++;
-                            aprilTagHomer.changeTarget(targetWhiteTagId);
+                            //update tag assignment after first pixel is dropped
+                            if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                                if(pixelsDropped == 1) {
+                                    aprilTagHomer.changeTarget(targetTagId);
+                                }
+                                else{
+                                    aprilTagHomer.changeTarget(targetTagIdWhite);
+                                }
+                            }
+                            if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
+                                if(pixelsDropped >= 1) {
+                                    aprilTagHomer.changeTarget(targetTagIdWhite);
+                                }
+                            }
                             queuedState = autoState.HOME_TAG;
                             hasTwoPixel = false;
                         }
