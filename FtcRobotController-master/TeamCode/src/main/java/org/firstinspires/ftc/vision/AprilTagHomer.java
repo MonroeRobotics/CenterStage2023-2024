@@ -19,7 +19,7 @@ public class AprilTagHomer {
     AprilTagPoseFtc currentTagPose;
 
     public static double CAMERA_Y_OFF = 6;
-    public static double CAMERA_X_OFF = 0;
+    public static double CAMERA_X_OFF = -2;
     int targetTagId = 6;
     double acptOffsetX = 1;
     double acptOffsetY = 2;
