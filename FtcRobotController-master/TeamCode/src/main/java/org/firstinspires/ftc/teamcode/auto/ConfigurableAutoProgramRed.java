@@ -63,6 +63,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Trajectory toPostTruss;
 
     TrajectorySequence toWhiteStack;
+    TrajectorySequence wiggle;
     //endregion
 
     ArmController armController;
@@ -397,7 +398,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     waitTimer = System.currentTimeMillis() + WHITE_INTAKE_TIME;
                                 })
                                 .build();
-                        drive.followTrajectorySequence(toWhiteStack);
+                        drive.followTrajectorySequenceAsync(toWhiteStack);
                         queuedState = autoState.GRAB_WHITE;
                     }
                     break;
@@ -412,6 +413,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             hasTwoPixel = true;
                             reverseTimer = System.currentTimeMillis() + REVERSE_TIME;
                             queuedState = autoState.PRE_TRUSS;
+                        }
+                        else {
+                            //wiggle on that jiggle
+                            wiggle = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .turn(Math.toRadians(15))
+                                    .turn(Math.toRadians(-30))
+                                    .build();
+                            drive.followTrajectorySequenceAsync(wiggle);
                         }
                     }
                     break;
