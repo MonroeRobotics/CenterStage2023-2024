@@ -395,6 +395,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 )
                                 .addDisplacementMarker(() -> {
                                     waitTimer = System.currentTimeMillis() + WHITE_INTAKE_TIME;
+                                    intakeActive = true;
+
                                 })
                                 .build();
                         drive.followTrajectorySequence(toWhiteStack);
