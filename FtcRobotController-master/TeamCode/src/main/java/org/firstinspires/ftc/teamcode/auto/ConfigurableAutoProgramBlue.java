@@ -40,7 +40,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     public static double BOARD_OUTTAKE_TIME = 800;//Time Board Pixel Outtakes in auto
     public static int WHITE_INTAKE_TIME = 3000;
     public static double PARK_TIME = 2000; //Time to go to park pos
-    public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
+    public static double APRIL_HOMER_LIMIT = 1500; //Failsafe for if apriltag homer has issues
 
     public static double ERROR_THRESH = 30;
     double waitTimer;
@@ -112,7 +112,6 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     //endregion
 
 
-    //TODO: UPDATE All THESE VALUES WITH BLUE Versions
     Pose2d beforeTrussCord = new Pose2d(-36, 10, Math.toRadians(180));
     Pose2d afterTrussCord = new Pose2d(30, 10, Math.toRadians(180));
     Pose2d whiteStackCord = new Pose2d(-56, 11, Math.toRadians(180));
@@ -125,8 +124,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
 
     //TODO: CHECK THESE
-    public static Pose2d centerBlueBoardCord = new Pose2d(35, 37, Math.toRadians(180));
-    public static Pose2d leftBlueBoardCord = new Pose2d(35, 43, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 34, Math.toRadians(180));
+    public static Pose2d leftBlueBoardCord = new Pose2d(35, 45, Math.toRadians(180));
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180 ));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
     public static Pose2d blueParkCord = new Pose2d(48, 38, Math.toRadians(180));
@@ -254,12 +253,12 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                 case START:
                     //Setts Spike Marks per starting position
                     if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
-                        spikeLeft = new Pose2d(19.75,37, Math.toRadians(120));
-                        spikeCenter = new Pose2d(12,36, Math.toRadians(90));
-                        spikeRight = new Pose2d(4,40, Math.toRadians(45));
+                        spikeLeft = new Pose2d(20.5,37, Math.toRadians(120));
+                        spikeCenter = new Pose2d(12,31, Math.toRadians(90));
+                        spikeRight = new Pose2d(2,38, Math.toRadians(45));
                     }else{
                         spikeRight = new Pose2d(-42,35, Math.toRadians(45));
-                        spikeCenter = new Pose2d(-35,33, Math.toRadians(90));
+                        spikeCenter = new Pose2d(-35,31.5, Math.toRadians(90));
                         spikeLeft = new Pose2d(-31,28, Math.toRadians(180));
                     }
 
@@ -463,6 +462,9 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                 .lineToLinearHeading(blueBoardCord)
                                 .build();
                         armController.switchArmState();
+                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                            armController.setStage(1);
+                        }
                         drive.followTrajectoryAsync(toRedBoard);
                         queuedState = autoState.HOME_TAG;
                     }
@@ -482,6 +484,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     if ((aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) && !drive.isBusy()) {
                         armController.changeStage(1);
 
+                        armController.startOuttake();
                         armController.startOuttake();
                         waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
 
@@ -540,9 +543,9 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
                         //Trajectory to Park Pos
                         if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.SIDE){
-                            blueParkCord = new Pose2d(48, 64, Math.toRadians(180));
+                            blueParkCord = new Pose2d(48, 60, Math.toRadians(180));
                         }else{
-                            blueParkCord = new Pose2d(40, 20, Math.toRadians(180));
+                            blueParkCord = new Pose2d(46, 10, Math.toRadians(180));
                         }
 
                         blueBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
