@@ -29,7 +29,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Configurable Blue Board Auto", group = "Main")
+@Autonomous(name = "Configurable Blue Auto", group = "Main")
 @Config
 public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
@@ -111,8 +111,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
 
     //TODO: UPDATE All THESE VALUES WITH BLUE Versions
-    Pose2d beforeTrussCord = new Pose2d(-36, 12, Math.toRadians(180));
-    Pose2d afterTrussCord = new Pose2d(30, 12, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, 10, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, 10, Math.toRadians(180));
     Pose2d whiteStackCord = new Pose2d(-56, 11, Math.toRadians(180));
 
 
@@ -123,11 +123,11 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
 
     //TODO: CHECK THESE
-    public static Pose2d centerBlueBoardCord = new Pose2d(35, 36, Math.toRadians(180));
-    public static Pose2d leftBlueBoardCord = new Pose2d(35, 42, Math.toRadians(180));
-    public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 37, Math.toRadians(180));
+    public static Pose2d leftBlueBoardCord = new Pose2d(35, 43, Math.toRadians(180));
+    public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180 ));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
-    public static Pose2d blueParkCord = new Pose2d(48, 64, Math.toRadians(180));
+    public static Pose2d blueParkCord = new Pose2d(48, 38, Math.toRadians(180));
 
     //endregion
 
@@ -220,8 +220,9 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
         currentGamepad.copy(gamepad1);
         previousGamepad.copy(gamepad1);
 
-        autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
+        autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.BLUE);
 
+        autoConfiguration.processInput(currentGamepad,previousGamepad);
         //endregion
 
         while(opModeInInit()){
@@ -252,12 +253,12 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     //Setts Spike Marks per starting position
                     if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
                         spikeLeft = new Pose2d(19.75,37, Math.toRadians(120));
-                        spikeCenter = new Pose2d(12,34.5, Math.toRadians(90));
+                        spikeCenter = new Pose2d(12,36, Math.toRadians(90));
                         spikeRight = new Pose2d(4,40, Math.toRadians(45));
                     }else{
                         spikeRight = new Pose2d(-42,35, Math.toRadians(45));
                         spikeCenter = new Pose2d(-35,33, Math.toRadians(90));
-                        spikeLeft = new Pose2d(-33,28, Math.toRadians(180));
+                        spikeLeft = new Pose2d(-31,28, Math.toRadians(180));
                     }
 
                     //Obtains team prop location from propDetector
@@ -321,7 +322,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
                             //region Away Spike Mark Pathing
                             case AWAY:
-                                if(Objects.equals(screenSector, "R")) {
+                                if(Objects.equals(screenSector, "L")) {
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .back(18)
                                             .lineToLinearHeading(spikeLocation)
@@ -333,12 +334,12 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .lineToLinearHeading(spikeLocation)
                                             .forward(12)
-                                            .strafeRight(16)
+                                            .strafeLeft(16)
                                             .back(28)
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
                                 }
-                                else if (Objects.equals(screenSector, "L")) {
+                                else if (Objects.equals(screenSector, "R")) {
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .back(12)
                                             .lineToLinearHeading(spikeLocation)

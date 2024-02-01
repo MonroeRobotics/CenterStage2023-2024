@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Config
 public class AutoConfiguration {
 
     public static boolean hasInitAuto = false;
@@ -32,17 +34,17 @@ public class AutoConfiguration {
         BOARD,
         AWAY
     }
-    boolean whitePixels;
-    boolean purplePixelOnly;
+    public static boolean whitePixels;
+    public static boolean purplePixelOnly;
 
-    int delay;
-    int cycleCount = 0;
+    public static int delay = 0;
+    public static int cycleCount = 0;
 
     String indicatorMarker = "֎";
 
-    ParkSide parkSide;
-    StartPosition startPosition;
-    AllianceColor allianceColor;
+    public static ParkSide parkSide = ParkSide.SIDE;
+    public static StartPosition startPosition = StartPosition.BOARD;
+    public static AllianceColor allianceColor;
 
     AdjVariables[] adjVariables = AdjVariables.values();
 
@@ -55,11 +57,6 @@ public class AutoConfiguration {
         hasInitAuto = true;
         this.telemetry = telemetry;
         this.allianceColor = allianceColor;
-        parkSide = ParkSide.SIDE;
-        startPosition = StartPosition.BOARD;
-        delay = 0;
-        whitePixels = false;
-        purplePixelOnly = false;
     }
     public AutoConfiguration(Telemetry telemetry, AllianceColor allianceColor, ParkSide parkSide, StartPosition startPosition, int delay, boolean whitePixels, boolean purplePixelOnly){
         hasInitAuto = true;
