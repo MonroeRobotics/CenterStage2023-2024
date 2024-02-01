@@ -41,6 +41,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     public static int WHITE_INTAKE_TIME = 3000;
     public static double PARK_TIME = 2000; //Time to go to park pos
     public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
+
+    public static double ERROR_THRESH = 30;
     double waitTimer;
     //endregion
 
@@ -589,6 +591,13 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
             drive.update();
 
             armController.updateArm();
+
+            //Auto error threshold kill
+            Pose2d lastError = drive.getLastError();
+
+            if(Math.abs(lastError.getX()) > ERROR_THRESH || Math.abs(lastError.getY()) > ERROR_THRESH){
+                requestOpModeStop();
+            }
         }
     }
 }
