@@ -42,7 +42,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     public static double PARK_TIME = 2000; //Time to go to park pos
     public static double APRIL_HOMER_LIMIT = 1500; //Failsafe for if apriltag homer has issues
 
-    public static double ERROR_THRESH = 30;
+    public static double ERROR_THRESH = 10;
     double waitTimer;
     //endregion
 
