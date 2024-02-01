@@ -48,7 +48,7 @@ public class main extends OpMode {
     //endregion
 
     public static int HANG_DRONE_HEIGHT = 6190;
-    public static int RIGGING_EXTENDED_POS = 1505;
+    public static int RIGGING_EXTENDED_POS = 14000;
 
     public static double DRONE_LAUNCH_POS = 0.3;
     public static double DRONE_START_POS = 0;
@@ -243,16 +243,14 @@ public class main extends OpMode {
                 armController.setSlideHeight(armController.getSlideHeight() - 20);
         }
 
-        if(currentGamepad2.left_stick_button && currentGamepad2.right_stick_button && armController.getSlideHeight() != 0)
-            armController.resetSlideZero();
-
         //Manual Jog For Slides (In Case of emergency)
-        if(currentGamepad2.right_bumper && currentGamepad2.left_bumper){
-            if(currentGamepad2.left_trigger >= 0.1){
-                armController.setSlideHeight(armController.getSlideHeight() - 10);
+        if(currentGamepad2.left_bumper){
+            if(currentGamepad2.share && armController.getSlideHeight() != 0) armController.resetSlideZero();
+            else if(currentGamepad2.left_trigger >= 0.1){
+                armController.setSlideHeight(armController.getSlideHeight() - 5);
             }
             else if(currentGamepad2.right_trigger >= 0.1){
-                armController.setSlideHeight(armController.getSlideHeight() + 10);
+                armController.setSlideHeight(armController.getSlideHeight() + 5);
             }
         }
         //endregion

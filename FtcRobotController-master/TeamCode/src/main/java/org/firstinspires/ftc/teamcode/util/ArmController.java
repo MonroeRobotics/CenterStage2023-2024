@@ -17,7 +17,7 @@ public class ArmController {
 
 
 
-    int SLIDE_HEIGHT = 20; //Live Updating Slide height
+    int SLIDE_HEIGHT = 1; //Live Updating Slide height
     int SLIDE_STAGE = 0; //Used for incremental Slide Height
     public static double SLIDE_POWER = 0.5; //Max Linear Slide Power
     public static double SLIDE_MAX_VELO = 2000; //Max Linear Slide Velocity
