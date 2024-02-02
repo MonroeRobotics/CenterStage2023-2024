@@ -15,7 +15,9 @@ public class ArmController {
 
     //region Arm Variables
 
-    int SLIDE_HEIGHT = 20; //Live Updating Slide height
+
+
+    int SLIDE_HEIGHT = 1; //Live Updating Slide height
     int SLIDE_STAGE = 0; //Used for incremental Slide Height
     public static double SLIDE_POWER = 0.5; //Max Linear Slide Power
     public static double SLIDE_MAX_VELO = 2000; //Max Linear Slide Velocity
@@ -31,13 +33,13 @@ public class ArmController {
 
     double ARM_POSITION = 0; //Live Updating Arm Servo Position (0 is intake position)
     public static double ARM_SERVO_FORWARD = 0;//Stores Value of Arm intake Position
-    public static double ARM_SERVO_BACKWARD = 0.9;//Stores Value of Arm outtake Position
+    public static double ARM_SERVO_BACKWARD = 1;//Stores Value of Arm outtake Position
 
-    double BOX_SERVO_POSITION = .2; //Live Updating Box Position (.15 is intake position)
-    public static double BOX_SERVO_FORWARD = .2; //Stores Value of Box intake Position
+    double BOX_SERVO_POSITION = .1; //Live Updating Box Position (.15 is intake position)
+    public static double BOX_SERVO_FORWARD = .1; //Stores Value of Box intake Position
     public static double BOX_SERVO_TRANSITION = 0.6; //Stores value of Box Outtake position
-    public static double BOX_SERVO_BACKWARD = 0.85; //Stores value of Box Outtake position
-    public static int SLIDE_HEIGHT_SERVO_TRANSITION = 1000;
+    public static double BOX_SERVO_BACKWARD = 0.7; //Stores value of Box Outtake position
+    public static int SLIDE_HEIGHT_SERVO_TRANSITION = 100;
 
     double outtakeTimer = 0; //Timer to control outtake
     public static double OUTTAKE_TIME = 150; //How Long Outtake runs for (ms)
@@ -70,8 +72,10 @@ public class ArmController {
         //endregion
 
         //region Arm Lift Motor Settings
-        leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(!AutoConfiguration.hasInitAuto) {
+            leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
 
         leftLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -130,21 +134,26 @@ public class ArmController {
                 ARM_POSITION = ARM_SERVO_BACKWARD;
                 outtakeServo.setPower(0);
                 if (SLIDE_STAGE == 0) {
-                    SLIDE_HEIGHT = 450;
+                    SLIDE_HEIGHT = 400;
                 }
                 else{
-                    SLIDE_HEIGHT = 450 + (SLIDE_STAGE * 150);
+                    SLIDE_HEIGHT = 400 + (SLIDE_STAGE * 150);
                 }
                 break;
         }
     }
 
     public void changeStage(int change){
-        if (change > 0 && SLIDE_STAGE < 7) {
+        if (change > 0 && SLIDE_STAGE < 9) {
             SLIDE_STAGE += change;
         } else if (change < 0 && SLIDE_STAGE > 0) {
             SLIDE_STAGE += change;
         }
+        updateArmState();
+    }
+
+    public void setStage(int stage){
+        if(stage >= 0 && stage <= 9) SLIDE_STAGE = stage;
         updateArmState();
     }
 
@@ -218,5 +227,16 @@ public class ArmController {
         armServoRight.setPosition(1 - ARM_POSITION);
 
         boxServo.setPosition(BOX_SERVO_POSITION);
+    }
+
+    public void resetSlideZero(){
+
+        leftLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLinear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLinear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        setSlideHeight(0);
     }
 }

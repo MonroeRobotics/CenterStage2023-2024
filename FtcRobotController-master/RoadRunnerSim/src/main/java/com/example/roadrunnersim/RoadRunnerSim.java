@@ -41,6 +41,7 @@ public class RoadRunnerSim {
         Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
         Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
         Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
+        Pose2d closeRedBoardCord = new Pose2d(50, -38, Math.toRadians(180));
         Pose2d beforeTrussCord = new Pose2d(-48, -12, Math.toRadians(180));
         Pose2d afterTrussCord = new Pose2d(12, -12, Math.toRadians(180));
         Pose2d redParkCord = new Pose2d(48, -64, Math.toRadians(180));
@@ -86,6 +87,7 @@ public class RoadRunnerSim {
                                 .lineToLinearHeading(new Pose2d(19,-37, Math.toRadians(240)))
                                 .forward(12)
                                 .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(closeRedBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
                 );
@@ -99,6 +101,7 @@ public class RoadRunnerSim {
                                 .lineToLinearHeading(new Pose2d(12,-33, Math.toRadians(270)))
                                 .forward(12)
                                 .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(closeRedBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
                 );
@@ -114,12 +117,13 @@ public class RoadRunnerSim {
                                 .lineToLinearHeading(spikeLeft)
                                 .forward(12)
                                 .lineToLinearHeading(redBoardCord)
-                                .lineToLinearHeading(afterTrussCord)
+                                /*.lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(whiteStackCord)
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
-                                .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(redBoardCord)*/
+                                .lineToLinearHeading(closeRedBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
                 );
@@ -140,6 +144,7 @@ public class RoadRunnerSim {
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(closeRedBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
                 );
@@ -158,6 +163,7 @@ public class RoadRunnerSim {
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(closeRedBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
                 );
@@ -175,6 +181,7 @@ public class RoadRunnerSim {
                                 .lineToLinearHeading(beforeTrussCord)
                                 .lineToLinearHeading(afterTrussCord)
                                 .lineToLinearHeading(redBoardCord)
+                                .lineToLinearHeading(closeRedBoardCord)
                                 .lineToLinearHeading(redParkCord)
                                 .build()
                 );
@@ -275,12 +282,12 @@ public class RoadRunnerSim {
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
                 //.addEntity(testBot)
-                //.addEntity(firstBot)
-                //.addEntity(secondBot)
-                //.addEntity(thirdBot)
-                //.addEntity(fourBot)
+                .addEntity(firstBot)
+                .addEntity(secondBot)
+                .addEntity(thirdBot)
+                .addEntity(fourBot)
                 .addEntity(fiveBot)
-                //.addEntity(sixBot)
+                .addEntity(sixBot)
                 //.addEntity(sevenBot)
                 //.addEntity(eightBot)
                 //.addEntity(nineBot)

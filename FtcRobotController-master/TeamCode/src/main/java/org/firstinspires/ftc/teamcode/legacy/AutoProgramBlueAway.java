@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.legacy;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -14,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.opmode.TurnTest;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.vision.AprilTagHomer;
@@ -23,9 +25,10 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Objects;
 
-@Autonomous(name = "Red Away Auto", group = "Main")
+@Autonomous(name = "Blue Away Auto", group = "Main")
 @Config
-public class AutoProgramRedAway extends OpMode {
+@Disabled
+public class AutoProgramBlueAway extends OpMode {
 
     //region Dashboard Variable Declarations
 
@@ -59,9 +62,9 @@ public class AutoProgramRedAway extends OpMode {
     Trajectory toSpikeMark4;
     Trajectory toPreTruss;
     Trajectory toPostTruss;
-    Trajectory toRedBoard;
-    Trajectory redBoardPark1;
-    Trajectory redBoardPark2;
+    Trajectory toBlueBoard;
+    Trajectory blueBoardPark1;
+    Trajectory blueBoardPark2;
     //endregion
 
     ArmController armController;
@@ -82,28 +85,27 @@ public class AutoProgramRedAway extends OpMode {
 
     //region RR static coordinates
 
-    //region red board spike locations
+    //region blue board spike locations
     Pose2d spikeLocation;
 
 
 
-    Pose2d spikeRight = new Pose2d(-33,-28, Math.toRadians(180));
-    Vector2d spikeLeftSpline = new Vector2d(11,-32);
-    Pose2d spikeCenter = new Pose2d(-35,-33, Math.toRadians(270));
+    Pose2d spikeLeft = new Pose2d(-33,28, Math.toRadians(180));
+    Pose2d spikeCenter = new Pose2d(-35,33, Math.toRadians(90));
 
-    Pose2d spikeLeft = new Pose2d(-42,-35, Math.toRadians(315));
+    Pose2d spikeRight = new Pose2d(-42,35, Math.toRadians(45));
 
-    Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
-    Pose2d afterTrussCord = new Pose2d(30, -12, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, 12, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, 12, Math.toRadians(180));
     //endregion
 
-    public static Pose2d STARTING_DRIVE_POS = new Pose2d(-35, -62, Math.toRadians(270));
+    public static Pose2d STARTING_DRIVE_POS = new Pose2d(-35, 62, Math.toRadians(90));
 
-    public static Pose2d centerRedBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
-    public static Pose2d leftRedBoardCord = new Pose2d(35, -34, Math.toRadians(180));
-    public static Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
-    public static Pose2d redParkCord = new Pose2d(40, -20, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 39, Math.toRadians(180));
+    public static Pose2d leftBlueBoardCord = new Pose2d(35, 41, Math.toRadians(180));
+    public static Pose2d rightBlueBoardCord = new Pose2d(35, 37, Math.toRadians(180));
+    public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
+    public static Pose2d blueParkCord = new Pose2d(40, 20, Math.toRadians(180));
 
     enum autoState {
         START,
@@ -148,7 +150,7 @@ public class AutoProgramRedAway extends OpMode {
 
         aprilTagHomer = new AprilTagHomer(aprilTagDetector, drive);
 
-        propDetection = new TeamPropDetection("red");
+        propDetection = new TeamPropDetection("blue");
 
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "webcam"), aprilTagDetector, propDetection);
         visionPortal.setProcessorEnabled(aprilTagDetector, false);
@@ -165,16 +167,16 @@ public class AutoProgramRedAway extends OpMode {
                 if(screenSector != null) {
                     if (screenSector.equals("L")) {
                         spikeLocation = spikeLeft;
-                        redBoardCord = leftRedBoardCord;
-                        targetTagId = 4;
+                        blueBoardCord = leftBlueBoardCord;
+                        targetTagId = 1;
                     } else if (screenSector.equals("C")) {
                         spikeLocation = spikeCenter;
-                        redBoardCord = centerRedBoardCord;
-                        targetTagId = 5;
+                        blueBoardCord = centerBlueBoardCord;
+                        targetTagId = 2;
                     } else {
                         spikeLocation = spikeRight;
-                        redBoardCord = rightRedBoardCord;
-                        targetTagId = 6;
+                        blueBoardCord = rightBlueBoardCord;
+                        targetTagId = 3;
                     }
 
                     queuedState = autoState.TO_SPIKE_MARK;
@@ -203,7 +205,7 @@ public class AutoProgramRedAway extends OpMode {
                     toSpikeMarkSequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(spikeLocation)
                             .forward(12)
-                            .strafeRight(16)
+                            .strafeLeft(16)
                             .back(28)
                             .build();
                     drive.followTrajectorySequenceAsync(toSpikeMarkSequence);
@@ -237,7 +239,6 @@ public class AutoProgramRedAway extends OpMode {
                 break;
             case PRE_TRUSS:
                 if(!drive.isBusy()){
-//                    drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), (drive.getExternalHeading() + TURN_ADJ)));
                     visionPortal.setProcessorEnabled(propDetection, false);
                     visionPortal.setProcessorEnabled(aprilTagDetector, true);
                     /*ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
@@ -258,6 +259,7 @@ public class AutoProgramRedAway extends OpMode {
                 break;
             case POST_TRUSS:
                 if(!drive.isBusy()){
+                    drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), (drive.getPoseEstimate().getHeading() + Math.toRadians(TURN_ADJ))));
                     toPostTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .lineToLinearHeading(afterTrussCord)
                             .build();
@@ -268,11 +270,11 @@ public class AutoProgramRedAway extends OpMode {
             case TO_BOARD:
                 if(!drive.isBusy()){
                     intakeMotor.setPower(0);
-                    toRedBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(redBoardCord)
+                    toBlueBoard = drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(blueBoardCord)
                             .build();
                     armController.switchArmState();
-                    drive.followTrajectoryAsync(toRedBoard);
+                    drive.followTrajectoryAsync(toBlueBoard);
                     queuedState = autoState.HOME_TAG;
                 }
                 break;
@@ -307,19 +309,19 @@ public class AutoProgramRedAway extends OpMode {
                 if(!drive.isBusy() && System.currentTimeMillis() > waitTimer){
                     //Trajectory to Park Pos
 
-                    redBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    blueBoardPark1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                             .forward(5)
                             .addDisplacementMarker(() -> {
                                 armController.switchArmState();
                                 armController.setSlideHeight(-10);
-                                drive.followTrajectoryAsync(redBoardPark2);
+                                drive.followTrajectoryAsync(blueBoardPark2);
                             })
                             .build();
-                    redBoardPark2 = drive.trajectoryBuilder(redBoardPark1.end())
-                            .lineToLinearHeading(redParkCord)
+                    blueBoardPark2 = drive.trajectoryBuilder(blueBoardPark1.end())
+                            .lineToLinearHeading(blueParkCord)
                             .build();
                     //Start Following Trajectory
-                    drive.followTrajectoryAsync(redBoardPark1);
+                    drive.followTrajectoryAsync(blueBoardPark1);
                     //Put slide and arm back to intake position
 
 

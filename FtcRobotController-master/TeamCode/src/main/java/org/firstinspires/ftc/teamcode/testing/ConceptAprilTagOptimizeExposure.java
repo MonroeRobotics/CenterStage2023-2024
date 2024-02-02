@@ -65,6 +65,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="AprilTag Exposure", group = "Testing")
+@Disabled
 public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 {
     private VisionPortal visionPortal = null;        // Used to manage the video source.

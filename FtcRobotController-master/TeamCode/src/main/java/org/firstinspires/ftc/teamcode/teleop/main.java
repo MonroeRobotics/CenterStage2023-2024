@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
+import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
 import org.firstinspires.ftc.teamcode.util.PixelGamepadDetector;
 
 @TeleOp(name="Main Drive", group = "Main")
@@ -46,8 +47,8 @@ public class main extends OpMode {
     double headingPower;
     //endregion
 
-    public static int HANG_DRONE_HEIGHT = 5500;
-    public static int RIGGING_EXTENDED_POS = 14500;
+    public static int HANG_DRONE_HEIGHT = 6190;
+    public static int RIGGING_EXTENDED_POS = 14000;
 
     public static double DRONE_LAUNCH_POS = 0.3;
     public static double DRONE_START_POS = 0;
@@ -83,6 +84,7 @@ public class main extends OpMode {
 
     Gamepad previousGamepad1;
     Gamepad previousGamepad2;
+
     //endregion
 
     double droneTimer = 0;
@@ -103,8 +105,7 @@ public class main extends OpMode {
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         //endregion
 
-        armController = new ArmController(hardwareMap);
-        armController.initArm();
+
 
         //region Intake Settings
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -112,9 +113,12 @@ public class main extends OpMode {
         //endregion
         //endregion
 
+        armController = new ArmController(hardwareMap);
+        armController.initArm();
+
         //region Rigging Init
         hangMotor = hardwareMap.get(DcMotorEx.class,"hangMotor");
-        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(!AutoConfiguration.hasInitAuto) hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         hangMotor.setPower(1);
         hangMotor.setTargetPosition(0);
@@ -140,6 +144,8 @@ public class main extends OpMode {
 
         //See util.PixelGamepadDetector
         pixelGamepadDetector = new PixelGamepadDetector(this.gamepad1, this.gamepad2, colorSensor1, colorSensor2);
+
+        AutoConfiguration.hasInitAuto = false;
     }
     @Override
     public void loop() {
@@ -226,18 +232,25 @@ public class main extends OpMode {
             armController.switchArmState();
         }
         //Resets Arm to Intake Position on square press
-        else if (currentGamepad2.square && !previousGamepad2.square) {
+        else if (currentGamepad2.square && !previousGamepad2.square && armController.getCurrentArmState() != ArmController.ArmState.INTAKE) {
             armController.startOuttake();
         }
 
+        if(currentGamepad2.left_bumper) {
+            if (currentGamepad2.right_trigger > 0.2)
+                armController.setSlideHeight(armController.getSlideHeight() + 20);
+            else if (currentGamepad2.left_trigger > 0.2)
+                armController.setSlideHeight(armController.getSlideHeight() - 20);
+        }
 
         //Manual Jog For Slides (In Case of emergency)
-        if(currentGamepad2.right_bumper && currentGamepad2.left_bumper){
-            if(currentGamepad2.left_trigger >= 0.1){
-                armController.setSlideHeight(armController.getSlideHeight() - 10);
+        if(currentGamepad2.left_bumper){
+            if(currentGamepad2.share && armController.getSlideHeight() != 0) armController.resetSlideZero();
+            else if(currentGamepad2.left_trigger >= 0.1){
+                armController.setSlideHeight(armController.getSlideHeight() - 5);
             }
             else if(currentGamepad2.right_trigger >= 0.1){
-                armController.setSlideHeight(armController.getSlideHeight() + 10);
+                armController.setSlideHeight(armController.getSlideHeight() + 5);
             }
         }
         //endregion
