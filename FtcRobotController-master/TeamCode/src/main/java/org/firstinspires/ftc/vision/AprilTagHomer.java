@@ -17,6 +17,8 @@ public class AprilTagHomer {
     SampleMecanumDrive drive;
     AprilTagDetection currentTag;
     AprilTagPoseFtc currentTagPose;
+    List<AprilTagDetection> currentDetections;
+
 
     public static double CAMERA_Y_OFF = 6;
     public static double CAMERA_X_OFF = -2;
@@ -126,18 +128,22 @@ public class AprilTagHomer {
     }
 
     public void processRobotPosition(){
-        if(currentTag !=null) {
+
+        updateCurrentTag();
+
+        if(currentDetections !=null && currentDetections.size() >= 1) {
+            AprilTagDetection currentLocalTag = currentDetections.get(0);
             Pose2d currPos = drive.getPoseEstimate();
-            VectorF tagFieldPos = currentTag.metadata.fieldPosition;
-            double newX = tagFieldPos.get(0) - currentTagPose.y - CAMERA_Y_OFF;
-            double newY = tagFieldPos.get(1) + currentTagPose.x + CAMERA_X_OFF;
+            VectorF tagFieldPos = currentLocalTag.metadata.fieldPosition;
+            double newX = tagFieldPos.get(0) - currentLocalTag.ftcPose.y - CAMERA_Y_OFF;
+            double newY = tagFieldPos.get(1) + currentLocalTag.ftcPose.x + CAMERA_X_OFF;
             drive.setPoseEstimate(new Pose2d(newX, newY, currPos.getHeading()));
         }
     }
 
     public AprilTagDetection updateCurrentTag() {
 
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        currentDetections = aprilTag.getDetections();
 
         // Step through the list of detections and check if matches target
         for (AprilTagDetection detection : currentDetections) {

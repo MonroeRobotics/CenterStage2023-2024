@@ -472,6 +472,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }
                     break;
                 case HOME_TAG:
+                    aprilTagHomer.processRobotPosition();
                     if (!drive.isBusy()) {
                         aprilTagHomer.processRobotPosition();
                         aprilTagHomer.updateDrive();
