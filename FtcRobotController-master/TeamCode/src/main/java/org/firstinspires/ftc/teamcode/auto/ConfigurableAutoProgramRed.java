@@ -345,7 +345,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .back(12)
                                             .lineToLinearHeading(spikeLocation)
-                                            .forward(6.5)
+                                            .forward(7)
                                             .lineToLinearHeading(spikeMiddle)
                                             .lineToLinearHeading(new Pose2d(beforeTrussCord.getX(), beforeTrussCord.getY(), Math.toRadians(270)))
                                             .build();

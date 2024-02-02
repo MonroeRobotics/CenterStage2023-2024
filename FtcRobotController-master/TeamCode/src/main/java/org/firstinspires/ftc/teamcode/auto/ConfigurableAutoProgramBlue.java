@@ -109,6 +109,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     Pose2d spikeLeft;
     Pose2d spikeCenter;
     Pose2d spikeRight;
+    Pose2d spikeMiddle;
     //endregion
 
 
@@ -260,6 +261,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         spikeRight = new Pose2d(-42,35, Math.toRadians(45));
                         spikeCenter = new Pose2d(-35,31.5, Math.toRadians(90));
                         spikeLeft = new Pose2d(-31,28, Math.toRadians(180));
+                        spikeMiddle = new Pose2d(-34.5,38, Math.toRadians(90));
                     }
 
                     //Obtains team prop location from propDetector
@@ -344,7 +346,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .back(12)
                                             .lineToLinearHeading(spikeLocation)
-                                            .forward(8)
+                                            .forward(7)
+                                            .lineToLinearHeading(spikeMiddle)
                                             .lineToLinearHeading(new Pose2d(beforeTrussCord.getX(), beforeTrussCord.getY(), Math.toRadians(90)))
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
