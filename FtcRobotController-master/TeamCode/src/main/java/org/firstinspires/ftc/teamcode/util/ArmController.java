@@ -134,21 +134,26 @@ public class ArmController {
                 ARM_POSITION = ARM_SERVO_BACKWARD;
                 outtakeServo.setPower(0);
                 if (SLIDE_STAGE == 0) {
-                    SLIDE_HEIGHT = 500;
+                    SLIDE_HEIGHT = 400;
                 }
                 else{
-                    SLIDE_HEIGHT = 500 + (SLIDE_STAGE * 150);
+                    SLIDE_HEIGHT = 400 + (SLIDE_STAGE * 150);
                 }
                 break;
         }
     }
 
     public void changeStage(int change){
-        if (change > 0 && SLIDE_STAGE < 7) {
+        if (change > 0 && SLIDE_STAGE < 9) {
             SLIDE_STAGE += change;
         } else if (change < 0 && SLIDE_STAGE > 0) {
             SLIDE_STAGE += change;
         }
+        updateArmState();
+    }
+
+    public void setStage(int stage){
+        if(stage >= 0 && stage <= 9) SLIDE_STAGE = stage;
         updateArmState();
     }
 

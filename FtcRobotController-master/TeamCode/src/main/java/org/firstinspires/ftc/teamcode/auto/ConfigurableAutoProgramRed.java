@@ -40,9 +40,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     public static double BOARD_OUTTAKE_TIME = 800;//Time Board Pixel Outtakes in auto
     public static int WHITE_INTAKE_TIME = 3000;
     public static double PARK_TIME = 2000; //Time to go to park pos
-    public static double APRIL_HOMER_LIMIT = 3000; //Failsafe for if apriltag homer has issues
+    public static double APRIL_HOMER_LIMIT = 1500; //Failsafe for if apriltag homer has issues
 
-    public static double ERROR_THRESH = 30;
+    public static double ERROR_THRESH = 10;
     double waitTimer;
     //endregion
 
@@ -109,10 +109,11 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Pose2d spikeLeft;
     Pose2d spikeCenter;
     Pose2d spikeRight;
+    Pose2d spikeMiddle;
     //endregion
 
-    Pose2d beforeTrussCord = new Pose2d(-36, -12, Math.toRadians(180));
-    Pose2d afterTrussCord = new Pose2d(30, -12, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, -13, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, -13, Math.toRadians(180));
     Pose2d whiteStackCord = new Pose2d(-60, -13, Math.toRadians(180));
 
 
@@ -124,7 +125,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
     //y was previously -35
     Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
-    Pose2d rightRedBoardCord = new Pose2d(35, -40, Math.toRadians(180));
+    Pose2d rightRedBoardCord = new Pose2d(35, -43, Math.toRadians(180));
     Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
     Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     Pose2d redParkCord;
@@ -222,6 +223,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
         autoConfiguration = new AutoConfiguration(telemetry, AutoConfiguration.AllianceColor.RED);
 
+        autoConfiguration.processInput(currentGamepad,previousGamepad);
         //endregion
 
         while(opModeInInit()){
@@ -251,13 +253,14 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                 case START:
                     //Setts Spike Marks per starting position
                     if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
-                        spikeLeft = new Pose2d(4,-40, Math.toRadians(315));
-                        spikeCenter = new Pose2d(12,-33, Math.toRadians(270));
+                        spikeLeft = new Pose2d(3,-40, Math.toRadians(315));
+                        spikeCenter = new Pose2d(12,-32, Math.toRadians(270));
                         spikeRight = new Pose2d(19,-37, Math.toRadians(240));
                     }else{
-                        spikeRight = new Pose2d(-33,-28, Math.toRadians(180));
-                        spikeCenter = new Pose2d(-35,-33, Math.toRadians(270));
-                        spikeLeft = new Pose2d(-42,-35, Math.toRadians(315));
+                        spikeRight = new Pose2d(-32,-30, Math.toRadians(180));
+                        spikeCenter = new Pose2d(-35,-32.5, Math.toRadians(270));
+                        spikeLeft = new Pose2d(-40.5,-35, Math.toRadians(315));
+                        spikeMiddle = new Pose2d(-34.5,-38, Math.toRadians(270));
                     }
 
                     //Obtains team prop location from propDetector
@@ -342,7 +345,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .back(12)
                                             .lineToLinearHeading(spikeLocation)
-                                            .forward(8)
+                                            .forward(7)
+                                            .lineToLinearHeading(spikeMiddle)
                                             .lineToLinearHeading(new Pose2d(beforeTrussCord.getX(), beforeTrussCord.getY(), Math.toRadians(270)))
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
@@ -460,6 +464,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .lineToLinearHeading(redBoardCord)
                                 .build();
                         armController.switchArmState();
+                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                            armController.setStage(1);
+                        }
                         drive.followTrajectoryAsync(toRedBoard);
                         queuedState = autoState.HOME_TAG;
                     }
@@ -479,6 +486,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     if ((aprilTagHomer.inRange() || System.currentTimeMillis() > waitTimer) && !drive.isBusy()) {
                         armController.changeStage(1);
 
+                        armController.startOuttake();
                         armController.startOuttake();
                         waitTimer = System.currentTimeMillis() + BOARD_OUTTAKE_TIME;
 
@@ -537,9 +545,9 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
                         //Trajectory to Park Pos
                         if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.SIDE){
-                            redParkCord = new Pose2d(40, -64, Math.toRadians(180));
+                            redParkCord = new Pose2d(50, -64, Math.toRadians(180));
                         }else{
-                            redParkCord = new Pose2d(48, -20, Math.toRadians(180));
+                            redParkCord = new Pose2d(49, -15, Math.toRadians(180));
                         }
 
                         redBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
