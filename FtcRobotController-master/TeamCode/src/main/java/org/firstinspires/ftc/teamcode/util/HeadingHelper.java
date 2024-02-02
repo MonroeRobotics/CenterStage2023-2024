@@ -60,17 +60,17 @@ public class HeadingHelper {
         telemetry.addData("Timer", timer);
 
         if (timer < System.currentTimeMillis()){
-            drive.setExternalHeading(getAdjustedYaw());
+            double yaw = getAdjustedYaw();
             Pose2d currPose = drive.getPoseEstimate();
-            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(getAdjustedYaw())));
+            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(yaw)));
             timer = System.currentTimeMillis() + pollInterval;
         }
-        else {
-            drive.setExternalHeading(getAdjustedYaw());
+       /* else {
+            double yaw = getAdjustedYaw();
             Pose2d currPose = drive.getPoseEstimate();
-            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(getAdjustedYaw())));
+            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(yaw)));
             timer = System.currentTimeMillis() + pollInterval;
-        }
+        }*/
     }
 
     public YawPitchRollAngles getImuReading(){

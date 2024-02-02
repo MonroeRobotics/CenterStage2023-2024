@@ -27,15 +27,18 @@ public class AutoConfiguration {
         PURPLEE_PIXEL_ONLY,
         WHITE_PIXELS,
         CYCLE_COUNT,
-        PARK_SIDE
+        PARK_SIDE,
+        ALLIANCE_YELLOW
     }
 
     public enum StartPosition{
         BOARD,
         AWAY
     }
-    public static boolean whitePixels;
-    public static boolean purplePixelOnly;
+    public static boolean whitePixels = false;
+    public static boolean purplePixelOnly = false;
+
+    public static boolean allianceYellow = false;
 
     public static int delay = 0;
     public static int cycleCount = 0;
@@ -93,6 +96,8 @@ public class AutoConfiguration {
         return startPosition;
     }
 
+    public boolean getAllianceYellow(){return allianceYellow;}
+
     public void processInput(Gamepad currentGamepad, Gamepad previousGamepad){
         if(currentGamepad.dpad_down && !previousGamepad.dpad_down && currVIndex < adjVariables.length - 1){
             currVIndex += 1;
@@ -136,6 +141,9 @@ public class AutoConfiguration {
                         parkSide = ParkSide.SIDE;
                     }
                     break;
+                case ALLIANCE_YELLOW:
+                    allianceYellow = !allianceYellow;
+                    break;
             }
         }
         else if(currentGamepad.dpad_left && !previousGamepad.dpad_left) {
@@ -171,7 +179,9 @@ public class AutoConfiguration {
                         parkSide = ParkSide.SIDE;
                     }
                     break;
-
+                case ALLIANCE_YELLOW:
+                    allianceYellow = !allianceYellow;
+                    break;
             }
         }
 
@@ -182,6 +192,7 @@ public class AutoConfiguration {
         telemetry.addData(((currentVariable == AdjVariables.WHITE_PIXELS ? indicatorMarker : "") + "White Pixel"), whitePixels);
         telemetry.addData(((currentVariable == AdjVariables.CYCLE_COUNT ? indicatorMarker : "") + "Max Cycle Count"), cycleCount);
         telemetry.addData(((currentVariable == AdjVariables.PARK_SIDE ? indicatorMarker : "") + "Park Side"), parkSide);
+        telemetry.addData(((currentVariable == AdjVariables.ALLIANCE_YELLOW ? indicatorMarker : "") + "ALLIANCE_YELLOW"), allianceYellow);
         telemetry.update();
     }
 }

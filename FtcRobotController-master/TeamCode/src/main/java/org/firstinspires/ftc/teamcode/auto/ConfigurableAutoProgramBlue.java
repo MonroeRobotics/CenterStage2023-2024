@@ -264,6 +264,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         spikeMiddle = new Pose2d(-34.5,38, Math.toRadians(90));
                     }
 
+                    spikeLocation = spikeLeft;
+
                     //Obtains team prop location from propDetector
                     screenSector = propDetection.getScreenSector();
                     if (screenSector != null) {
@@ -277,20 +279,26 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                             blueBoardCord = centerBlueBoardCord;
                             targetTagId = 2;
                             targetTagIdWhite = 1;
-                        } else {
+                        }
+                        else {
                             spikeLocation = spikeRight;
                             blueBoardCord = rightBlueBoardCord;
                             targetTagId = 3;
                             targetTagIdWhite = 1;
                         }
-                        //tag assignment based of starting position
-                        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
-                            aprilTagHomer.changeTarget(targetTagIdWhite);
-                        }
-                        else{
-                            aprilTagHomer.changeTarget(targetTagId);
-                        }
-
+                    }
+                    else {
+                        spikeLocation = spikeRight;
+                        blueBoardCord = rightBlueBoardCord;
+                        targetTagId = 6;
+                        targetTagIdWhite = 5;
+                    }
+                    //tag assignment based of starting position
+                    if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
+                        aprilTagHomer.changeTarget(targetTagIdWhite);
+                    }
+                    else{
+                        aprilTagHomer.changeTarget(targetTagId);
                     }
 
                     //Adds for
@@ -465,7 +473,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                 .lineToLinearHeading(blueBoardCord)
                                 .build();
                         armController.switchArmState();
-                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY &&
+                                autoConfiguration.getAllianceYellow()){
                             armController.setStage(1);
                         }
                         drive.followTrajectoryAsync(toRedBoard);
@@ -473,7 +482,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     }
                     break;
                 case HOME_TAG:
-                    aprilTagHomer.processRobotPosition();
+//                    aprilTagHomer.processRobotPosition();
                     if (!drive.isBusy()) {
                         aprilTagHomer.processRobotPosition();
                         aprilTagHomer.updateDrive();

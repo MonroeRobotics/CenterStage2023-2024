@@ -126,7 +126,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     //y was previously -35
     Pose2d centerRedBoardCord = new Pose2d(35, -36, Math.toRadians(180));
     Pose2d rightRedBoardCord = new Pose2d(35, -43, Math.toRadians(180));
-    Pose2d leftRedBoardCord = new Pose2d(35, -32, Math.toRadians(180));
+    Pose2d leftRedBoardCord = new Pose2d(35, -28, Math.toRadians(180));
     Pose2d redBoardCord = new Pose2d(35, -38, Math.toRadians(180));
     Pose2d redParkCord;
 
@@ -156,7 +156,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     AutoConfiguration autoConfiguration;
     //endregion
 
-     boolean hasTwoPixel;
+    boolean hasTwoPixel;
 
     @Override
     public void runOpMode() {
@@ -263,6 +263,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                         spikeMiddle = new Pose2d(-34.5,-38, Math.toRadians(270));
                     }
 
+                    spikeLocation = spikeLeft;
+
                     //Obtains team prop location from propDetector
                     screenSector = propDetection.getScreenSector();
                     if (screenSector != null) {
@@ -276,20 +278,26 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             redBoardCord = centerRedBoardCord;
                             targetTagId = 5;
                             targetTagIdWhite = 4;
-                        } else {
+                        }
+                        else {
                             spikeLocation = spikeRight;
                             redBoardCord = rightRedBoardCord;
                             targetTagId = 6;
                             targetTagIdWhite = 5;
                         }
-                        //tag assignment based of starting position
-                        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
-                            aprilTagHomer.changeTarget(targetTagIdWhite);
-                        }
-                        else{
-                            aprilTagHomer.changeTarget(targetTagId);
-                        }
-
+                    }
+                    else {
+                        spikeLocation = spikeRight;
+                        redBoardCord = rightRedBoardCord;
+                        targetTagId = 6;
+                        targetTagIdWhite = 5;
+                    }
+                    //tag assignment based of starting position
+                    if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
+                        aprilTagHomer.changeTarget(targetTagIdWhite);
+                    }
+                    else{
+                        aprilTagHomer.changeTarget(targetTagId);
                     }
 
                     //Adds for
@@ -374,7 +382,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
 
                         //If on side close to board goes to place pixel, If not goes to pre truss location
                         if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD)
-                        queuedState = autoState.TO_BOARD;
+                            queuedState = autoState.TO_BOARD;
                         else queuedState = autoState.PRE_TRUSS;
                     }
                     break;
@@ -464,7 +472,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                 .lineToLinearHeading(redBoardCord)
                                 .build();
                         armController.switchArmState();
-                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY &&
+                                autoConfiguration.getAllianceYellow()){
                             armController.setStage(1);
                         }
                         drive.followTrajectoryAsync(toRedBoard);
@@ -472,7 +481,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }
                     break;
                 case HOME_TAG:
-                    aprilTagHomer.processRobotPosition();
+//                    aprilTagHomer.processRobotPosition();
                     if (!drive.isBusy()) {
                         aprilTagHomer.processRobotPosition();
                         aprilTagHomer.updateDrive();
