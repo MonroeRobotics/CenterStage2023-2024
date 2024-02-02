@@ -109,10 +109,11 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
     Pose2d spikeLeft;
     Pose2d spikeCenter;
     Pose2d spikeRight;
+    Pose2d spikeMiddle;
     //endregion
 
-    Pose2d beforeTrussCord = new Pose2d(-36, -14, Math.toRadians(180));
-    Pose2d afterTrussCord = new Pose2d(30, -14, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, -13, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, -13, Math.toRadians(180));
     Pose2d whiteStackCord = new Pose2d(-60, -13, Math.toRadians(180));
 
 
@@ -258,7 +259,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }else{
                         spikeRight = new Pose2d(-32,-30, Math.toRadians(180));
                         spikeCenter = new Pose2d(-35,-32.5, Math.toRadians(270));
-                        spikeLeft = new Pose2d(-42,-35, Math.toRadians(315));
+                        spikeLeft = new Pose2d(-40.5,-35, Math.toRadians(315));
+                        spikeMiddle = new Pose2d(-34.5,-38, Math.toRadians(270));
                     }
 
                     //Obtains team prop location from propDetector
@@ -343,7 +345,8 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                                     toSpikeMark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .back(12)
                                             .lineToLinearHeading(spikeLocation)
-                                            .forward(8)
+                                            .forward(6.5)
+                                            .lineToLinearHeading(spikeMiddle)
                                             .lineToLinearHeading(new Pose2d(beforeTrussCord.getX(), beforeTrussCord.getY(), Math.toRadians(270)))
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
