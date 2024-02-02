@@ -113,8 +113,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     //endregion
 
 
-    Pose2d beforeTrussCord = new Pose2d(-36, 10, Math.toRadians(180));
-    Pose2d afterTrussCord = new Pose2d(30, 10, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, 8, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, 8, Math.toRadians(180));
     Pose2d whiteStackCord = new Pose2d(-56, 11, Math.toRadians(180));
 
 
@@ -270,17 +270,22 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     screenSector = propDetection.getScreenSector();
                     if (screenSector != null) {
                         if (screenSector.equals("L")) {
+
                             spikeLocation = spikeLeft;
                             blueBoardCord = leftBlueBoardCord;
                             targetTagId = 1;
                             targetTagIdWhite = 2;
                         } else if (screenSector.equals("C")) {
+                            beforeTrussCord = new Pose2d(-36, 11, Math.toRadians(180));
+                            afterTrussCord = new Pose2d(30, 11, Math.toRadians(180));
                             spikeLocation = spikeCenter;
                             blueBoardCord = centerBlueBoardCord;
                             targetTagId = 2;
                             targetTagIdWhite = 1;
                         }
                         else {
+                            beforeTrussCord = new Pose2d(-36, 6, Math.toRadians(180));
+                            afterTrussCord = new Pose2d(30, 6, Math.toRadians(180));
                             spikeLocation = spikeRight;
                             blueBoardCord = rightBlueBoardCord;
                             targetTagId = 3;
@@ -355,7 +360,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                             .back(12)
                                             .lineToLinearHeading(spikeLocation)
                                             .forward(7)
-                                            .lineToLinearHeading(spikeMiddle)
+                                            .lineToLinearHeading(spikeMiddle, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, Math.toRadians(160), DriveConstants.TRACK_WIDTH),
+                                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                             .lineToLinearHeading(new Pose2d(beforeTrussCord.getX(), beforeTrussCord.getY(), Math.toRadians(90)))
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
@@ -392,7 +398,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         headingHelper.loopMethod();
 
                         toPreTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(beforeTrussCord)
+                                .lineToLinearHeading(beforeTrussCord, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, Math.toRadians(160), DriveConstants.TRACK_WIDTH),
+                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .build();
                         drive.followTrajectoryAsync(toPreTruss);
 
@@ -565,7 +572,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                 .forward(5)
                                 .addDisplacementMarker(() -> {
                                     armController.switchArmState();
-                                    armController.setSlideHeight(-10);
+//                                    armController.setSlideHeight(-10);
                                 })
                                 .lineToLinearHeading(blueParkCord)
                                 .build();
@@ -601,6 +608,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                 intakeMotor.setPower(0);
                 intakeServo.setPosition(1);
             }
+
 
             telemetry.update();
 
