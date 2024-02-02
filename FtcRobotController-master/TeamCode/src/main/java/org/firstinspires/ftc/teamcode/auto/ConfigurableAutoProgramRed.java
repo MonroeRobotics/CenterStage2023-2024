@@ -259,7 +259,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                     }else{
                         spikeRight = new Pose2d(-32,-30, Math.toRadians(180));
                         spikeCenter = new Pose2d(-35,-32.5, Math.toRadians(270));
-                        spikeLeft = new Pose2d(-40.5,-35, Math.toRadians(315));
+                        spikeLeft = new Pose2d(-41,-35, Math.toRadians(315));
                         spikeMiddle = new Pose2d(-34.5,-38, Math.toRadians(270));
                     }
 
