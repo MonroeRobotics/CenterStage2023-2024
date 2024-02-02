@@ -50,7 +50,6 @@ public class AprilTagLocalizationTester extends OpMode {
             telemetry.addData("Tag X:", currentTagPose.x);
             telemetry.addData("Tag Y:", currentTagPose.y);
             telemetry.addData("Tag Yaw:", currentTagPose.yaw);
-            
             telemetry.update();
         }
         else{
