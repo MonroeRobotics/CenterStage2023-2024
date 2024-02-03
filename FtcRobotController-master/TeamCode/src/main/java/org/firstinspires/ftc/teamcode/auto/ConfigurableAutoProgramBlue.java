@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.ArmController;
 import org.firstinspires.ftc.teamcode.util.AutoConfiguration;
 import org.firstinspires.ftc.teamcode.util.HeadingHelper;
-import org.firstinspires.ftc.vision.AprilTagHomer;
-import org.firstinspires.ftc.vision.TeamPropDetection;
+import org.firstinspires.ftc.teamcode.vision.AprilTagHomer;
+import org.firstinspires.ftc.teamcode.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 

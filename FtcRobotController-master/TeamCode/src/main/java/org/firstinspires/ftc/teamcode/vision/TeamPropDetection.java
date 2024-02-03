@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.vision;
+package org.firstinspires.ftc.teamcode.vision;
 
 
 import static org.opencv.imgproc.Imgproc.MORPH_OPEN;
@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 
+import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;

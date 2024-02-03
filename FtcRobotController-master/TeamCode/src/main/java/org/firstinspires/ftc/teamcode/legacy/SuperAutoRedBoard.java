@@ -14,11 +14,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ArmController;
-import org.firstinspires.ftc.vision.AprilTagHomer;
-import org.firstinspires.ftc.vision.TeamPropDetection;
+import org.firstinspires.ftc.teamcode.vision.AprilTagHomer;
+import org.firstinspires.ftc.teamcode.vision.TeamPropDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
