@@ -125,7 +125,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
 
     //TODO: CHECK THESE
-    public static Pose2d centerBlueBoardCord = new Pose2d(35, 34, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 39, Math.toRadians(180));
     public static Pose2d leftBlueBoardCord = new Pose2d(35, 45, Math.toRadians(180));
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180 ));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
@@ -284,8 +284,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                             targetTagIdWhite = 1;
                         }
                         else {
-                            beforeTrussCord = new Pose2d(-36, 6, Math.toRadians(180));
-                            afterTrussCord = new Pose2d(30, 6, Math.toRadians(180));
+                            beforeTrussCord = new Pose2d(-36, 8.5, Math.toRadians(165));
+                            afterTrussCord = new Pose2d(30, 8.5, Math.toRadians(180));
                             spikeLocation = spikeRight;
                             blueBoardCord = rightBlueBoardCord;
                             targetTagId = 3;
@@ -489,7 +489,6 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     }
                     break;
                 case HOME_TAG:
-//                    aprilTagHomer.processRobotPosition();
                     if (!drive.isBusy()) {
                         aprilTagHomer.processRobotPosition();
                         aprilTagHomer.updateDrive();
@@ -569,7 +568,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         }
 
                         blueBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .forward(5)
+                                .forward(10)
                                 .addDisplacementMarker(() -> {
                                     armController.switchArmState();
 //                                    armController.setSlideHeight(-10);

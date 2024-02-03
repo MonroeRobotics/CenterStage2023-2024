@@ -10,7 +10,6 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 public class TeamPropAutoProcessor implements VisionProcessor{
-
     Scalar lowHSV;
     Scalar highHSV;
 
@@ -27,6 +26,8 @@ public class TeamPropAutoProcessor implements VisionProcessor{
         return highHSV;
     }
 
+    double[] currentValues;
+    Scalar currentScalar;
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
         // Not useful in this case, but we do need to implement it either way
@@ -40,7 +41,7 @@ public class TeamPropAutoProcessor implements VisionProcessor{
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
         //creates center sqaure
-        Rect centerScreen = new Rect(width/4, height/4, width/4, height/4);
+        Rect centerScreen = new Rect(width/2 - width/8, height - height/4, width/4, height/4);
 
 
         cropC = input.submat(centerScreen);
@@ -50,40 +51,51 @@ public class TeamPropAutoProcessor implements VisionProcessor{
         return null; // No context object
     }
 
+    public double[] getCurrentValues(){
+        return currentValues;
+    }
+
     public void getRanges(){
-        double lowH = 0;
-        double lowS = 0;
-        double lowV = 0;
+
+        double lowH = 255;
+        double lowS = 255;
+        double lowV = 255;
 
         double highH = 0;
         double highS = 0;
         double highV = 0;
 
-        for(int i = 0; i < cropC.height(); i++){
-            for(int j = 0; j < cropC.width(); i++){
-                double[] currentValue = cropC.get(i, j);
-                if(currentValue[0] > highH){
-                    currentValue[0] = highH;
-                }
-                else if (currentValue[0] < lowH){
-                    currentValue[0] = lowH;
-                }
+
+        for(int i = 0; i < cropC.rows() - 1; i++){
+            for(int k = 0; k < cropC.cols() - 1; k++){
 
 
-                if(currentValue[1] > highS){
-                    currentValue[1] = highS;
-                }
-                else if (currentValue[1] < lowS){
-                    currentValue[1] = lowS;
-                }
+                currentValues = cropC.get(i, k);
+
+                if (currentValues != null && currentValues.length != 0){
 
 
-                if(currentValue[2] > highV){
-                    currentValue[2] = highV;
-                }
-                else if (currentValue[2] < lowV){
-                    currentValue[2] = lowV;
-                }
+                        if (currentValues[0] > highH) {
+                            highH = currentValues[0];
+                        }
+                        if (currentValues[0] < lowH) {
+                            lowH = currentValues[0];
+                        }
+
+                        if (currentValues[1] > highS) {
+                            highS = currentValues[1];
+                        }
+                        if (currentValues[1] < lowS) {
+                            lowS = currentValues[1];
+                        }
+
+                        if (currentValues[2] > highV) {
+                            highV = currentValues[2];
+                        }
+                        if (currentValues[2] < lowV) {
+                            lowV = currentValues[2];
+                        }
+                    }
             }
         }
 

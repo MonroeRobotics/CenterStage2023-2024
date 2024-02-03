@@ -56,16 +56,21 @@ public class TeamPropDetectionAutoTuner extends OpMode {
 
     @Override
     public void loop() {
+        telemetry.addLine("Press X when Cube is in middle");
 
 
-        if(currentGamepad.x && !previousGamepad.x) {
-            telemetry.addData("lowHSV", propDetection.getLowHSV());
-            telemetry.addData("highHSV", propDetection.getHighHSV());
-            telemetry.update();
+        if(currentGamepad.cross && !previousGamepad.cross) {
+            propDetection.getRanges();
 
         }
 
-        previousGamepad.copy(gamepad1);
+        telemetry.addData("Values", propDetection.getCurrentValues());
+
+        telemetry.addData("lowHSV", propDetection.getLowHSV());
+        telemetry.addData("highHSV", propDetection.getHighHSV());
+        telemetry.update();
+
+        previousGamepad.copy(currentGamepad);
         currentGamepad.copy(gamepad1);
     }
 }
