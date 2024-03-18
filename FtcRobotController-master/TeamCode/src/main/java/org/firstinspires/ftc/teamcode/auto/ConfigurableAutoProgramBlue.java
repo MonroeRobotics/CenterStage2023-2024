@@ -112,9 +112,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     Pose2d spikeMiddle;
     //endregion
 
-
-    Pose2d beforeTrussCord = new Pose2d(-36, 10, Math.toRadians(180));
-    Pose2d afterTrussCord = new Pose2d(30, 10, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, 8, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, 8, Math.toRadians(180));
     Pose2d whiteStackCord = new Pose2d(-56, 11, Math.toRadians(180));
 
 
@@ -125,7 +124,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
 
 
     //TODO: CHECK THESE
-    public static Pose2d centerBlueBoardCord = new Pose2d(35, 34, Math.toRadians(180));
+    public static Pose2d centerBlueBoardCord = new Pose2d(35, 39, Math.toRadians(180));
     public static Pose2d leftBlueBoardCord = new Pose2d(35, 45, Math.toRadians(180));
     public static Pose2d rightBlueBoardCord = new Pose2d(35, 32, Math.toRadians(180 ));
     public static Pose2d blueBoardCord = new Pose2d(35, 38, Math.toRadians(180));
@@ -264,6 +263,9 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         spikeMiddle = new Pose2d(-34.5,38, Math.toRadians(90));
                     }
 
+
+                    spikeLocation = spikeLeft;
+                
                     //Obtains team prop location from propDetector
                     screenSector = propDetection.getScreenSector();
                     if (screenSector != null) {
@@ -273,24 +275,34 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                             targetTagId = 1;
                             targetTagIdWhite = 2;
                         } else if (screenSector.equals("C")) {
+                            beforeTrussCord = new Pose2d(-36, 11, Math.toRadians(180));
+                            afterTrussCord = new Pose2d(30, 11, Math.toRadians(180));
                             spikeLocation = spikeCenter;
                             blueBoardCord = centerBlueBoardCord;
                             targetTagId = 2;
                             targetTagIdWhite = 1;
-                        } else {
+                        }
+                        else {
+                            beforeTrussCord = new Pose2d(-36, 8.5, Math.toRadians(165));
+                            afterTrussCord = new Pose2d(30, 8.5, Math.toRadians(180));
                             spikeLocation = spikeRight;
                             blueBoardCord = rightBlueBoardCord;
                             targetTagId = 3;
                             targetTagIdWhite = 1;
                         }
-                        //tag assignment based of starting position
-                        if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
-                            aprilTagHomer.changeTarget(targetTagIdWhite);
-                        }
-                        else{
-                            aprilTagHomer.changeTarget(targetTagId);
-                        }
-
+                    }
+                    else {
+                        spikeLocation = spikeRight;
+                        blueBoardCord = rightBlueBoardCord;
+                        targetTagId = 6;
+                        targetTagIdWhite = 5;
+                    }
+                    //tag assignment based of starting position
+                    if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
+                        aprilTagHomer.changeTarget(targetTagIdWhite);
+                    }
+                    else{
+                        aprilTagHomer.changeTarget(targetTagId);
                     }
 
                     //Adds for
@@ -347,7 +359,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                             .back(12)
                                             .lineToLinearHeading(spikeLocation)
                                             .forward(7)
-                                            .lineToLinearHeading(spikeMiddle)
+                                            .lineToLinearHeading(spikeMiddle, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, Math.toRadians(160), DriveConstants.TRACK_WIDTH),
+                                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                             .lineToLinearHeading(new Pose2d(beforeTrussCord.getX(), beforeTrussCord.getY(), Math.toRadians(90)))
                                             .build();
                                     drive.followTrajectorySequenceAsync(toSpikeMark);
@@ -384,7 +397,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         headingHelper.loopMethod();
 
                         toPreTruss = drive.trajectoryBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(beforeTrussCord)
+                                .lineToLinearHeading(beforeTrussCord, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, Math.toRadians(160), DriveConstants.TRACK_WIDTH),
+                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .build();
                         drive.followTrajectoryAsync(toPreTruss);
 
@@ -465,7 +479,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                 .lineToLinearHeading(blueBoardCord)
                                 .build();
                         armController.switchArmState();
-                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY){
+                        if (autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY &&
+                                autoConfiguration.getAllianceYellow()){
                             armController.setStage(1);
                         }
                         drive.followTrajectoryAsync(toRedBoard);
@@ -473,7 +488,6 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     }
                     break;
                 case HOME_TAG:
-                    aprilTagHomer.processRobotPosition();
                     if (!drive.isBusy()) {
                         aprilTagHomer.processRobotPosition();
                         aprilTagHomer.updateDrive();
@@ -553,10 +567,9 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         }
 
                         blueBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .forward(5)
+                                .forward(10)
                                 .addDisplacementMarker(() -> {
                                     armController.switchArmState();
-                                    armController.setSlideHeight(-10);
                                 })
                                 .lineToLinearHeading(blueParkCord)
                                 .build();
