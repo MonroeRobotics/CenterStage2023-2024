@@ -112,7 +112,6 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     Pose2d spikeMiddle;
     //endregion
 
-
     Pose2d beforeTrussCord = new Pose2d(-36, 8, Math.toRadians(180));
     Pose2d afterTrussCord = new Pose2d(30, 8, Math.toRadians(180));
     Pose2d whiteStackCord = new Pose2d(-56, 11, Math.toRadians(180));
@@ -264,13 +263,13 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         spikeMiddle = new Pose2d(-34.5,38, Math.toRadians(90));
                     }
 
-                    spikeLocation = spikeLeft;
 
+                    spikeLocation = spikeLeft;
+                
                     //Obtains team prop location from propDetector
                     screenSector = propDetection.getScreenSector();
                     if (screenSector != null) {
                         if (screenSector.equals("L")) {
-
                             spikeLocation = spikeLeft;
                             blueBoardCord = leftBlueBoardCord;
                             targetTagId = 1;
@@ -566,7 +565,6 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                         }else{
                             blueParkCord = new Pose2d(46, 10, Math.toRadians(180));
                         }
-
                         if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.BOARD){
                             blueBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                     .forward(10)
@@ -621,7 +619,6 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                 intakeMotor.setPower(0);
                 intakeServo.setPosition(1);
             }
-
 
             telemetry.update();
 

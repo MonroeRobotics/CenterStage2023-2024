@@ -98,7 +98,6 @@ public class AutoConfiguration {
     }
 
     public boolean getAllianceYellow(){return allianceYellow;}
-
     public void processInput(Gamepad currentGamepad, Gamepad previousGamepad){
         if(currentGamepad.dpad_down && !previousGamepad.dpad_down && currVIndex < adjVariables.length - 1){
             currVIndex += 1;

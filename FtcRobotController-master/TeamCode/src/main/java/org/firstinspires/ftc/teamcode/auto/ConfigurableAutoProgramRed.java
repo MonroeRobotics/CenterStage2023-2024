@@ -233,7 +233,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
             previousGamepad.copy(currentGamepad);
             currentGamepad.copy(gamepad1);
         }
-        
+
         //Sets starting position based on start position variable
         if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
             startingDrivePose = startingDrivePoseBoard;
