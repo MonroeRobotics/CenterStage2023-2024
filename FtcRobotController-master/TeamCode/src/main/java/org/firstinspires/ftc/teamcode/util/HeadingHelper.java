@@ -59,10 +59,10 @@ public class HeadingHelper {
         telemetry.addData("Roll", yPR.getRoll(AngleUnit.DEGREES));
         telemetry.addData("Timer", timer);
 
-            double yaw = getAdjustedYaw();
-            Pose2d currPose = drive.getPoseEstimate();
-            drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(yaw)));
-            timer = System.currentTimeMillis() + pollInterval;
+        double yaw = getAdjustedYaw();
+        Pose2d currPose = drive.getPoseEstimate();
+        drive.setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), Math.toRadians(yaw)));
+        timer = System.currentTimeMillis() + pollInterval;
 
     }
 
