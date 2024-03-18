@@ -567,14 +567,28 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                             blueParkCord = new Pose2d(46, 10, Math.toRadians(180));
                         }
 
-                        blueBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .forward(10)
-                                .addDisplacementMarker(() -> {
-                                    armController.switchArmState();
+                        if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.BOARD){
+                            blueBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .forward(10)
+                                    .addDisplacementMarker(() -> {
+                                        armController.switchArmState();
 //                                    armController.setSlideHeight(-10);
-                                })
-                                .lineToLinearHeading(blueParkCord)
-                                .build();
+                                    })
+                                    .back(7)
+
+                                    .build();
+                        }
+                        else{
+                            blueBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .forward(10)
+                                    .addDisplacementMarker(() -> {
+                                        armController.switchArmState();
+//                                    armController.setSlideHeight(-10);
+                                    })
+                                    .lineToLinearHeading(blueParkCord)
+                                    .build();
+                        }
+
                         drive.followTrajectorySequenceAsync(blueBoardPark);
                         waitTimer = System.currentTimeMillis() + PARK_TIME;
                         queuedState = autoState.STOP;

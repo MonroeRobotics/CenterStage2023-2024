@@ -233,7 +233,7 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
             previousGamepad.copy(currentGamepad);
             currentGamepad.copy(gamepad1);
         }
-
+        
         //Sets starting position based on start position variable
         if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.BOARD){
             startingDrivePose = startingDrivePoseBoard;
@@ -560,14 +560,28 @@ public class ConfigurableAutoProgramRed extends LinearOpMode {
                             redParkCord = new Pose2d(49, -15, Math.toRadians(180));
                         }
 
-                        redBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .forward(5)
-                                .addDisplacementMarker(() -> {
-                                    armController.switchArmState();
-                                    armController.setSlideHeight(-10);
-                                })
-                                .lineToLinearHeading(redParkCord)
-                                .build();
+                        if(autoConfiguration.getParkSide() == AutoConfiguration.ParkSide.BOARD){
+                            redBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .forward(10)
+                                    .addDisplacementMarker(() -> {
+                                        armController.switchArmState();
+//                                    armController.setSlideHeight(-10);
+                                    })
+                                    .back(7)
+
+                                    .build();
+                        }
+                        else{
+                            redBoardPark = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .forward(10)
+                                    .addDisplacementMarker(() -> {
+                                        armController.switchArmState();
+//                                    armController.setSlideHeight(-10);
+                                    })
+                                    .lineToLinearHeading(redParkCord)
+                                    .build();
+                        }
+
                         drive.followTrajectorySequenceAsync(redBoardPark);
                         waitTimer = System.currentTimeMillis() + PARK_TIME;
                         queuedState = autoState.STOP;

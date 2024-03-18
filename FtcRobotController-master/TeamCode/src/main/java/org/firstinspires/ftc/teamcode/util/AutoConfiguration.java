@@ -14,7 +14,8 @@ public class AutoConfiguration {
 
     public enum ParkSide{
         MIDDLE,
-        SIDE
+        SIDE,
+        BOARD
     }
     public enum AllianceColor{
         RED,
@@ -134,11 +135,14 @@ public class AutoConfiguration {
                     }
                     break;
                 case PARK_SIDE:
-                    if(parkSide == ParkSide.SIDE){
+                    if(parkSide == ParkSide.BOARD){
                         parkSide = ParkSide.MIDDLE;
                     }
-                    else{
+                    else if (parkSide == ParkSide.MIDDLE){
                         parkSide = ParkSide.SIDE;
+                    }
+                    else{
+                        parkSide = ParkSide.BOARD;
                     }
                     break;
                 case ALLIANCE_YELLOW:
@@ -172,11 +176,14 @@ public class AutoConfiguration {
                         cycleCount --;
                     }
                 case PARK_SIDE:
-                    if(parkSide == ParkSide.SIDE){
+                    if(parkSide == ParkSide.BOARD){
                         parkSide = ParkSide.MIDDLE;
                     }
-                    else{
+                    else if (parkSide == ParkSide.MIDDLE){
                         parkSide = ParkSide.SIDE;
+                    }
+                    else{
+                        parkSide = ParkSide.BOARD;
                     }
                     break;
                 case ALLIANCE_YELLOW:
