@@ -112,9 +112,9 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
     Pose2d spikeMiddle;
     //endregion
 
-    Pose2d beforeTrussCord = new Pose2d(-36, 8, Math.toRadians(180));
-    Pose2d afterTrussCord = new Pose2d(30, 8, Math.toRadians(180));
-    Pose2d whiteStackCord = new Pose2d(-56, 11, Math.toRadians(180));
+    Pose2d beforeTrussCord = new Pose2d(-36, 5, Math.toRadians(180));
+    Pose2d afterTrussCord = new Pose2d(30, 5, Math.toRadians(180));
+    Pose2d whiteStackCord = new Pose2d(-58, 11, Math.toRadians(180));
 
 
     Pose2d startingDrivePose = new Pose2d(10, 62, Math.toRadians(90));;
@@ -294,8 +294,8 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                     else {
                         spikeLocation = spikeRight;
                         blueBoardCord = rightBlueBoardCord;
-                        targetTagId = 6;
-                        targetTagIdWhite = 5;
+                        targetTagId = 1;
+                        targetTagIdWhite = 2;
                     }
                     //tag assignment based of starting position
                     if(autoConfiguration.getStartPosition() == AutoConfiguration.StartPosition.AWAY && autoConfiguration.isWhitePixels()){
@@ -483,6 +483,7 @@ public class ConfigurableAutoProgramBlue extends LinearOpMode {
                                 autoConfiguration.getAllianceYellow()){
                             armController.setStage(1);
                         }
+                        if (hasTwoPixel){aprilTagHomer.changeTarget(targetTagIdWhite);}
                         drive.followTrajectoryAsync(toRedBoard);
                         queuedState = autoState.HOME_TAG;
                     }
